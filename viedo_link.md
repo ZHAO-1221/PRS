@@ -9,3 +9,4 @@ https://petcube.com/blog/pets-caught-on-night-vision-pet-camera/ 夜间宠
 
 模型：
 https://github.com/SebastianJanampa/DETRPose 多目标姿态检测
+https://github.com/open-mmlab/mmpose/tree/main/configs/body_2d_keypoint/rtmpose 动物的
