@@ -1,4 +1,5 @@
 训练集：
+https://github.com/AlexTheBad/AP-10K 日间宠物骨架
 https://huggingface.co/datasets/ohicarip/interpet4d 人宠互动音频（英文）
 
 
