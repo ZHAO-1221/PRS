@@ -4,7 +4,7 @@ https://huggingface.co/datasets/ohicarip/interpet4d 人宠互动音频（英文�
 https://zenodo.org/records/18972388 人宠互动音频
 https://sites.google.com/view/animal-pose/ 该数据集提供了五个类别的动物姿态注释：狗、猫、牛、马、绵羊，总计在4000+张图片中有6000+个实例。此外，数据集还包含其他7个动物类别的边界框注释。20个点
 
-melodyyyyy123/apt36k-dog
+melodyyyyy123/apt36k-canidae-felidae
 AP36k 数据来自约 2,400 段视频片段，约 36,000 帧，覆盖 30 个物种，17点骨架，和AP-10k一致，基本都是室外场景。先去掉灵长类，训练后再用犬科微调。
 犬科：dog, wolf, fox 240 viedo 80 each
 猫科：cat， tiger， lion， cheetah cat 82，others 80 each
