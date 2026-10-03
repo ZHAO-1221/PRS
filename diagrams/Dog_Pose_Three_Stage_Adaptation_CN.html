@@ -1,0 +1,54 @@
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>犬类姿态模型三阶段适配策略</title><style>
+:root{--paper:#fbfcfd;--ink:#172238;--muted:#607087;--rule:#d7e0e9;--navy:#003d7c;--blue:#0a84bd;--orange:#ef7c00;--green:#15936c}*{box-sizing:border-box}body{margin:0;background:#edf2f6;color:var(--ink);font-family:"Noto Sans SC","Microsoft YaHei",Arial,sans-serif}main{width:min(1320px,calc(100vw - 30px));margin:20px auto}.figure{margin:0;background:var(--paper);border:1px solid #dce4ec;padding:18px 22px 14px}svg{display:block;width:100%;height:auto}figcaption{margin:12px 4px 0;padding-top:11px;border-top:1px solid #dce4ec;font:14px/1.65 Georgia,"Noto Serif SC",serif;color:#445269}.cap{font-weight:700;color:#172238}</style></head><body><main><figure class="figure">
+<svg viewBox="0 0 1280 720" role="img" aria-labelledby="adapt-title adapt-desc">
+<title id="adapt-title">犬类姿态模型三阶段适配策略</title><desc id="adapt-desc">从官方AP-10K通用动物RTMPose-M开始，依次进行直接室内测试、AP-10K狗类别专门化和室内犬类数据微调，并使用相同测试集比较三个版本。</desc>
+<defs><pattern id="dots" width="22" height="22" patternUnits="userSpaceOnUse"><circle cx="11" cy="11" r=".75" fill="#172238" opacity=".06"/></pattern><marker id="arr" markerWidth="9" markerHeight="7" refX="8" refY="3.5" orient="auto"><path d="M0 0L9 3.5L0 7Z" fill="#607087"/></marker><marker id="arr-orange" markerWidth="9" markerHeight="7" refX="8" refY="3.5" orient="auto"><path d="M0 0L9 3.5L0 7Z" fill="#ef7c00"/></marker><style>
+.sans{font-family:"Noto Sans SC","Microsoft YaHei",Arial,sans-serif}.serif{font-family:Georgia,"Noto Serif SC",serif}.mono{font-family:"Geist Mono",Consolas,monospace}.title{font-size:15px;font-weight:750;fill:#172238}.sub{font-size:10px;fill:#607087}.tech{font-size:9px;fill:#52657c}.small{font-size:8px;fill:#718096}.eyebrow{font-size:9px;font-weight:700;letter-spacing:.13em}.edge{fill:none;stroke:#607087;stroke-width:1.5;marker-end:url(#arr)}.focal-edge{fill:none;stroke:#ef7c00;stroke-width:1.7;marker-end:url(#arr-orange)}
+</style></defs>
+<rect width="1280" height="720" fill="#fbfcfd"/><rect width="1280" height="720" fill="url(#dots)"/>
+<text x="30" y="37" class="serif" font-size="27" font-weight="700" fill="#172238">犬类姿态模型三阶段适配策略</text><text x="31" y="61" class="sans" font-size="11" fill="#607087">从通用动物基线到狗类别专门化，再到室内场景适配；逐阶段验证每次训练是否带来真实增益</text><line x1="30" y1="76" x2="1250" y2="76" stroke="#cbd6e1"/>
+
+<!-- shared model specification -->
+<g class="sans"><rect x="50" y="105" width="1180" height="67" rx="7" fill="#f5f8fb" stroke="#d2dce6"/><text x="70" y="129" class="mono eyebrow" fill="#607087">SHARED ARCHITECTURE</text>
+<rect x="248" y="117" width="132" height="39" rx="4" fill="#fff" stroke="#cbd6e1"/><text x="314" y="134" class="title" text-anchor="middle">RTMPose-M</text><text x="314" y="149" class="mono small" text-anchor="middle">top-down estimator</text>
+<text x="407" y="141" class="title" fill="#8a97a8">→</text><rect x="440" y="117" width="132" height="39" rx="4" fill="#fff" stroke="#cbd6e1"/><text x="506" y="134" class="title" text-anchor="middle">256 × 256</text><text x="506" y="149" class="mono small" text-anchor="middle">dog crop</text>
+<text x="599" y="141" class="title" fill="#8a97a8">→</text><rect x="632" y="117" width="150" height="39" rx="4" fill="#fff" stroke="#cbd6e1"/><text x="707" y="134" class="title" text-anchor="middle">CSPNeXt-M</text><text x="707" y="149" class="mono small" text-anchor="middle">768 × 8 × 8</text>
+<text x="809" y="141" class="title" fill="#8a97a8">→</text><rect x="842" y="117" width="174" height="39" rx="4" fill="#fff" stroke="#efc38e"/><text x="929" y="134" class="title" text-anchor="middle">RTMCCHead</text><text x="929" y="149" class="mono small" text-anchor="middle">7×7 Conv · FC · GAU</text>
+<text x="1043" y="141" class="title" fill="#8a97a8">→</text><rect x="1076" y="117" width="130" height="39" rx="4" fill="#fff" stroke="#cbd6e1"/><text x="1141" y="134" class="title" text-anchor="middle">AP-10K 17点</text><text x="1141" y="149" class="mono small" text-anchor="middle">x · y · confidence</text></g>
+
+<!-- stage connectors -->
+<line class="edge" x1="380" y1="350" x2="442" y2="350"/><line class="focal-edge" x1="775" y1="350" x2="837" y2="350"/>
+
+<!-- Stage P0 -->
+<g class="sans"><rect x="55" y="205" width="325" height="310" rx="8" fill="#fff" stroke="#aab9c8"/>
+<rect x="75" y="222" width="44" height="23" rx="3" fill="#607087" opacity=".13"/><text x="97" y="238" class="mono" font-size="9" font-weight="700" text-anchor="middle" fill="#52657c">P0</text><text x="136" y="239" class="eyebrow" fill="#607087">GENERAL BASELINE</text>
+<text x="75" y="279" class="title">阶段一 · 官方模型直接测试</text><text x="75" y="301" class="sub">不进行额外训练，建立室内场景基线</text>
+<rect x="75" y="325" width="285" height="65" rx="5" fill="#f5f8fb" stroke="#d4dee8"/><text x="92" y="348" class="tech">初始化</text><text x="92" y="370" class="title">官方 AP-10K RTMPose-M 权重</text>
+<rect x="75" y="405" width="285" height="74" rx="5" fill="#f8fafc" stroke="#dce4ec"/><text x="92" y="427" class="tech">操作</text><text x="92" y="449" class="sub">直接在独立室内验证/测试集推理</text><text x="92" y="468" class="mono small">no fine-tuning · baseline errors</text>
+<text x="75" y="501" class="sub">关注：侧卧、遮挡、低光照、运动模糊</text></g>
+
+<!-- Stage P1 -->
+<g class="sans"><rect x="450" y="205" width="325" height="310" rx="8" fill="#fff" stroke="#0a84bd" stroke-width="1.3"/>
+<rect x="470" y="222" width="44" height="23" rx="3" fill="#0a84bd" opacity=".14"/><text x="492" y="238" class="mono" font-size="9" font-weight="700" text-anchor="middle" fill="#0072a7">P1</text><text x="531" y="239" class="eyebrow" fill="#0072a7">DOG SPECIALISATION</text>
+<text x="470" y="279" class="title">阶段二 · 狗类别专门化</text><text x="470" y="301" class="sub">强化犬类身体比例、关节结构和局部特征</text>
+<rect x="470" y="325" width="285" height="65" rx="5" fill="#eef6fb" stroke="#b9d3e3"/><text x="487" y="348" class="tech">训练数据</text><text x="487" y="370" class="title">AP-10K Train 中的狗类别样本</text>
+<rect x="470" y="405" width="285" height="74" rx="5" fill="#f8fbfd" stroke="#cbdce8"/><text x="487" y="427" class="tech">训练</text><text x="487" y="449" class="sub">从 P0 权重继续微调</text><text x="487" y="468" class="mono small">dog subset · validation/test isolated</text>
+<text x="470" y="501" class="sub">目标：改善头部、前肢和后肢定位</text></g>
+
+<!-- Stage P2 -->
+<g class="sans"><rect x="845" y="205" width="325" height="310" rx="8" fill="#fffaf5" stroke="#ef7c00" stroke-width="1.7"/>
+<rect x="865" y="222" width="44" height="23" rx="3" fill="#ef7c00" opacity=".15"/><text x="887" y="238" class="mono" font-size="9" font-weight="700" text-anchor="middle" fill="#a84f00">P2</text><text x="926" y="239" class="eyebrow" fill="#a84f00">INDOOR ADAPTATION</text>
+<text x="865" y="279" class="title">阶段三 · 室内场景微调</text><text x="865" y="301" class="sub">适配固定摄像机、室内背景与真实遮挡</text>
+<rect x="865" y="325" width="285" height="65" rx="5" fill="#fff3e5" stroke="#efc38e"/><text x="882" y="348" class="tech">训练数据</text><text x="882" y="370" class="title">约 300–800 张室内关键点图像</text>
+<rect x="865" y="405" width="285" height="74" rx="5" fill="#fff8ef" stroke="#efd2ae"/><text x="882" y="427" class="tech">训练</text><text x="882" y="449" class="sub">从 P1 权重进行小学习率微调</text><text x="882" y="468" class="mono small">flip · scale · rotation · occlusion</text>
+<text x="865" y="501" class="sub">最终模型：Indoor-Adapted Dog RTMPose</text></g>
+
+<!-- comparison band -->
+<g class="sans"><rect x="55" y="548" width="1115" height="102" rx="7" fill="#f4f7fa" stroke="#d3dde7"/><text x="75" y="574" class="mono eyebrow" fill="#607087">CONTROLLED COMPARISON</text><text x="75" y="601" class="title">P0  →  P1  →  P2：使用相同的独立测试集逐阶段比较</text>
+<rect x="75" y="618" width="82" height="20" rx="3" fill="#003d7c" opacity=".10"/><text x="116" y="632" class="mono" font-size="8" text-anchor="middle" fill="#003d7c">COCO AP</text><rect x="170" y="618" width="82" height="20" rx="3" fill="#003d7c" opacity=".10"/><text x="211" y="632" class="mono" font-size="8" text-anchor="middle" fill="#003d7c">AP@0.5</text><rect x="265" y="618" width="82" height="20" rx="3" fill="#003d7c" opacity=".10"/><text x="306" y="632" class="mono" font-size="8" text-anchor="middle" fill="#003d7c">AP@0.75</text><rect x="360" y="618" width="82" height="20" rx="3" fill="#003d7c" opacity=".10"/><text x="401" y="632" class="mono" font-size="8" text-anchor="middle" fill="#003d7c">PCK</text><text x="475" y="632" class="sub">分部结果：头部 · 前肢 · 后肢 · 全部17点</text>
+<g transform="translate(1040 570)" fill="none" stroke="#ef7c00" stroke-width="2" stroke-linecap="round"><path d="M0 18L20 28L70 31M22 28L20 62M35 30L38 63M56 31L55 63M70 31L76 61"/></g><g transform="translate(1040 570)" fill="#ef7c00"><circle cx="0" cy="18" r="3"/><circle cx="20" cy="28" r="3"/><circle cx="70" cy="31" r="3"/><circle cx="20" cy="62" r="3"/><circle cx="38" cy="63" r="3"/><circle cx="55" cy="63" r="3"/><circle cx="76" cy="61" r="3"/></g></g>
+
+<line x1="30" y1="680" x2="1250" y2="680" stroke="#cbd6e1"/><text x="30" y="704" class="mono small">HYPOTHESIS: P1 &gt; P0 说明狗类别专门化有效；P2 &gt; P1 说明室内场景适配有效。</text><text x="1250" y="704" class="mono small" text-anchor="end">DOG POSE ADAPTATION · THREE-STAGE DESIGN</text>
+</svg>
+<figcaption><span class="cap">图：犬类 RTMPose-M 的三阶段适配策略。</span> P0 直接评估官方 AP-10K 通用动物模型，P1 使用 AP-10K 训练划分中的狗类别样本进行专门化，P2 再利用少量室内犬类关键点图像进行场景适配。三个版本在同一独立测试集上比较，以区分狗类别专门化和室内微调的增量贡献。</figcaption>
+</figure></main></body></html>

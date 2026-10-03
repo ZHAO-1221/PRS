@@ -1,0 +1,141 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>人—犬骨架的 ST-GCN 邻域与分区策略</title>
+  <style>
+    :root{--paper:#fbfcfd;--ink:#172238;--muted:#607087;--line:#d9e1ea;--blue:#087db8;--navy:#003d7c;--orange:#ef7c00;--green:#15936c;--soft:#edf2f7}
+    *{box-sizing:border-box}
+    body{margin:0;background:#eef2f6;color:var(--ink);font-family:"Noto Sans SC","Microsoft YaHei",Arial,sans-serif}
+    main{width:min(1180px,calc(100vw - 32px));margin:24px auto 40px}
+    .figure{background:var(--paper);border:1px solid #dfe5ec;box-shadow:0 18px 46px rgba(23,34,56,.09);padding:24px 26px 18px}
+    svg{display:block;width:100%;height:auto}
+    figcaption{margin:16px 5px 0;padding-top:14px;border-top:1px solid #dfe5ec;font-family:Georgia,"Noto Serif SC",serif;font-size:14px;line-height:1.7;color:#445269}
+    .caption-title{font-weight:700;color:#172238}
+    @media print{body{background:#fff}main{width:100%;margin:0}.figure{border:0;box-shadow:none;padding:0}figcaption{font-size:11pt}}
+  </style>
+</head>
+<body>
+<main>
+  <figure class="figure">
+    <svg viewBox="0 0 1120 792" role="img" aria-labelledby="svg-title svg-desc">
+      <title id="svg-title">面向人宠互动识别的人体与犬类 ST-GCN 邻域分区策略</title>
+      <desc id="svg-desc">上排采用 COCO-17 人体骨架并以右肘为根节点，下排采用 AP-10K 十七点犬类骨架并以左肘为根节点。每排依次展示一阶邻域、统一标记、距离分区与空间配置分区。</desc>
+      <defs>
+        <pattern id="dots" width="22" height="22" patternUnits="userSpaceOnUse"><circle cx="11" cy="11" r=".75" fill="#172238" opacity=".07"/></pattern>
+        <filter id="shadow" x="-15%" y="-15%" width="130%" height="140%"><feDropShadow dx="0" dy="3" stdDeviation="5" flood-color="#172238" flood-opacity=".08"/></filter>
+        <style>
+          .sans{font-family:"Noto Sans SC","Microsoft YaHei",Arial,sans-serif}.serif{font-family:Georgia,"Noto Serif SC",serif}.mono{font-family:"Geist Mono",Consolas,monospace}
+          .base-edge{stroke:#ccd7e4;stroke-width:3.2;stroke-linecap:round;stroke-linejoin:round;fill:none}.base-node{fill:#dbe5f1;stroke:#fbfcfd;stroke-width:1.2}
+          .active-edge{stroke:#6b7d93;stroke-width:4.5;stroke-linecap:round}.zone{fill:#087db8;fill-opacity:.035;stroke:#087db8;stroke-width:2;stroke-dasharray:6 5}
+          .joint{stroke:#fff;stroke-width:2}.joint-label{font-size:10px;font-weight:800;text-anchor:middle;dominant-baseline:middle;fill:#fff}.dark-label{fill:#172238}
+          .panel-title{font-size:15px;font-weight:750;fill:#172238;text-anchor:middle}.panel-sub{font-size:10px;fill:#6a788d;text-anchor:middle}.row-title{font-size:15px;font-weight:800;fill:#003d7c}.row-sub{font-size:10px;fill:#607087}
+        </style>
+
+        <symbol id="human" viewBox="0 0 174 204" width="174" height="204">
+          <g class="base-edge">
+            <line x1="58" y1="62" x2="102" y2="62"/><line x1="58" y1="62" x2="38" y2="100"/><line x1="38" y1="100" x2="24" y2="138"/>
+            <line x1="102" y1="62" x2="126" y2="92"/><line x1="126" y1="92" x2="150" y2="118"/>
+            <line x1="58" y1="62" x2="66" y2="118"/><line x1="102" y1="62" x2="94" y2="118"/><line x1="66" y1="118" x2="94" y2="118"/>
+            <line x1="66" y1="118" x2="62" y2="158"/><line x1="62" y1="158" x2="58" y2="198"/><line x1="94" y1="118" x2="98" y2="158"/><line x1="98" y1="158" x2="104" y2="198"/>
+            <line x1="80" y1="22" x2="72" y2="18"/><line x1="80" y1="22" x2="88" y2="18"/><line x1="72" y1="18" x2="88" y2="18"/>
+            <line x1="72" y1="18" x2="64" y2="24"/><line x1="88" y1="18" x2="96" y2="24"/><line x1="64" y1="24" x2="58" y2="62"/><line x1="96" y1="24" x2="102" y2="62"/>
+          </g>
+          <g class="base-node">
+            <circle cx="80" cy="22" r="5"/><circle cx="72" cy="18" r="5"/><circle cx="88" cy="18" r="5"/><circle cx="64" cy="24" r="5"/><circle cx="96" cy="24" r="5"/>
+            <circle cx="58" cy="62" r="6"/><circle cx="102" cy="62" r="6"/><circle cx="38" cy="100" r="6"/><circle cx="126" cy="92" r="6"/><circle cx="24" cy="138" r="6"/><circle cx="150" cy="118" r="6"/>
+            <circle cx="66" cy="118" r="6"/><circle cx="94" cy="118" r="6"/><circle cx="62" cy="158" r="6"/><circle cx="98" cy="158" r="6"/><circle cx="58" cy="198" r="6"/><circle cx="104" cy="198" r="6"/>
+          </g>
+        </symbol>
+
+        <symbol id="dog" viewBox="0 0 184 136" width="184" height="136">
+          <g class="base-edge">
+            <line x1="38" y1="26" x2="44" y2="34"/><line x1="38" y1="26" x2="22" y2="36"/><line x1="44" y1="34" x2="22" y2="36"/><line x1="22" y1="36" x2="68" y2="54"/>
+            <line x1="68" y1="54" x2="150" y2="64"/><line x1="68" y1="54" x2="82" y2="66"/><line x1="82" y1="66" x2="78" y2="96"/><line x1="78" y1="96" x2="76" y2="128"/>
+            <line x1="68" y1="54" x2="94" y2="70"/><line x1="94" y1="70" x2="98" y2="100"/><line x1="98" y1="100" x2="104" y2="130"/>
+            <line x1="150" y1="64" x2="132" y2="70"/><line x1="132" y1="70" x2="132" y2="100"/><line x1="132" y1="100" x2="138" y2="130"/>
+            <line x1="150" y1="64" x2="150" y2="74"/><line x1="150" y1="74" x2="156" y2="102"/><line x1="156" y1="102" x2="166" y2="128"/>
+          </g>
+          <g class="base-node">
+            <circle cx="38" cy="26" r="4.5"/><circle cx="44" cy="34" r="4.5"/><circle cx="22" cy="36" r="5.2"/><circle cx="68" cy="54" r="6"/><circle cx="150" cy="64" r="6"/>
+            <circle cx="82" cy="66" r="6"/><circle cx="78" cy="96" r="6"/><circle cx="76" cy="128" r="6"/><circle cx="94" cy="70" r="6"/><circle cx="98" cy="100" r="6"/><circle cx="104" cy="130" r="6"/>
+            <circle cx="132" cy="70" r="6"/><circle cx="132" cy="100" r="6"/><circle cx="138" cy="130" r="6"/><circle cx="150" cy="74" r="6"/><circle cx="156" cy="102" r="6"/><circle cx="166" cy="128" r="6"/>
+          </g>
+        </symbol>
+      </defs>
+
+      <rect width="1120" height="792" fill="#fbfcfd"/><rect width="1120" height="792" fill="url(#dots)"/>
+      <text x="28" y="35" class="serif" font-size="25" font-weight="700" fill="#172238">人—犬骨架的 ST-GCN 邻域与分区策略</text>
+      <text x="29" y="58" class="sans" font-size="11" fill="#607087">面向喂食、抚摸与共同玩耍识别 · COCO-17 人体骨架 × AP-10K 犬类骨架</text>
+      <line x1="28" y1="72" x2="1092" y2="72" stroke="#ccd6e1"/>
+
+      <g class="sans">
+        <text x="230" y="94" class="panel-title">(a) 一阶邻域 D = 1</text><text x="230" y="108" class="panel-sub">根节点与一跳相邻节点</text>
+        <text x="475" y="94" class="panel-title">(b) 统一标记</text><text x="475" y="108" class="panel-sub">邻域节点共享同一子集</text>
+        <text x="720" y="94" class="panel-title">(c) 距离分区</text><text x="720" y="108" class="panel-sub">根节点 0 · 一跳节点 1</text>
+        <text x="965" y="94" class="panel-title">(d) 空间配置分区</text><text x="965" y="108" class="panel-sub">相对骨架重心：向心 / 离心</text>
+      </g>
+
+      <g class="sans">
+        <rect x="25" y="153" width="72" height="68" rx="8" fill="#003d7c" opacity=".08"/><text x="37" y="177" class="row-title">人体</text><text x="37" y="195" class="row-sub">COCO-17</text><text x="37" y="211" class="row-sub">根：右肘 8</text>
+        <rect x="25" y="431" width="72" height="68" rx="8" fill="#ef7c00" opacity=".10"/><text x="37" y="455" class="row-title" fill="#a84f00">犬类</text><text x="37" y="473" class="row-sub">AP-10K</text><text x="37" y="489" class="row-sub">根：左肘 6</text>
+      </g>
+
+      <g fill="#fff" stroke="#d9e1ea" filter="url(#shadow)">
+        <rect x="120" y="120" width="220" height="238" rx="8"/><rect x="365" y="120" width="220" height="238" rx="8"/><rect x="610" y="120" width="220" height="238" rx="8"/><rect x="855" y="120" width="220" height="238" rx="8"/>
+        <rect x="120" y="390" width="220" height="205" rx="8"/><rect x="365" y="390" width="220" height="205" rx="8"/><rect x="610" y="390" width="220" height="205" rx="8"/><rect x="855" y="390" width="220" height="205" rx="8"/>
+      </g>
+
+      <!-- Human: (a) receptive field -->
+      <g transform="translate(162 139) scale(.78)"><use href="#human"/><ellipse class="zone" cx="126" cy="91" rx="55" ry="28" transform="rotate(40 126 91)"/><line class="active-edge" x1="102" y1="62" x2="126" y2="92"/><line class="active-edge" x1="126" y1="92" x2="150" y2="118"/><circle class="joint" cx="102" cy="62" r="9" fill="#087db8"/><circle class="joint" cx="126" cy="92" r="10" fill="#ef7c00"/><circle class="joint" cx="150" cy="118" r="9" fill="#087db8"/></g>
+      <text x="230" y="343" class="mono" font-size="10" text-anchor="middle" fill="#607087">6 右肩  —  8 右肘  —  10 右腕</text>
+
+      <!-- Human: (b) uni-label -->
+      <g transform="translate(407 139) scale(.78)"><use href="#human"/><ellipse class="zone" cx="126" cy="91" rx="55" ry="28" transform="rotate(40 126 91)"/><line class="active-edge" x1="102" y1="62" x2="126" y2="92"/><line class="active-edge" x1="126" y1="92" x2="150" y2="118"/><circle class="joint" cx="102" cy="62" r="10" fill="#15936c"/><circle class="joint" cx="126" cy="92" r="10" fill="#15936c"/><circle class="joint" cx="150" cy="118" r="10" fill="#15936c"/></g>
+      <text x="475" y="343" class="mono" font-size="10" text-anchor="middle" fill="#15936c">同一标签 k = 0</text>
+
+      <!-- Human: (c) distance partition -->
+      <g transform="translate(652 139) scale(.78)"><use href="#human"/><ellipse class="zone" cx="126" cy="91" rx="55" ry="28" transform="rotate(40 126 91)"/><line class="active-edge" x1="102" y1="62" x2="126" y2="92"/><line class="active-edge" x1="126" y1="92" x2="150" y2="118"/><circle class="joint" cx="102" cy="62" r="11" fill="#087db8"/><text x="102" y="62" class="joint-label">1</text><circle class="joint" cx="126" cy="92" r="11" fill="#15936c"/><text x="126" y="92" class="joint-label">0</text><circle class="joint" cx="150" cy="118" r="11" fill="#087db8"/><text x="150" y="118" class="joint-label">1</text></g>
+      <text x="720" y="343" class="mono" font-size="10" text-anchor="middle" fill="#607087">K = {根节点, 一跳节点}</text>
+
+      <!-- Human: (d) spatial configuration -->
+      <g transform="translate(897 139) scale(.78)"><use href="#human"/><ellipse class="zone" cx="126" cy="91" rx="55" ry="28" transform="rotate(40 126 91)"/><line class="active-edge" x1="102" y1="62" x2="126" y2="92"/><line class="active-edge" x1="126" y1="92" x2="150" y2="118"/><line x1="82" y1="104" x2="102" y2="62" stroke="#087db8" stroke-width="1.4" stroke-dasharray="3 3"/><line x1="82" y1="104" x2="150" y2="118" stroke="#ef7c00" stroke-width="1.4" stroke-dasharray="3 3"/><path d="M75 104h14M82 97v14" stroke="#172238" stroke-width="2.4"/><circle class="joint" cx="102" cy="62" r="10" fill="#087db8"/><circle class="joint" cx="126" cy="92" r="10" fill="#15936c"/><circle class="joint" cx="150" cy="118" r="10" fill="#ef7c00"/></g>
+      <text x="965" y="343" class="mono" font-size="10" text-anchor="middle" fill="#607087">右肩：向心 · 右腕：离心</text>
+
+      <!-- Dog: (a) receptive field -->
+      <g transform="translate(148 421) scale(.90)"><use href="#dog"/><ellipse class="zone" cx="79" cy="97" rx="23" ry="48"/><line class="active-edge" x1="82" y1="66" x2="78" y2="96"/><line class="active-edge" x1="78" y1="96" x2="76" y2="128"/><circle class="joint" cx="82" cy="66" r="9" fill="#087db8"/><circle class="joint" cx="78" cy="96" r="10" fill="#ef7c00"/><circle class="joint" cx="76" cy="128" r="9" fill="#087db8"/></g>
+      <text x="230" y="579" class="mono" font-size="10" text-anchor="middle" fill="#607087">5 左肩  —  6 左肘  —  7 左前爪</text>
+
+      <!-- Dog: (b) uni-label -->
+      <g transform="translate(393 421) scale(.90)"><use href="#dog"/><ellipse class="zone" cx="79" cy="97" rx="23" ry="48"/><line class="active-edge" x1="82" y1="66" x2="78" y2="96"/><line class="active-edge" x1="78" y1="96" x2="76" y2="128"/><circle class="joint" cx="82" cy="66" r="10" fill="#15936c"/><circle class="joint" cx="78" cy="96" r="10" fill="#15936c"/><circle class="joint" cx="76" cy="128" r="10" fill="#15936c"/></g>
+      <text x="475" y="579" class="mono" font-size="10" text-anchor="middle" fill="#15936c">同一标签 k = 0</text>
+
+      <!-- Dog: (c) distance partition -->
+      <g transform="translate(638 421) scale(.90)"><use href="#dog"/><ellipse class="zone" cx="79" cy="97" rx="23" ry="48"/><line class="active-edge" x1="82" y1="66" x2="78" y2="96"/><line class="active-edge" x1="78" y1="96" x2="76" y2="128"/><circle class="joint" cx="82" cy="66" r="11" fill="#087db8"/><text x="82" y="66" class="joint-label">1</text><circle class="joint" cx="78" cy="96" r="11" fill="#15936c"/><text x="78" y="96" class="joint-label">0</text><circle class="joint" cx="76" cy="128" r="11" fill="#087db8"/><text x="76" y="128" class="joint-label">1</text></g>
+      <text x="720" y="579" class="mono" font-size="10" text-anchor="middle" fill="#607087">K = {根节点, 一跳节点}</text>
+
+      <!-- Dog: (d) spatial configuration -->
+      <g transform="translate(883 421) scale(.90)"><use href="#dog"/><ellipse class="zone" cx="79" cy="97" rx="23" ry="48"/><line class="active-edge" x1="82" y1="66" x2="78" y2="96"/><line class="active-edge" x1="78" y1="96" x2="76" y2="128"/><line x1="110" y1="70" x2="82" y2="66" stroke="#087db8" stroke-width="1.4" stroke-dasharray="3 3"/><line x1="110" y1="70" x2="76" y2="128" stroke="#ef7c00" stroke-width="1.4" stroke-dasharray="3 3"/><path d="M103 70h14M110 63v14" stroke="#172238" stroke-width="2.4"/><circle class="joint" cx="82" cy="66" r="10" fill="#087db8"/><circle class="joint" cx="78" cy="96" r="10" fill="#15936c"/><circle class="joint" cx="76" cy="128" r="10" fill="#ef7c00"/></g>
+      <text x="965" y="579" class="mono" font-size="10" text-anchor="middle" fill="#607087">左肩：向心 · 左前爪：离心</text>
+
+      <g class="sans">
+        <rect x="25" y="625" width="1070" height="112" rx="9" fill="#f2f6fa" stroke="#d7e0e9"/>
+        <text x="45" y="649" font-size="11" font-weight="800" fill="#172238">图例</text>
+        <circle cx="101" cy="646" r="7" fill="#15936c"/><text x="114" y="650" font-size="10" fill="#526177">根节点 / 自身</text>
+        <circle cx="217" cy="646" r="7" fill="#087db8"/><text x="230" y="650" font-size="10" fill="#526177">一跳 / 向心</text>
+        <circle cx="338" cy="646" r="7" fill="#ef7c00"/><text x="351" y="650" font-size="10" fill="#526177">离心节点</text>
+        <path d="M445 646h35" stroke="#087db8" stroke-width="2" stroke-dasharray="6 5"/><text x="490" y="650" font-size="10" fill="#526177">D = 1 感受野</text>
+        <path d="M612 646h14M619 639v14" stroke="#172238" stroke-width="2"/><text x="637" y="650" font-size="10" fill="#526177">骨架重心</text>
+        <text x="45" y="682" font-size="11" font-weight="800" fill="#003d7c">实际拓扑</text>
+        <text x="118" y="682" class="mono" font-size="10.5" fill="#172238">人体：right_shoulder (6) ─ right_elbow (8) ─ right_wrist (10)</text>
+        <text x="118" y="705" class="mono" font-size="10.5" fill="#172238">犬类：L_Shoulder (5) ─ L_Elbow (6) ─ L_F_Paw (7)</text>
+        <text x="45" y="724" font-size="9.5" fill="#607087">注：虚线区域只表示当前根节点的一阶邻域，不表示身体部位分组；浅灰节点仍保留在完整骨架图中，但不参与本次局部卷积示例。</text>
+      </g>
+      <text x="1092" y="772" class="mono" text-anchor="end" font-size="9" fill="#8a97a8">Human–Dog Interaction Recognition · ST-GCN local partitioning</text>
+    </svg>
+    <figcaption><span class="caption-title">图：人—犬骨架上的 ST-GCN 局部卷积分区。</span> (a) 以一个根节点为中心选取图距离为 1 的邻域；(b) 统一标记将邻域内节点归入同一子集；(c) 距离分区区分根节点与一跳节点；(d) 空间配置分区依据节点相对骨架重心的距离，将邻居划分为向心与离心子集。人体示例采用 COCO-17 的右肘邻域，犬类示例采用 AP-10K 的左肘邻域，适配本项目的人宠互动识别任务。</figcaption>
+  </figure>
+</main>
+</body>
+</html>
