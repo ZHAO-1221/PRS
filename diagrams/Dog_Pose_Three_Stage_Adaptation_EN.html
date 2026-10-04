@@ -1,7 +1,7 @@
 <!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Three-Stage Adaptation Strategy for Dog Pose</title><style>
 :root{--paper:#fbfcfd;--ink:#172238;--muted:#607087;--rule:#d7e0e9;--navy:#003d7c;--blue:#0a84bd;--orange:#ef7c00;--green:#15936c}*{box-sizing:border-box}body{margin:0;background:#edf2f6;color:var(--ink);font-family:"Noto Sans SC","Microsoft YaHei",Arial,sans-serif}main{width:min(1320px,calc(100vw - 30px));margin:20px auto}.figure{margin:0;background:var(--paper);border:1px solid #dce4ec;padding:18px 22px 14px}svg{display:block;width:100%;height:auto}figcaption{margin:12px 4px 0;padding-top:11px;border-top:1px solid #dce4ec;font:14px/1.65 Georgia,"Noto Serif SC",serif;color:#445269}.cap{font-weight:700;color:#172238}</style></head><body><main><figure class="figure">
 <svg viewBox="0 0 1280 720" role="img" aria-labelledby="adapt-en-title adapt-en-desc">
-<title id="adapt-en-title">Three-Stage Adaptation Strategy for Dog Pose</title><desc id="adapt-en-desc">Starting from the official AP-10K general-animal RTMPose-M, the model is evaluated directly indoors, specialized on the AP-10K dog category, and fine-tuned on indoor dog data; all three versions are compared on the same test set.</desc>
+<title id="adapt-en-title">Three-Stage Adaptation Strategy for Dog Pose</title><desc id="adapt-en-desc">Starting from the official AP-10K-pretrained RTMPose-M, the model is evaluated directly indoors, specialized using the dog subset from the APT-36K training split, and fine-tuned on indoor dog data; all three versions are compared on the same test set.</desc>
 <defs><pattern id="dots" width="22" height="22" patternUnits="userSpaceOnUse"><circle cx="11" cy="11" r=".75" fill="#172238" opacity=".06"/></pattern><marker id="arr" markerWidth="9" markerHeight="7" refX="8" refY="3.5" orient="auto"><path d="M0 0L9 3.5L0 7Z" fill="#607087"/></marker><marker id="arr-orange" markerWidth="9" markerHeight="7" refX="8" refY="3.5" orient="auto"><path d="M0 0L9 3.5L0 7Z" fill="#ef7c00"/></marker><style>
 .sans{font-family:"Noto Sans SC","Microsoft YaHei",Arial,sans-serif}.serif{font-family:Georgia,"Noto Serif SC",serif}.mono{font-family:"Geist Mono",Consolas,monospace}.title{font-size:15px;font-weight:750;fill:#172238}.sub{font-size:10px;fill:#607087}.tech{font-size:9px;fill:#52657c}.small{font-size:8px;fill:#718096}.eyebrow{font-size:9px;font-weight:700;letter-spacing:.13em}.edge{fill:none;stroke:#607087;stroke-width:1.5;marker-end:url(#arr)}.focal-edge{fill:none;stroke:#ef7c00;stroke-width:1.7;marker-end:url(#arr-orange)}
 </style></defs>
@@ -31,8 +31,8 @@
 <g class="sans"><rect x="450" y="205" width="325" height="310" rx="8" fill="#fff" stroke="#0a84bd" stroke-width="1.3"/>
 <rect x="470" y="222" width="44" height="23" rx="3" fill="#0a84bd" opacity=".14"/><text x="492" y="238" class="mono" font-size="9" font-weight="700" text-anchor="middle" fill="#0072a7">P1</text><text x="531" y="239" class="eyebrow" fill="#0072a7">DOG SPECIALISATION</text>
 <text x="470" y="279" class="title">Stage 2 · Dog-Category Specialization</text><text x="470" y="301" class="sub">Learn dog proportions, joint structure, and local features</text>
-<rect x="470" y="325" width="285" height="65" rx="5" fill="#eef6fb" stroke="#b9d3e3"/><text x="487" y="348" class="tech">Training Data</text><text x="487" y="370" class="title">Dog samples from AP-10K Train</text>
-<rect x="470" y="405" width="285" height="74" rx="5" fill="#f8fbfd" stroke="#cbdce8"/><text x="487" y="427" class="tech">Training</text><text x="487" y="449" class="sub">Continue fine-tuning from P0 weights</text><text x="487" y="468" class="mono small">dog subset · validation/test isolated</text>
+<rect x="470" y="325" width="285" height="65" rx="5" fill="#eef6fb" stroke="#b9d3e3"/><text x="487" y="348" class="tech">Training Data</text><text x="487" y="370" class="title">APT-36K Dog Subset (Train Split)</text>
+<rect x="470" y="405" width="285" height="74" rx="5" fill="#f8fbfd" stroke="#cbdce8"/><text x="487" y="427" class="tech">Training</text><text x="487" y="449" class="sub">Continue fine-tuning from P0 weights</text><text x="487" y="468" class="mono small">APT-36K train · dog only · test isolated</text>
 <text x="470" y="501" class="sub">Goal: improve head, forelimb, and hindlimb localization</text></g>
 
 <!-- Stage P2 -->
@@ -50,7 +50,7 @@
 
 <line x1="30" y1="680" x2="1250" y2="680" stroke="#cbd6e1"/><text x="30" y="704" class="mono small">HYPOTHESIS: P1 &gt; P0 validates dog specialization; P2 &gt; P1 validates indoor adaptation.</text><text x="1250" y="704" class="mono small" text-anchor="end">DOG POSE ADAPTATION · THREE-STAGE DESIGN</text>
 </svg>
-<figcaption><span class="cap">Figure: Three-stage adaptation strategy for dog RTMPose-M.</span> P0 directly evaluates the official AP-10K general-animal model; P1 specializes it using dog-category samples from the AP-10K training split; P2 adapts it with a small set of indoor dog-keypoint images. The three versions are compared on the same independent test set to isolate gains from dog specialization and indoor fine-tuning.</figcaption>
+<figcaption><span class="cap">Figure: Three-stage adaptation strategy for dog RTMPose-M.</span> P0 directly evaluates the official AP-10K-pretrained general-animal model; P1 specializes it using the dog subset from the APT-36K training split; P2 adapts it with a small set of indoor dog-keypoint images. The three versions are compared on the same independent test set to isolate gains from dog specialization and indoor fine-tuning.</figcaption>
 </figure></main></body></html>
 
 
