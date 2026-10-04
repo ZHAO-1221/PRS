@@ -1,11 +1,13 @@
 """Build Proposal_Group28_EN.pptx from the Chinese deck: English slide text,
-English diagrams, bilingual (EN/中文) speaker notes.  Run: python build_en_pptx.py"""
+English diagrams, no speaker notes; the bilingual (EN/中文) script goes to
+Proposal_Group28_EN_Script.txt.  Run: python build_en_pptx.py"""
 from pathlib import Path
 from pptx import Presentation
 from pptx.util import Pt, Inches
 
 HERE = Path(__file__).parent
 SRC, OUT = HERE / "Proposal_Group28_CN.pptx", HERE / "Proposal_Group28_EN.pptx"
+SCRIPT = HERE / "Proposal_Group28_EN_Script.txt"
 
 # shape name -> paragraphs; a paragraph is a str or a list of run texts (keeps per-run styling)
 TEXT = {
@@ -287,20 +289,24 @@ def main():
                 blip.rEmbed = new
                 slide.part.drop_rel(old)
                 sh._element.nvPicPr.cNvPr.set("descr", IMAGES[name].removesuffix(".png"))
-        slide.notes_slide.notes_text_frame.text = notes_text(i, *NOTES[i])
+        if slide.has_notes_slide:  # drop the Chinese deck's notes
+            slide.notes_slide.notes_text_frame.text = ""
     prs.core_properties.title = "Indoor Dog Behavior & Human–Dog Interaction Recognition — Group 28 Proposal"
     prs.save(OUT)
+    head = ("Group 28 · Proposal Presentation Script 演讲稿\n"
+            "15 min talk + 5 min Q&A · Slides 1–6: Sun Wenjing · Slides 7–12: Zhao Jiayi")
+    SCRIPT.write_text("\n\n\n".join([head] + [notes_text(i, *NOTES[i]) for i in NOTES]) + "\n",
+                      encoding="utf-8-sig")
 
-    # self-check: no Chinese left on slides; every slide has bilingual notes
+    # self-check: no Chinese left on slides, no notes in the deck
     import re
     cjk = re.compile(r"[一-鿿]")
     for i, slide in enumerate(Presentation(OUT).slides, 1):
         for s in slide.shapes:
             if s.has_text_frame:
                 assert not cjk.search(s.text_frame.text), (i, s.name, s.text_frame.text)
-        n = slide.notes_slide.notes_text_frame.text
-        assert "[EN]" in n and "[中文]" in n, i
-    print("wrote", OUT)
+        assert not slide.has_notes_slide or not slide.notes_slide.notes_text_frame.text, i
+    print("wrote", OUT, "and", SCRIPT)
 
 
 if __name__ == "__main__":
