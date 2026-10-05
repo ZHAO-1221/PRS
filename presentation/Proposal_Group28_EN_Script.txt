@@ -4,7 +4,7 @@
 
 【Slide 1 / 12 · 第 1 页】 Speaker 主讲: Sun Wenjing · 0:00–0:40 (~40 s)
 
-[EN] Good morning, everyone. We are Group 28. I am Sun Wenjing, and this is my teammate Zhao Jiayi. Our project is about indoor dog behavior and human–dog interaction recognition. We use video and skeleton features. Our idea is simple. A home camera should not only see the dog. It should also understand what the dog is doing, and how people interact with it. First, I will talk about the background, our goals, the system and the data. Then Jiayi will talk about the models and how we will test them.
+[EN] Good morning, everyone. We are Group 28. I am Sun Wenjing, and this is my teammate Zhao Jiayi. Our project is about indoor dog behavior and human–dog interaction recognition. We use video and skeleton features. This our mobile prototype .Our idea is simple. A home camera should not only see the dog. It should also understand what the dog is doing, and how people interact with it. First, I will talk about the background, our goals, the system and the data. Then Jiayi will talk about the models and how we will test them.
 
 [中文] 各位老师、同学好，我们是第 28 组。我是 Sun Wenjing，这位是我的组员 Zhao Jiayi。我们的项目是室内狗行为和人宠互动识别，用到视频和骨架特征。我们的想法很简单：家里的摄像头不应该只是拍到狗，还应该看懂狗在做什么、人和狗在怎样互动。我先介绍背景、目标、系统和数据，然后由 Jiayi 介绍模型和评估方法。
 
