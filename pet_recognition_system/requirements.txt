@@ -1,2 +1,4 @@
-# Add pinned project dependencies when implementation begins.
-
+# Keypoint evaluation and ONNX inference (Python 3.10). Fine-tuning needs more: see Setup in README.md.
+numpy==1.26.4
+onnxruntime==1.23.2
+pillow==12.3.0

@@ -1,0 +1,9 @@
+# data, weights and run outputs stay on each machine; only the folder placeholders are tracked
+/data/*
+/checkpoints/*
+/work_dirs/*
+/outputs/*
+!.gitkeep
+
+__pycache__/
+*.egg-info/
