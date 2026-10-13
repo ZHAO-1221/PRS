@@ -1,0 +1,5 @@
+﻿pose_input_boxes,model,oks_ap,ap50,ap75,mean_oks,pck005,pck01
+hand-drawn boxes,P0,0.7105,0.9703,0.8561,0.8457,0.6984,0.8739
+hand-drawn boxes,P1,0.7086,1.0,0.7878,0.8384,0.66,0.8611
+RTMDet boxes,P0,0.6896,0.9703,0.795,0.832,0.6874,0.8611
+RTMDet boxes,P1,0.7065,1.0,0.7859,0.838,0.6856,0.8665
