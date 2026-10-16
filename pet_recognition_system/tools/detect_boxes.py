@@ -15,16 +15,9 @@ from pathlib import Path
 import numpy as np
 
 from pet_recognition.datasets.labelme_pose import load_labelme_pose
-from pet_recognition.models.rtmdet import RTMDet
+from pet_recognition.models.rtmdet import RTMDet, iou
 
 MIN_SCORE = 0.3  # same default as tools/eval_pose.py --min-box-score
-
-
-def iou(a, b):
-    width = min(a[2], b[2]) - max(a[0], b[0])
-    height = min(a[3], b[3]) - max(a[1], b[1])
-    overlap = max(width, 0) * max(height, 0)
-    return overlap / ((a[2] - a[0]) * (a[3] - a[1]) + (b[2] - b[0]) * (b[3] - b[1]) - overlap)
 
 
 def main():

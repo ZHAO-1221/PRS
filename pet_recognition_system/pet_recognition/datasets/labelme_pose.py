@@ -21,12 +21,20 @@ def load_labelme_pose(json_path):
 
 def load_behavior_labels(data_root):
     """Return a function mapping an image stem ({clip_id}_f{N}) to the behavior label of its clip."""
-    data_root = Path(data_root)
-    clips = {}
-    for split in ("train", "test"):
-        with open(data_root / "raw" / f"indoor {split} raw data" / "dog_behavior_clips.csv", encoding="utf-8-sig") as f:
-            clips.update((row["clip_id"], row["behavior_label"]) for row in csv.DictReader(f))
-    # two-dog frames were cropped into single-dog images; crops.csv maps each crop back to its source frame
-    with open(data_root / "images" / "crops.csv", encoding="utf-8-sig") as f:
-        source = {Path(row["file"]).stem: Path(row["source_file"]).stem for row in csv.DictReader(f)}
-    return lambda stem: clips[source.get(stem, stem).rsplit("_f", 1)[0]]
+    with open(Path(data_root) / "raw" / "dog_behavior" / "dog_behavior_clips.csv", encoding="utf-8-sig") as f:
+        clips = {row["clip_id"]: row["behavior_label"] for row in csv.DictReader(f)}
+    same_video_and_clip = {}
+    for clip_id in clips:
+        same_video_and_clip.setdefault(clip_id.split("_", 1)[1], []).append(clip_id)
+
+    def label(stem):
+        dog, video, number = stem.rsplit("_f", 1)[0].split("_")
+        if video.startswith("t"):  # test videos t01-t05 are v27-v31 in the clip list
+            video = f"v{int(video[1:]) + 26:02d}"
+        clip_id = f"{dog}_{video}_{number}"
+        if clip_id not in clips:
+            # a second dog cropped out of a two-dog frame got a new dog_id but kept the video and clip numbers
+            (clip_id,) = same_video_and_clip[f"{video}_{number}"]
+        return clips[clip_id]
+
+    return label
