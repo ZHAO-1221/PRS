@@ -10,7 +10,7 @@
 - 详细记录和图表：`训练过程资料（写最终报告可参考）/骨架识别模型/P1(APT-36k微调)/`。
 - 代码在 `pet_recognition_system/`（结构见其中的 `ARCHITECTURE.md`），conda 环境 `PRS-project`；数据和权重留在本地，通过环境变量 `PET_DATA_ROOT` 读取，不进仓库。
 - 骨架提取流程已完成并验证：`pet_recognition_system/tools/extract_skeletons.py`，每个视频片段输出一个 `<clip_id>.npz`（2 条流 × T 帧 × 17 关节 × [x, y, 置信度]，15 fps，第 0 条流是人、第 1 条是狗，没检测到填 0），格式说明见 `pet_recognition_system/README.md`。
-- 下一步：批量导出 `raw/dog_behavior/` 的 120 个行为片段和 Hugging Face `data/interaction/` 的互动片段，交给模型二（ST-GCN）训练。
+- 骨架已全部导出（266 个片段，见进度日志）。下一步：交给模型二（ST-GCN）训练。
 
 ## 里程碑
 
@@ -23,7 +23,7 @@
 - [ ] 数据划分：按狗 / 按视频切 train/val/test
 - [x] 狗姿态 P0 基线测试 → P1（APT-36K 微调）对比 — 2026-10-14，P1 无提升，P0 为最终模型
 - [ ] 狗姿态 P2（室内微调）— 视模型二结果而定；做之前要按视频重新划分训练和评估，现在的评估集覆盖了几乎所有源视频
-- [ ] 检测跟踪：RTMDet + ByteTrack，导出骨架序列（JSON/NPY）— 不用 ByteTrack：第一帧选置信度最高的框，之后每帧选与上一帧重合最多的框；导出脚本已在 7 个样例片段上验证，批量导出待做
+- [x] 检测跟踪：RTMDet + ByteTrack，导出骨架序列（JSON/NPY）— 2026-10-17，不用 ByteTrack，改为按重合度跟踪同一目标；266 个片段已导出为 npz
 - [ ] Task A：LSTM 基线 + ST-GCN
 - [ ] Task B：双流 ST-GCN + 关系特征 + 音频融合
 - [ ] 评估与消融实验
@@ -38,6 +38,7 @@
 
 <!-- 新的写在最上面：日期 · 谁 · 做了什么 · 下一步 -->
 
+- 2026-10-17 · 骨架全量导出完成：`raw/skeletons_generated/` 共 266 个 npz（`dog_*` 119、`interaction_*` 147），行为片段只导狗、互动片段导人和狗；`d025_v24_c002` 骨架不可用，设为 valid=0、不导出（HF 上的 CSV 未同步）。汇总表 `pet_recognition_system/outputs/skeletons_generated_summary.csv`；选框规则见 `训练过程资料（写最终报告可参考）/骨架识别模型/骨架提取的检测与跟踪优化.md`。下一步：交给模型二，训练时按 valid 列过滤。
 - 2026-10-17 · 骨架提取与数据修复：写好骨架提取流程（人体姿态 RTMPose-m COCO 导出为 ONNX；RTMDet 按上一帧重合度跟住同一目标；置信度截到 1），在 4 段互动、3 段行为片段上验证格式和关键点位置（与 MMPose 官方推理一致）；发现 18 个行为 mp4 开头多出 2–5.8 秒（剪切时未重新编码），已从原始视频重剪，旧文件在 `raw/dog_behavior_old_cut/`；`d013_v11_c002` 恢复为旧版并更正为 25.400–27.333 walking_run，`d013_v11_c001` 保持原样（25.467–30.133 standing，与 c002 的时间有重叠，按你的决定不改）；评估集把 `d013_v11_c002_f0019` 换成 `d013_v11_c003_f0030`，P0/P1 结论不变。待办：Hugging Face 上的 `dog_behavior_clips.csv` 还没同步（本机未登录）。下一步：批量导出骨架。
 - 2026-10-14 · 模型一评测与 P1 微调：建 `PRS-project` 环境；写评测（OKS / PCK / 配对置信区间）、APT-36K 划分、训练、ONNX 导出、RTMDet 检测脚本；P1 在 CPU 上训练 30 轮（APT 验证 AP 0.775 → 0.817）；人工标注 36 张室内评估帧；RTMDet 直接用 COCO 权重，后处理只保留人和狗，并把猫、牛等四足动物类别并入狗（否则约六分之一的狗因被认成猫而漏检）。结论：P0 为最终模型。下一步：导出全部片段的骨架序列。
 - 2026-10-06 · 建立 `.agent/`：Agents.md（项目说明）、prime.md（进度）、lesson.md（经验）。

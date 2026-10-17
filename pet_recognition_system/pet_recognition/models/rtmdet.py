@@ -10,7 +10,7 @@ DOG_LIKE = {"dog", "cat", "horse", "sheep", "cow", "elephant", "bear", "zebra", 
 FOLLOW_MIN_SCORE = 0.3  # boxes below this are not real detections; same as the box threshold of the pipeline
 # a lying dog often scores only 0.1-0.3 while staying where it was, so a weak box may continue a track if it
 # overlaps the last box this much
-FOLLOW_LOW_SCORE, FOLLOW_LOW_MIN_IOU = 0.1, 0.5
+FOLLOW_LOW_SCORE, FOLLOW_LOW_MIN_IOU = 0.1, 0.3
 
 
 def iou(a, b):
@@ -36,6 +36,18 @@ class RTMDet:
         self.model = init_detector(get_config(CONFIG), str(checkpoint), device=device)
         self.classes = self.model.dataset_meta["classes"]
 
+    def candidates(self, image):
+        """Every person box and every dog box found: {"person": [...], "dog": [...]}, each box
+        (x1, y1, x2, y2, score, COCO class) at any score. image: path or BGR array."""
+        found = inference_detector(self.model, image).pred_instances
+        candidates = {"person": [], "dog": []}
+        for box, score, label in zip(found.bboxes.tolist(), found.scores.tolist(), found.labels.tolist()):
+            name = self.classes[label]
+            target = "person" if name == "person" else "dog" if name in DOG_LIKE else None
+            if target:
+                candidates[target].append((*box, score, name))
+        return candidates
+
     def __call__(self, image, previous=None):
         """Person box and dog box, each (x1, y1, x2, y2, score, COCO class) or None.
 
@@ -44,11 +56,4 @@ class RTMDet:
         previous box takes the highest-scoring candidate; one with a previous box only takes the candidate
         overlapping it most, so a second person or dog in view never takes over the track.
         """
-        found = inference_detector(self.model, image).pred_instances
-        candidates = {"person": [], "dog": []}
-        for box, score, label in zip(found.bboxes.tolist(), found.scores.tolist(), found.labels.tolist()):
-            name = self.classes[label]
-            target = "person" if name == "person" else "dog" if name in DOG_LIKE else None
-            if target:
-                candidates[target].append((*box, score, name))
-        return {target: choose(boxes, (previous or {}).get(target)) for target, boxes in candidates.items()}
+        return {target: choose(boxes, (previous or {}).get(target)) for target, boxes in self.candidates(image).items()}

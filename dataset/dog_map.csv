@@ -90,7 +90,7 @@
 "23_bili_BV14T411N7J8_围栏_夜间-00.00.07.969-00.00.13.636-seg2_lying_sleeping.mp4",d024,"overlaps seg5 and seg6; label not stable","pomeranian; household has 2 similar pomeranians"
 "23_bili_BV14T411N7J8_围栏_夜间-00.00.11.969-00.00.13.636-seg6_walking_run.mp4",d024,"","pomeranian; household has 2 similar pomeranians"
 "24_bili_BV1vv41147XW_睡觉_夜间-00.03.15.000-00.03.20.000-seg1_lying_sleeping.mp4",d025,"","labrador"
-"24_bili_BV1vv41147XW_睡觉_夜间-00.03.35.000-00.03.40.000-seg2_lying_sleeping.mp4",d025,"","labrador"
+"24_bili_BV1vv41147XW_睡觉_夜间-00.03.35.000-00.03.40.000-seg2_lying_sleeping.mp4",d025,"night infrared: dog curled under a quilt, detector scores 0.04-0.3, skeleton unusable","labrador"
 "24_bili_BV1vv41147XW_睡觉_夜间-00.05.17.202-00.05.22.495-seg3_standing.mp4",d025,"","labrador"
 "12_bili_BV1C54y1z7CG_法斗围栏-00.02.57.927-00.03.03.546-seg5_playing_alone.mp4",d014,"","french bulldog puppy"
 "15_bili_BV1C54y1p7J2_扒桌偷吃-00.00.20.046-00.00.25.046-seg1_eating_drinking.mp4",d017,"","labrador"

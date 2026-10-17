@@ -85,12 +85,19 @@ Each clip becomes `<clip_id>.npz`, resampled to 15 fps:
 | `fps` | scalar | 15 |
 | `image_size` | (2,) | width, height in pixels |
 
-A stream is all zeros (confidence 0) in frames where its target was not detected, e.g. the person stream of a
-dog-only clip. Coordinates are not normalized and can fall outside the image for body parts out of frame.
+A stream is all zeros (confidence 0) in frames where its target was not detected. Clips in a `dog_behavior` folder get only the dog
+stream (their person stream is all zeros throughout); clips in an `interaction` folder get both. Coordinates are not normalized and can fall outside the image for body parts out of frame.
 When several people or dogs are in view, the first frame takes the most confident box; every later frame takes
 the box overlapping the previous one most (a box scoring only 0.1-0.3, as lying dogs often do, counts when it
-overlaps the previous box by IoU >= 0.5) and counts the target as not detected when no box qualifies. After 3
-missed frames in a row the track is dropped and the most confident box is taken again. `--video` also writes `<clip_id>_skeleton.mp4` for checking by eye; use it on a review sample (about 15 clips
+overlaps the previous box by IoU >= 0.3) and counts the target as not detected when no box qualifies. Through
+missed frames the last box seen is kept, so the same rule picks the target up again where it was last seen (a dog
+hidden behind or jumping on its owner comes back at 0.1-0.3); after 3 missed frames in a row a box scoring 0.3
+anywhere may also take the track over. A target that never scores 0.3 in a clip (a far or lying dog
+often stays at 0.1-0.3) starts instead from the highest-scoring box of the whole clip. Either way the track is also
+followed backwards from its start frame to the beginning of the clip. `--low-score 0` drops the 0.1 floor for
+weak boxes, for a clip where the detector finds the dog but never scores it well. It was tried on
+`d025_v24_c002` (night infrared, a curled-up dog scored 0.04-0.3 as a cat): the skeletons were unusable, so that
+clip is now valid=0 and has no `.npz`. `--video` also writes `<clip_id>_skeleton.mp4` for checking by eye; use it on a review sample (about 15 clips
 spread evenly over the behavior and interaction classes), not on the whole batch.
 
 Tests: `python tests/test_keypoint_metrics.py`, `python tests/test_extract_skeletons.py`, `python tests/test_rtmdet_choose.py`.
