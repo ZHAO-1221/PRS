@@ -85,6 +85,9 @@ python tools/cross_validate_interaction_relation.py \
   --folds 5 \
   --augmentations 0 \
   --seed 28 \
+  --max-features sqrt \
+  --min-samples-leaf 1 \
+  --hand-feeding-weight 1.5 \
   --output-dir work_dirs/interaction_relation_mixed_v2_cv5_noaug
 ```
 
@@ -96,7 +99,10 @@ python tools/train_final_interaction_ensemble.py \
   --skeleton-dir <data>/skeletons_generated \
   --output-dir work_dirs/interaction_relation_mixed_v2_final \
   --models 5 \
-  --seed 28
+  --seed 28 \
+  --max-features sqrt \
+  --min-samples-leaf 1 \
+  --hand-feeding-weight 1.5
 ```
 
 ### 4. Evaluate the frozen final ensemble

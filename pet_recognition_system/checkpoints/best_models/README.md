@@ -14,7 +14,7 @@ not older model versions. Experimental and superseded checkpoints are excluded.
 | Task | Model | Classes | Development result | Test result |
 |---|---|---:|---:|---:|
 | Dog behaviour | Motion-aware TCN + engineered geometry ensemble | 5 | 77.37% accuracy / 76.47% macro-F1 | 78.79% accuracy / 78.83% macro-F1 |
-| Human-dog interaction | Relation features + 5-seed ExtraTrees ensemble | 4 | 76.34% OOF accuracy / 75.67% macro-F1 | 66.67% accuracy / 65.19% macro-F1 |
+| Human-dog interaction | Relation features + 5-seed ExtraTrees ensemble | 4 | 74.23% OOF accuracy / 72.98% macro-F1 | 70.83% accuracy / 70.74% macro-F1 |
 
 The dog test set has been used as an iterative benchmark, so its score must not
 be described as a one-shot unbiased final estimate. The interaction mixed-v2

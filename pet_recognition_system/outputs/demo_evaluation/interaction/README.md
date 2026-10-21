@@ -13,5 +13,5 @@ active retrained-model reports are under `outputs/best_models/interaction/`.
 Before retraining, the old OOF/fixed-test predictions gave this selected set
 75.00% accuracy and 75.61% macro-F1. That number is only a split-selection
 record and is not produced by the active weights. After identity isolation and
-retraining, the active weights achieve 66.67% accuracy and 65.19% macro-F1 on
+retraining, the active weights achieve 70.83% accuracy and 70.74% macro-F1 on
 these 24 clips. The earlier fixed-v1 result remains archived separately.

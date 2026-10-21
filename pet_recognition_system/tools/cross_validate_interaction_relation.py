@@ -43,6 +43,14 @@ def connected_groups(rows):
     return np.asarray([root_to_index[find("d:" + row["dog_id"])] for row in rows])
 
 
+def parse_max_features(value):
+    if value.lower() in {"none", "all"}:
+        return None
+    if value in {"sqrt", "log2"}:
+        return value
+    return float(value)
+
+
 def main():
     project = Path(__file__).resolve().parents[1]
     parser = argparse.ArgumentParser()
@@ -53,12 +61,25 @@ def main():
     parser.add_argument("--folds", type=int, default=5)
     parser.add_argument("--augmentations", type=int, default=4)
     parser.add_argument("--seed", type=int, default=28)
+    parser.add_argument("--n-estimators", type=int, default=500)
+    parser.add_argument("--min-samples-leaf", type=int, default=1)
+    parser.add_argument("--max-features", default="sqrt")
+    parser.add_argument(
+        "--class-weight",
+        choices=("balanced", "balanced_subsample", "none"),
+        default="balanced",
+    )
+    parser.add_argument("--hand-feeding-weight", type=float, default=1.0)
     args = parser.parse_args()
     if not args.data_root and not args.skeleton_dir:
         parser.error("set PET_DATA_ROOT/--data-root or pass --skeleton-dir")
     skeleton_dir = (Path(args.skeleton_dir) if args.skeleton_dir
                     else Path(args.data_root) / "skeletons_generated")
     output = Path(args.output_dir); output.mkdir(parents=True, exist_ok=True)
+    max_features = parse_max_features(args.max_features)
+    class_weight = None if args.class_weight == "none" else args.class_weight
+    if args.hand_feeding_weight != 1.0:
+        class_weight = {0: 1.0, 1: args.hand_feeding_weight, 2: 1.0, 3: 1.0}
 
     datasets = [
         InteractionSkeletonDataset(args.manifest, skeleton_dir, split, training=False,
@@ -106,8 +127,12 @@ def main():
         for dataset in datasets:
             dataset.training = False; dataset.strong_augmentation = False
         model = ExtraTreesClassifier(
-            n_estimators=500, max_depth=None, min_samples_leaf=1,
-            class_weight="balanced", random_state=args.seed + fold,
+            n_estimators=args.n_estimators,
+            max_depth=None,
+            min_samples_leaf=args.min_samples_leaf,
+            max_features=max_features,
+            class_weight=class_weight,
+            random_state=args.seed + fold,
         )
         model.fit(np.stack(train_x), np.asarray(train_y))
         fold_probability = model.predict_proba(base_features[val_indices])
@@ -131,6 +156,13 @@ def main():
         "protocol": "5-fold stratified connected-human/dog-group CV on original train+val only",
         "clips": len(rows), "identity_components": int(len(np.unique(groups))),
         "augmentations_per_training_clip": args.augmentations,
+        "model_parameters": {
+            "n_estimators": args.n_estimators,
+            "min_samples_leaf": args.min_samples_leaf,
+            "max_features": args.max_features,
+            "class_weight": args.class_weight,
+            "hand_feeding_weight": args.hand_feeding_weight,
+        },
         "accuracy_mean": float(accuracy.mean()), "accuracy_std": float(accuracy.std()),
         "macro_f1_mean": float(macro_f1.mean()), "macro_f1_std": float(macro_f1.std()),
         "out_of_fold": overall,

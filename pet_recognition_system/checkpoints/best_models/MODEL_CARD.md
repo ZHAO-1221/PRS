@@ -27,14 +27,15 @@ systems and not veterinary diagnostic tools.
 - Architecture: five ExtraTrees classifiers operating on summarized human-dog
   relation features; final probabilities are averaged across five seeds.
 - Training protocol: 5-fold identity-grouped CV for development, followed by
-  final fitting on all 93 train/validation clips with no synthetic augmentation.
-- OOF result: 76.34% accuracy, 75.67% macro-F1 on 93 clips.
-- Mixed-v2 test result: 16/24 correct, 66.67% accuracy, 65.19% macro-F1.
+  final fitting on all 97 train/validation clips with no synthetic augmentation.
+  Hand-feeding receives a 1.5 class weight selected by cross-validation.
+- OOF result: 74.23% accuracy, 72.98% macro-F1 on 97 clips.
+- Mixed-v2 test result: 17/24 correct, 70.83% accuracy, 70.74% macro-F1.
 - Test composition: 6 clips per class and no human, dog or source-video overlap
   with training. Half of this set was selected from previously correct OOF
   examples, so the score is a demonstration benchmark rather than an unbiased
   one-shot estimate.
-- Main limitation: hand feeding has 33.33% recall on the mixed-v2 test set.
+- Main limitation: hand feeding has 50.00% recall on the mixed-v2 test set.
 
 ## Data and privacy
 

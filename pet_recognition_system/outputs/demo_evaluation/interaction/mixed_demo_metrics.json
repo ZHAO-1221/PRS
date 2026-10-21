@@ -30,7 +30,7 @@
   },
   "retrained_weight_reference": {
     "report": "outputs/best_models/interaction/ensemble_test_metrics.json",
-    "accuracy": 0.6666666666666666,
-    "macro_f1": 0.6518620268620269
+    "accuracy": 0.7083333333333334,
+    "macro_f1": 0.7074175824175825
   }
 }

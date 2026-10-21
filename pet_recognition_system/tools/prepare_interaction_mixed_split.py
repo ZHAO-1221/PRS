@@ -2,8 +2,8 @@
 
 The selected test IDs come from the mixed demonstration evaluation. Any other
 clip sharing a dog or person with a selected test clip is disabled instead of
-being moved into training. Original fixed-test clips that are not selected are
-also disabled, so no previous test material is recycled as training data.
+being moved into training. Original fixed-test clips that are not selected and
+do not share a test identity are returned to the training pool.
 """
 from __future__ import annotations
 
@@ -36,7 +36,7 @@ def main() -> None:
     test_dogs = {by_id[clip_id]["dog_id"] for clip_id in selected_ids}
     test_people = {by_id[clip_id]["person_id"] for clip_id in selected_ids}
     output_rows = []
-    excluded_identity = excluded_old_test = 0
+    excluded_identity = recovered_old_test = 0
     for row in rows:
         copied = dict(row)
         notes = copied.get("notes", "")
@@ -50,10 +50,10 @@ def main() -> None:
             tag = "excluded_to_prevent_mixed_test_identity_leakage"
             excluded_identity += 1
         elif copied["split"] == "test":
-            copied["split"] = "excluded"
-            copied["valid"] = "0"
-            tag = "unused_original_fixed_test"
-            excluded_old_test += 1
+            copied["split"] = "train"
+            copied["valid"] = "1"
+            tag = "recovered_original_fixed_test_to_train"
+            recovered_old_test += 1
         else:
             tag = "mixed_v2_training_pool"
         copied["notes"] = ";".join(value for value in (notes, tag) if value)
@@ -77,7 +77,7 @@ def main() -> None:
             row["interaction"] for row in valid if row["split"] == "test"
         ),
         "excluded_identity": excluded_identity,
-        "excluded_old_test": excluded_old_test,
+        "recovered_old_test": recovered_old_test,
     }
     print(json.dumps(summary, indent=2))
 

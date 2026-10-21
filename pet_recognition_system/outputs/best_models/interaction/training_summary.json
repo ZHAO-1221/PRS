@@ -1,6 +1,6 @@
 {
   "protocol": "full train+val ExtraTrees seed ensemble",
-  "clips": 93,
+  "clips": 97,
   "models": 5,
   "seeds": [
     29,
@@ -8,5 +8,12 @@
     31,
     32,
     33
-  ]
+  ],
+  "model_parameters": {
+    "n_estimators": 500,
+    "min_samples_leaf": 1,
+    "max_features": "sqrt",
+    "class_weight": "balanced",
+    "hand_feeding_weight": 1.5
+  }
 }
