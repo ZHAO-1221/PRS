@@ -14,11 +14,14 @@ not older model versions. Experimental and superseded checkpoints are excluded.
 | Task | Model | Classes | Development result | Test result |
 |---|---|---:|---:|---:|
 | Dog behaviour | Motion-aware TCN + engineered geometry ensemble | 5 | 77.37% accuracy / 76.47% macro-F1 | 78.79% accuracy / 78.83% macro-F1 |
-| Human-dog interaction | Relation features + 5-fold ExtraTrees ensemble | 4 | 82.11% OOF accuracy / 82.50% macro-F1 | 57.14% accuracy / 57.27% macro-F1 |
+| Human-dog interaction | Relation features + 5-seed ExtraTrees ensemble | 4 | 76.34% OOF accuracy / 75.67% macro-F1 | 66.67% accuracy / 65.19% macro-F1 |
 
 The dog test set has been used as an iterative benchmark, so its score must not
-be described as a one-shot unbiased final estimate. The interaction test set is
-small (21 clips), and its result is reported separately from cross-validation.
+be described as a one-shot unbiased final estimate. The interaction mixed-v2
+test set has 24 clips (6 per class); half were selected from previously correct
+group-OOF examples, so it is a demonstration benchmark rather than an unbiased
+one-shot estimate. The earlier 21-clip fixed-test reports are retained under
+`outputs/best_models/interaction_fixed_v1/`.
 The selected dog model adds 31 curated APT skeleton clips to training only;
 validation and the fixed 33-clip test split contain no APT clips.
 
@@ -78,7 +81,7 @@ ensemble's 834-dimensional engineered feature vector.
 ```bash
 python tools/evaluate_interaction_ensemble.py \
   checkpoints/best_models/interaction/checkpoints \
-  --manifest outputs/best_models/manifests/interaction_manifest.csv \
+  --manifest outputs/best_models/manifests/interaction_manifest_mixed_v2.csv \
   --skeleton-dir <data>/skeletons_generated \
   --split test \
   --output-dir work_dirs/released_interaction_evaluation

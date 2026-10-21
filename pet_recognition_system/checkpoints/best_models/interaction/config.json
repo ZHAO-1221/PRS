@@ -10,15 +10,31 @@
   "target_frames": 32,
   "human_skeleton_layout": "coco_17",
   "dog_skeleton_layout": "ap10k_17",
-  "model": "relation_features_extratrees",
-  "folds": 5,
+  "model": "relation_features_extratrees_seed_ensemble",
+  "models": 5,
+  "training_protocol": "full_train_val_seed_ensemble",
+  "training_seeds": [29, 30, 31, 32, 33],
   "training_augmentations_per_clip": 0,
+  "split_manifest": "outputs/best_models/manifests/interaction_manifest_mixed_v2.csv",
+  "split": {
+    "train": 71,
+    "val": 22,
+    "test": 24,
+    "test_per_class": 6,
+    "identity_overlap": 0
+  },
   "evaluation": {
-    "oof_accuracy": 0.8211382113821138,
-    "oof_macro_f1": 0.8249529478706177,
-    "oof_samples": 123,
-    "test_accuracy": 0.5714285714285714,
-    "test_macro_f1": 0.5727272727272728,
-    "test_samples": 21
+    "oof_accuracy": 0.7634408602150538,
+    "oof_macro_f1": 0.7567220598598847,
+    "oof_samples": 93,
+    "test_accuracy": 0.6666666666666666,
+    "test_macro_f1": 0.6518620268620269,
+    "test_samples": 24
+  },
+  "previous_fixed_test_evaluation": {
+    "accuracy": 0.5714285714285714,
+    "macro_f1": 0.5727272727272728,
+    "samples": 21,
+    "reports": "outputs/best_models/interaction_fixed_v1"
   }
 }

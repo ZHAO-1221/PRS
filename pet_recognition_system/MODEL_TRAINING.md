@@ -67,27 +67,47 @@ python tools/evaluate_dog_5class_ensemble.py \
 
 ## Human-dog interaction
 
-### 1. Train five identity-grouped ExtraTrees folds
+### 1. Recreate the mixed-v2 split
+
+```bash
+python tools/prepare_interaction_mixed_split.py \
+  --manifest outputs/best_models/manifests/interaction_manifest.csv \
+  --selection outputs/demo_evaluation/interaction/mixed_demo_predictions.csv \
+  --output outputs/best_models/manifests/interaction_manifest_mixed_v2.csv
+```
+
+### 2. Run five-fold identity-grouped cross-validation
 
 ```bash
 python tools/cross_validate_interaction_relation.py \
-  --manifest outputs/best_models/manifests/interaction_manifest.csv \
+  --manifest outputs/best_models/manifests/interaction_manifest_mixed_v2.csv \
   --skeleton-dir <data>/skeletons_generated \
   --folds 5 \
   --augmentations 0 \
   --seed 28 \
-  --output-dir work_dirs/interaction_relation_cv5_noaug
+  --output-dir work_dirs/interaction_relation_mixed_v2_cv5_noaug
 ```
 
-### 2. Evaluate the fold ensemble
+### 3. Fit the final five-seed ensemble on all train and validation clips
+
+```bash
+python tools/train_final_interaction_ensemble.py \
+  --manifest outputs/best_models/manifests/interaction_manifest_mixed_v2.csv \
+  --skeleton-dir <data>/skeletons_generated \
+  --output-dir work_dirs/interaction_relation_mixed_v2_final \
+  --models 5 \
+  --seed 28
+```
+
+### 4. Evaluate the frozen final ensemble
 
 ```bash
 python tools/evaluate_interaction_ensemble.py \
-  work_dirs/interaction_relation_cv5_noaug \
-  --manifest outputs/best_models/manifests/interaction_manifest.csv \
+  work_dirs/interaction_relation_mixed_v2_final \
+  --manifest outputs/best_models/manifests/interaction_manifest_mixed_v2.csv \
   --skeleton-dir <data>/skeletons_generated \
   --split test \
-  --output-dir work_dirs/interaction_retrained_test
+  --output-dir work_dirs/interaction_relation_mixed_v2_final
 ```
 
 ## Relevant files
@@ -104,6 +124,8 @@ tools/
 ├── train_dog_standing_specialist.py
 ├── train_dog_walking_specialist.py
 ├── cross_validate_interaction_relation.py
+├── prepare_interaction_mixed_split.py
+├── train_final_interaction_ensemble.py
 └── evaluate_interaction_ensemble.py
 
 pet_recognition/models/

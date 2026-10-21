@@ -1,0 +1,12 @@
+{
+  "protocol": "full train+val ExtraTrees seed ensemble",
+  "clips": 93,
+  "models": 5,
+  "seeds": [
+    29,
+    30,
+    31,
+    32,
+    33
+  ]
+}

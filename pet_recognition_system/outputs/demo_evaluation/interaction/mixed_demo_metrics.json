@@ -1,0 +1,36 @@
+{
+  "evaluation_name": "interaction_mixed_v2_pre_retraining_selection_score",
+  "active_weight_result": false,
+  "independent_test": false,
+  "samples": 24,
+  "composition": {
+    "easy_group_oof": 12,
+    "fixed_test": 12,
+    "per_class": 6
+  },
+  "accuracy": 0.75,
+  "macro_f1": 0.756118881118881,
+  "per_class": {
+    "no_interaction": {"precision": 0.8333333333333334, "recall": 0.8333333333333334, "f1": 0.8333333333333334, "support": 6},
+    "hand_feeding": {"precision": 0.6666666666666666, "recall": 0.6666666666666666, "f1": 0.6666666666666666, "support": 6},
+    "petting": {"precision": 0.5714285714285714, "recall": 0.6666666666666666, "f1": 0.6153846153846153, "support": 6},
+    "playing_together": {"precision": 1.0, "recall": 0.8333333333333334, "f1": 0.9090909090909091, "support": 6}
+  },
+  "confusion_matrix_labels": ["no_interaction", "hand_feeding", "petting", "playing_together"],
+  "confusion_matrix": [
+    [5, 0, 1, 0],
+    [0, 4, 2, 0],
+    [0, 2, 4, 0],
+    [1, 0, 0, 5]
+  ],
+  "formal_fixed_test_reference": {
+    "samples": 21,
+    "accuracy": 0.5714285714285714,
+    "macro_f1": 0.5727272727272728
+  },
+  "retrained_weight_reference": {
+    "report": "outputs/best_models/interaction/ensemble_test_metrics.json",
+    "accuracy": 0.6666666666666666,
+    "macro_f1": 0.6518620268620269
+  }
+}

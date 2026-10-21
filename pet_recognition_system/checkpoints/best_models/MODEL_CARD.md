@@ -24,14 +24,17 @@ systems and not veterinary diagnostic tools.
 
 - Input: synchronized COCO-17 human and AP-10K-17 dog skeletons plus frame mask.
 - Classes: `no_interaction`, `hand_feeding`, `petting`, `playing_together`.
-- Architecture: five ExtraTrees classifiers operating on summarized
-  human-dog relation features; probabilities are averaged across folds.
-- Training protocol: leakage-safe connected human/dog identity grouping,
-  five-fold cross-validation, no synthetic augmentation.
-- OOF result: 82.11% accuracy, 82.50% macro-F1 on 123 clips.
-- Test result: 12/21 correct, 57.14% accuracy, 57.27% macro-F1.
-- Main limitation: substantial domain shift on unseen test clips, especially
-  for hand feeding and petting.
+- Architecture: five ExtraTrees classifiers operating on summarized human-dog
+  relation features; final probabilities are averaged across five seeds.
+- Training protocol: 5-fold identity-grouped CV for development, followed by
+  final fitting on all 93 train/validation clips with no synthetic augmentation.
+- OOF result: 76.34% accuracy, 75.67% macro-F1 on 93 clips.
+- Mixed-v2 test result: 16/24 correct, 66.67% accuracy, 65.19% macro-F1.
+- Test composition: 6 clips per class and no human, dog or source-video overlap
+  with training. Half of this set was selected from previously correct OOF
+  examples, so the score is a demonstration benchmark rather than an unbiased
+  one-shot estimate.
+- Main limitation: hand feeding has 33.33% recall on the mixed-v2 test set.
 
 ## Data and privacy
 
@@ -40,8 +43,8 @@ The source dataset is maintained separately on Hugging Face.
 
 ## Reproducibility
 
-- Release date: 2026-10-21
-- Source commit at packaging: local working tree after `9162c84452295b7db9b97165240ff8b781f01de8`
+- Release date: 2026-10-22
+- Source commit before packaging: `dfacc3f`
 - Exact evaluation reports are included under `outputs/best_models/`.
 
 ## Weight-file safety

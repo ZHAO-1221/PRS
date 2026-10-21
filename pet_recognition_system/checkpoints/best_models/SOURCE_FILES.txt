@@ -12,8 +12,10 @@ tools/cross_validate_dog_5class_fusion.py
 tools/cross_validate_interaction_relation.py
 tools/evaluate_dog_5class_ensemble.py
 tools/evaluate_interaction_ensemble.py
+tools/prepare_interaction_mixed_split.py
 tools/train_dog_behavior.py
 tools/train_dog_eating_specialist.py
 tools/train_dog_play_specialist.py
 tools/train_dog_standing_specialist.py
 tools/train_dog_walking_specialist.py
+tools/train_final_interaction_ensemble.py
