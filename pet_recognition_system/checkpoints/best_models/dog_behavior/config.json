@@ -1,0 +1,26 @@
+{
+  "release": "best_models",
+  "task": "dog_behavior",
+  "classes": [
+    "walking_run",
+    "standing",
+    "sitting",
+    "lying_sleeping",
+    "eating_drinking"
+  ],
+  "target_frames": 32,
+  "skeleton_layout": "ap10k_17",
+  "input_channels": ["x", "y", "confidence"],
+  "backbone": "motion_aux_tcn",
+  "folds": 5,
+  "feature_version": "head_duration_v1",
+  "engineered_feature_dim": 834,
+  "fusion_stages": 2,
+  "evaluation": {
+    "cv_accuracy": 0.7737226277372263,
+    "cv_macro_f1": 0.7620305113961565,
+    "test_accuracy": 0.696969696969697,
+    "test_macro_f1": 0.6992784992784993,
+    "test_samples": 33
+  }
+}

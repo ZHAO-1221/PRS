@@ -1,8 +1,12 @@
 # data, weights and run outputs stay on each machine; only the folder placeholders are tracked
 /data/*
 /checkpoints/*
+!/checkpoints/best_models/
+!/checkpoints/best_models/**
 /work_dirs/*
 /outputs/*
+!/outputs/best_models/
+!/outputs/best_models/**
 !.gitkeep
 
 __pycache__/

@@ -1,0 +1,6 @@
+actual\predicted,walking_run,standing,sitting,lying_sleeping,eating_drinking
+walking_run,19,3,0,0,0
+standing,3,16,2,3,4
+sitting,0,2,27,1,0
+lying_sleeping,1,3,2,32,2
+eating_drinking,1,2,0,2,12

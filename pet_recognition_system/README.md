@@ -3,6 +3,9 @@
 Skeleton-based dog behaviour and human-dog interaction recognition project.
 
 See [ARCHITECTURE.md](ARCHITECTURE.md) for the repository structure and directory responsibilities.
+The selected recognition weights and reports are documented in
+[checkpoints/best_models](checkpoints/best_models/README.md), and exact
+retraining commands are in [MODEL_TRAINING.md](MODEL_TRAINING.md).
 
 ## Setup
 
@@ -29,7 +32,7 @@ pip uninstall -y opencv-python-headless opencv-python
 pip install numpy==1.26.4 opencv-python==4.11.0.86
 ```
 
-Data and model weights are not in the repository. Every script finds them through the `PET_DATA_ROOT`
+Source data and pose-model weights are not in the repository. Every script finds them through the `PET_DATA_ROOT`
 environment variable (or `--data-root`), which points at the local data folder:
 
 ```text
@@ -70,7 +73,7 @@ python tools/export_rtmpose_onnx.py configs/rtmpose/rtmpose-m_apt36k-dog_finetun
     work_dirs/rtmpose-m_apt36k-dog_finetune/best_coco_AP_epoch_N.pth checkpoints/p1_apt36k.onnx
 ```
 
-## Skeleton sequences for model two
+## Skeleton sequences for recognition
 
 ```bash
 python tools/extract_skeletons.py CLIP.mp4 [CLIP.mp4 ...] --out-dir outputs/skeletons [--video]
@@ -100,4 +103,17 @@ weak boxes, for a clip where the detector finds the dog but never scores it well
 clip is now valid=0 and has no `.npz`. `--video` also writes `<clip_id>_skeleton.mp4` for checking by eye; use it on a review sample (about 15 clips
 spread evenly over the behavior and interaction classes), not on the whole batch.
 
-Tests: `python tests/test_keypoint_metrics.py`, `python tests/test_extract_skeletons.py`, `python tests/test_rtmdet_choose.py`.
+## Selected recognition models
+
+Only the best-performing configuration for each active recognition task is
+published. The fold files are components of one ensemble per task, not model
+history. Superseded ST-GCN, LSTM, Transformer, RGB-fusion, hierarchical and
+ablation checkpoints are excluded.
+
+- Dog behaviour: motion-aware TCN with geometry fusion, five classes.
+- Human-dog interaction: relation-feature ExtraTrees ensemble, four classes.
+
+Install `requirements-training.txt`, then follow [MODEL_TRAINING.md](MODEL_TRAINING.md)
+to retrain or evaluate the published ensembles.
+
+Tests: `python -m pytest -q`.

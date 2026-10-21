@@ -1,0 +1,66 @@
+{
+  "protocol": "5-fold stratified connected-human/dog-group CV on original train+val only",
+  "clips": 123,
+  "identity_components": 57,
+  "augmentations_per_training_clip": 0,
+  "accuracy_mean": 0.8212564102564104,
+  "accuracy_std": 0.07368556256267242,
+  "macro_f1_mean": 0.8275530025530026,
+  "macro_f1_std": 0.06920294642842746,
+  "out_of_fold": {
+    "accuracy": 0.8211382113821138,
+    "macro_f1": 0.8249529478706177,
+    "per_class": {
+      "no_interaction": {
+        "precision": 0.9629629629629629,
+        "recall": 0.9285714285714286,
+        "f1": 0.9454545454545454,
+        "support": 28
+      },
+      "hand_feeding": {
+        "precision": 0.6875,
+        "recall": 0.7333333333333333,
+        "f1": 0.7096774193548386,
+        "support": 30
+      },
+      "petting": {
+        "precision": 0.7941176470588235,
+        "recall": 0.8181818181818182,
+        "f1": 0.8059701492537314,
+        "support": 33
+      },
+      "playing_together": {
+        "precision": 0.8666666666666667,
+        "recall": 0.8125,
+        "f1": 0.8387096774193549,
+        "support": 32
+      }
+    },
+    "confusion_matrix": [
+      [
+        26,
+        1,
+        1,
+        0
+      ],
+      [
+        1,
+        22,
+        5,
+        2
+      ],
+      [
+        0,
+        4,
+        27,
+        2
+      ],
+      [
+        0,
+        5,
+        1,
+        26
+      ]
+    ]
+  }
+}

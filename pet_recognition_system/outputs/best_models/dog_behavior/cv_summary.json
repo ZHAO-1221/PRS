@@ -1,0 +1,28 @@
+{
+  "base_accuracy": 0.7153284671532847,
+  "base_macro_f1": 0.6953230677368608,
+  "final_accuracy": 0.7737226277372263,
+  "final_macro_f1": 0.7620305113961565,
+  "multiclass_model": "logistic_c0.3",
+  "multiclass_alpha": 1.0,
+  "pairwise_stages": [
+    {
+      "positive": "standing",
+      "negative": "lying_sleeping",
+      "depth": 2,
+      "leaf": 1,
+      "gate": "close",
+      "margin": 1.0,
+      "alpha": 0.3
+    },
+    {
+      "positive": "standing",
+      "negative": "walking_run",
+      "depth": 2,
+      "leaf": 2,
+      "gate": "all",
+      "margin": 0.0,
+      "alpha": 0.5
+    }
+  ]
+}

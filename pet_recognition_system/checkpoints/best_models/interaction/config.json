@@ -1,0 +1,24 @@
+{
+  "release": "best_models",
+  "task": "human_dog_interaction",
+  "classes": [
+    "no_interaction",
+    "hand_feeding",
+    "petting",
+    "playing_together"
+  ],
+  "target_frames": 32,
+  "human_skeleton_layout": "coco_17",
+  "dog_skeleton_layout": "ap10k_17",
+  "model": "relation_features_extratrees",
+  "folds": 5,
+  "training_augmentations_per_clip": 0,
+  "evaluation": {
+    "oof_accuracy": 0.8211382113821138,
+    "oof_macro_f1": 0.8249529478706177,
+    "oof_samples": 123,
+    "test_accuracy": 0.5714285714285714,
+    "test_macro_f1": 0.5727272727272728,
+    "test_samples": 21
+  }
+}
