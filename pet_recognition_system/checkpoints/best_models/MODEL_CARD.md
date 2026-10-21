@@ -15,8 +15,10 @@ systems and not veterinary diagnostic tools.
 - Architecture: five motion-aware TCN folds; fold probabilities are refined by
   five multiclass geometry models and two pairwise specialist stages per fold.
 - Engineered feature version: `head_duration_v1`.
-- Test result: 23/33 correct, 69.70% accuracy, 69.93% macro-F1.
-- Main limitation: eating/drinking and walking/running have 50% test recall.
+- Training data: 170 valid project clips plus 31 curated external APT skeleton
+  clips used only for training.
+- Test result: 26/33 correct, 78.79% accuracy, 78.83% macro-F1.
+- Main limitation: eating/drinking has 50% test recall.
 
 ## Human-dog interaction model
 
@@ -39,7 +41,7 @@ The source dataset is maintained separately on Hugging Face.
 ## Reproducibility
 
 - Release date: 2026-10-21
-- Source commit at packaging: `225e12b47a8c6e02c6554f94f2f73bc7f8692887`
+- Source commit at packaging: local working tree after `9162c84452295b7db9b97165240ff8b781f01de8`
 - Exact evaluation reports are included under `outputs/best_models/`.
 
 ## Weight-file safety

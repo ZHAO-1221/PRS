@@ -1,203 +1,234 @@
-"clip_id","source_video_id","dog_id","start_sec","end_sec","duration_sec","behavior_label","split","valid","notes","cv_fold"
-"d001_v01_c001","d001_v01","d001","163.661","174.005","10.344","walking_run","dev","1","source_bili_BV1vNzaB2Ey2_P1","3"
-"d001_v01_c002","d001_v01","d001","242.355","252.012","9.657","walking_run","dev","0","source_bili_BV1vNzaB2Ey2_P1;multi-dog: corgi and border collie puppy both moving","3"
-"d001_v01_c003","d001_v01","d001","583.445","591.100","7.655","eating_drinking","dev","1","source_bili_BV1vNzaB2Ey2_P1","3"
-"d002_v02_c001","d002_v02","d002","18.421","24.348","5.927","walking_run","dev","1","source_bili_BV1zJ411D75S_P2","1"
-"d002_v02_c002","d002_v02","d002","43.668","49.335","5.667","playing_alone","dev","0","source_bili_BV1zJ411D75S_P2; excluded_from_5class_model","1"
-"d002_v02_c003","d002_v02","d002","80.326","85.662","5.336","lying_sleeping","dev","1","source_bili_BV1zJ411D75S_P2","1"
-"d002_v02_c004","d002_v02","d002","118.538","122.983","4.445","sitting","dev","1","source_bili_BV1zJ411D75S_P2","1"
-"d003_v03_c001","d003_v03","d003","15.023","20.023","5.000","walking_run","test","1","source_bili_BV1fs4y1P7Ag",""
-"d003_v03_c002","d003_v03","d003","170.023","175.142","5.119","sitting","test","1","source_bili_BV1fs4y1P7Ag",""
-"d004_v04_c001","d004_v04","d004","10.609","15.742","5.133","eating_drinking","test","1","source_bili_BV1Bt4y187tu",""
-"d004_v04_c002","d004_v04","d004","48.384","53.779","5.395","lying_sleeping","test","1","source_bili_BV1Bt4y187tu",""
-"d004_v04_c003","d004_v04","d004","69.621","74.846","5.225","standing","test","1","source_bili_BV1Bt4y187tu",""
-"d004_v04_c004","d004_v04","d004","82.052","87.358","5.306","standing","test","1","source_bili_BV1Bt4y187tu",""
-"d004_v04_c005","d004_v04","d004","103.100","104.443","1.343","walking_run","test","1","source_bili_BV1Bt4y187tu",""
-"d004_v04_c006","d004_v04","d004","104.933","108.133","3.200","lying_sleeping","test","1","source_bili_BV1Bt4y187tu",""
-"d005_v05_c001","d005_v05","d005","12.344","17.767","5.423","lying_sleeping","dev","1","source_bili_BV1t5411V7qj","2"
-"d006_v05_c001","d006_v05","d006","46.113","51.169","5.056","sitting","test","1","source_bili_BV1t5411V7qj",""
-"d007_v05_c001","d007_v05","d007","75.093","80.093","5.000","standing","dev","1","source_bili_BV1t5411V7qj","3"
-"d008_v05_c001","d008_v05","d008","87.891","92.891","5.000","standing","dev","1","source_bili_BV1t5411V7qj","1"
-"d009_v06_c001","d009_v06","d009","16.854","22.854","6.000","walking_run","dev","1","source_bili_BV1tA4y1D7x7","4"
-"d009_v06_c002","d009_v06","d009","35.046","39.678","4.632","walking_run","dev","1","source_bili_BV1tA4y1D7x7","4"
-"d009_v06_c003","d009_v06","d009","40.146","45.413","5.267","sitting","dev","1","source_bili_BV1tA4y1D7x7","4"
-"d009_v06_c004","d009_v06","d009","45.046","50.046","5.000","lying_sleeping","dev","1","source_bili_BV1tA4y1D7x7","4"
-"d009_v06_c005","d009_v06","d009","85.046","90.046","5.000","standing","dev","1","source_bili_BV1tA4y1D7x7","4"
-"d009_v06_c006","d009_v06","d009","145.046","150.481","5.435","lying_sleeping","dev","1","source_bili_BV1tA4y1D7x7","4"
-"d009_v06_c007","d009_v06","d009","240.046","245.046","5.000","lying_sleeping","dev","1","source_bili_BV1tA4y1D7x7","4"
-"d009_v06_c008","d009_v06","d009","350.355","355.950","5.595","lying_sleeping","dev","1","source_bili_BV1tA4y1D7x7","4"
-"d010_v07_c001","d010_v07","d010","37.713","42.998","5.285","eating_drinking","dev","1","source_bili_BV1qb411h7SQ","0"
-"d010_v07_c002","d010_v07","d010","56.030","61.387","5.357","walking_run","dev","1","source_bili_BV1qb411h7SQ","0"
-"d010_v07_c003","d010_v07","d010","118.310","123.482","5.172","playing_alone","dev","0","source_bili_BV1qb411h7SQ; excluded_from_5class_model","0"
-"d010_v07_c004","d010_v07","d010","170.000","175.000","5.000","playing_alone","dev","0","source_bili_BV1qb411h7SQ; excluded_from_5class_model","0"
-"d010_v07_c005","d010_v07","d010","255.000","260.000","5.000","playing_alone","dev","0","source_bili_BV1qb411h7SQ; excluded_from_5class_model","0"
-"d011_v08_c001","d011_v08","d011","115.000","120.000","5.000","standing","dev","1","source_bili_BV1pCeGz3Ebg","2"
-"d011_v08_c002","d011_v08","d011","120.000","125.000","5.000","walking_run","dev","1","source_bili_BV1pCeGz3Ebg","2"
-"d011_v08_c003","d011_v08","d011","135.000","140.000","5.000","walking_run","dev","1","source_bili_BV1pCeGz3Ebg","2"
-"d011_v08_c004","d011_v08","d011","170.665","178.665","8.000","eating_drinking","dev","1","source_bili_BV1pCeGz3Ebg","2"
-"d011_v08_c005","d011_v08","d011","265.963","272.425","6.462","sitting","dev","1","source_bili_BV1pCeGz3Ebg","2"
-"d011_v08_c006","d011_v08","d011","280.000","285.000","5.000","playing_alone","dev","0","source_bili_BV1pCeGz3Ebg; excluded_from_5class_model","2"
-"d012_v09_c001","d012_v09","d012","30.023","35.023","5.000","playing_alone","dev","0","source_bili_BV1Fh411M7nq; excluded_from_5class_model","2"
-"d012_v09_c002","d012_v09","d012","50.023","55.023","5.000","playing_alone","dev","0","source_bili_BV1Fh411M7nq; excluded_from_5class_model","2"
-"d012_v09_c003","d012_v09","d012","85.023","90.023","5.000","playing_alone","dev","0","source_bili_BV1Fh411M7nq; excluded_from_5class_model","2"
-"d012_v09_c004","d012_v09","d012","104.023","109.023","5.000","eating_drinking","dev","1","source_bili_BV1Fh411M7nq","2"
-"d012_v09_c005","d012_v09","d012","114.634","118.634","4.000","eating_drinking","dev","1","source_bili_BV1Fh411M7nq","2"
-"d012_v09_c006","d012_v09","d012","120.023","125.023","5.000","lying_sleeping","dev","1","source_bili_BV1Fh411M7nq","2"
-"d012_v09_c007","d012_v09","d012","175.023","180.023","5.000","sitting","dev","1","source_bili_BV1Fh411M7nq","2"
-"d013_v11_c001","d013_v11","d013","25.467","30.133","4.666","standing","test","1","source_bili_BV147411J7Dz",""
-"d013_v11_c002","d013_v11","d013","25.400","27.333","1.933","walking_run","test","1","source_bili_BV147411J7Dz;source is 4x fast-forward here; file repeats each frame 4 times (7.7 s at real speed)",""
-"d013_v11_c003","d013_v11","d013","32.700","35.067","2.367","eating_drinking","test","1","source_bili_BV147411J7Dz",""
-"d013_v11_c004","d013_v11","d013","105.000","110.000","5.000","standing","test","1","source_bili_BV147411J7Dz",""
-"d013_v11_c005","d013_v11","d013","135.000","140.000","5.000","standing","test","1","source_bili_BV147411J7Dz",""
-"d013_v11_c006","d013_v11","d013","155.000","160.000","5.000","lying_sleeping","test","1","source_bili_BV147411J7Dz",""
-"d013_v11_c007","d013_v11","d013","195.000","200.000","5.000","lying_sleeping","test","1","source_bili_BV147411J7Dz",""
-"d014_v12_c001","d014_v12","d014","30.048","35.048","5.000","lying_sleeping","test","1","source_bili_BV1C54y1z7CG",""
-"d014_v12_c002","d014_v12","d014","48.428","53.221","4.793","walking_run","test","1","source_bili_BV1C54y1z7CG",""
-"d014_v12_c003","d014_v12","d014","130.048","135.048","5.000","sitting","test","1","source_bili_BV1C54y1z7CG",""
-"d014_v12_c004","d014_v12","d014","145.048","152.509","7.461","lying_sleeping","test","1","source_bili_BV1C54y1z7CG",""
-"d014_v12_c005","d014_v12","d014","177.927","183.546","5.619","playing_alone","test","0","source_bili_BV1C54y1z7CG; excluded_from_5class_model",""
-"d014_v12_c006","d014_v12","d014","203.479","208.964","5.485","lying_sleeping","test","1","source_bili_BV1C54y1z7CG",""
-"d015_v13_c001","d015_v13","d015","35.046","40.046","5.000","walking_run","dev","1","source_bili_BV1Rt411Z72R","3"
-"d015_v13_c002","d015_v13","d015","75.046","80.046","5.000","sitting","dev","1","source_bili_BV1Rt411Z72R","3"
-"d015_v13_c003","d015_v13","d015","110.046","113.046","3.000","sitting","dev","1","source_bili_BV1Rt411Z72R","3"
-"d015_v13_c004","d015_v13","d015","114.446","120.179","5.733","lying_sleeping","dev","1","source_bili_BV1Rt411Z72R","3"
-"d015_v13_c005","d015_v13","d015","140.046","145.046","5.000","lying_sleeping","dev","1","source_bili_BV1Rt411Z72R","3"
-"d016_v14_c001","d016_v14","d016","5.000","10.000","5.000","lying_sleeping","dev","1","source_bili_BV1Wk4y1C7AS","1"
-"d016_v14_c002","d016_v14","d016","19.451","23.824","4.373","walking_run","dev","1","source_bili_BV1Wk4y1C7AS","1"
-"d016_v14_c003","d016_v14","d016","65.000","70.000","5.000","lying_sleeping","dev","1","source_bili_BV1Wk4y1C7AS","1"
-"d016_v14_c004","d016_v14","d016","75.000","80.000","5.000","lying_sleeping","dev","1","source_bili_BV1Wk4y1C7AS","1"
-"d017_v15_c001","d017_v15","d017","20.046","25.046","5.000","eating_drinking","dev","1","source_bili_BV1C54y1p7J2","4"
-"d017_v15_c002","d017_v15","d017","88.825","93.821","4.996","walking_run","dev","1","source_bili_BV1C54y1p7J2","4"
-"d017_v15_c003","d017_v15","d017","110.046","115.046","5.000","eating_drinking","dev","1","source_bili_BV1C54y1p7J2","4"
-"d018_v16_c001","d018_v16","d018","10.010","15.015","5.005","walking_run","test","1","source_bili_BV1bJ411i7gm",""
-"d018_v16_c002","d018_v16","d018","30.030","35.035","5.005","sitting","test","1","source_bili_BV1bJ411i7gm",""
-"d018_v16_c003","d018_v16","d018","60.060","65.065","5.005","standing","test","1","source_bili_BV1bJ411i7gm",""
-"d018_v16_c004","d018_v16","d018","98.796","104.007","5.211","standing","test","1","source_bili_BV1bJ411i7gm",""
-"d018_v16_c005","d018_v16","d018","165.890","171.427","5.537","sitting","test","1","source_bili_BV1bJ411i7gm",""
-"d019_v17_c001","d019_v17","d019","15.015","20.020","5.005","sitting","dev","1","source_bili_BV1wQ4y1C7LT","4"
-"d019_v17_c002","d019_v17","d019","71.886","77.886","6.000","lying_sleeping","dev","1","source_bili_BV1wQ4y1C7LT","4"
-"d019_v17_c003","d019_v17","d019","95.095","100.100","5.005","walking_run","dev","1","source_bili_BV1wQ4y1C7LT","4"
-"d020_v18_c001","d020_v18","d020","30.043","35.043","5.000","lying_sleeping","dev","1","source_bili_BV1fd4y1M7oP","2"
-"d020_v18_c002","d020_v18","d020","65.043","70.043","5.000","lying_sleeping","dev","1","source_bili_BV1fd4y1M7oP","2"
-"d020_v18_c003","d020_v18","d020","90.043","95.043","5.000","lying_sleeping","dev","1","source_bili_BV1fd4y1M7oP","2"
-"d020_v18_c004","d020_v18","d020","105.043","109.876","4.833","lying_sleeping","dev","1","source_bili_BV1fd4y1M7oP","2"
-"d021_v19_c001","d021_v19","d021","20.039","25.044","5.005","eating_drinking","test","1","source_bili_BV1hW411z72w",""
-"d021_v19_c002","d021_v19","d021","270.289","275.294","5.005","eating_drinking","test","1","source_bili_BV1hW411z72w",""
-"d022_v20_c001","d022_v20","d022","5.023","10.023","5.000","eating_drinking","dev","1","source_bili_BV15xy6YWEeM","3"
-"d022_v20_c002","d022_v20","d022","50.023","55.023","5.000","eating_drinking","dev","1","source_bili_BV15xy6YWEeM","3"
-"d023_v22_c001","d023_v22","d023","5.000","10.000","5.000","lying_sleeping","dev","1","source_bili_BV1ACpK6mExD","3"
-"d023_v22_c002","d023_v22","d023","50.000","55.000","5.000","sitting","dev","1","source_bili_BV1ACpK6mExD","3"
-"d024_v23_c001","d024_v23","d024","0.000","5.046","5.046","sitting","dev","0","source_bili_BV14T411N7J8;multi-dog: two pomeranians in frame",""
-"d024_v23_c002","d024_v23","d024","7.969","11.169","3.200","lying_sleeping","dev","0","source_bili_BV14T411N7J8;multi-dog: two pomeranians in frame",""
-"d024_v23_c003","d024_v23","d024","7.969","13.636","5.667","lying_sleeping","dev","0","source_bili_BV14T411N7J8;overlaps seg5 and seg6; label not stable",""
-"d024_v23_c005","d024_v23","d024","35.046","40.046","5.000","walking_run","dev","0","source_bili_BV14T411N7J8;multi-dog: two pomeranians in frame",""
-"d025_v24_c001","d025_v24","d025","195.000","200.000","5.000","lying_sleeping","dev","1","source_bili_BV1vv41147XW","4"
-"d025_v24_c002","d025_v24","d025","215.000","220.000","5.000","lying_sleeping","dev","0","source_bili_BV1vv41147XW;night infrared: dog curled under a quilt, detector scores 0.04-0.3, skeleton unusable","4"
-"d025_v24_c003","d025_v24","d025","317.202","322.495","5.293","standing","dev","1","source_bili_BV1vv41147XW","4"
-"d026_v25_c001","d026_v25","d026","31.382","36.914","5.532","playing_alone","dev","0","source_bili_BV1hd4y1s7Mt; excluded_from_5class_model","4"
-"d026_v25_c002","d026_v25","d026","55.046","60.046","5.000","playing_alone","dev","0","source_bili_BV1hd4y1s7Mt; excluded_from_5class_model","4"
-"d026_v25_c003","d026_v25","d026","76.933","82.933","6.000","sitting","dev","1","source_bili_BV1hd4y1s7Mt","4"
-"d027_v26_c001","d027_v26","d027","57.417","63.406","5.989","lying_sleeping","dev","1","source_bili_BV11Zy5YiEJQ","1"
-"d027_v26_c002","d027_v26","d027","71.874","77.657","5.783","lying_sleeping","dev","1","source_bili_BV11Zy5YiEJQ","1"
-"d027_v26_c003","d027_v26","d027","135.023","140.023","5.000","lying_sleeping","dev","1","source_bili_BV11Zy5YiEJQ","1"
-"d028_v27_c001","d028_v27","d028","5.000","10.000","5.000","playing_alone","test","0","source_bili_BV13qEM6REuC; excluded_from_5class_model",""
-"d028_v27_c002","d028_v27","d028","26.904","31.270","4.366","playing_alone","test","0","source_bili_BV13qEM6REuC; excluded_from_5class_model",""
-"d028_v27_c003","d028_v27","d028","49.088","52.569","3.481","playing_alone","test","0","source_bili_BV13qEM6REuC; excluded_from_5class_model",""
-"d028_v27_c004","d028_v27","d028","76.464","81.951","5.487","playing_alone","test","0","source_bili_BV13qEM6REuC; excluded_from_5class_model",""
-"d029_v28_c001","d029_v28","d029","195.000","200.000","5.000","playing_alone","dev","0","source_bili_BV1HkXaBbEYz; excluded_from_5class_model","4"
-"d029_v28_c002","d029_v28","d029","310.000","315.000","5.000","eating_drinking","dev","1","source_bili_BV1HkXaBbEYz","4"
-"d029_v28_c003","d029_v28","d029","320.000","325.000","5.000","lying_sleeping","dev","1","source_bili_BV1HkXaBbEYz","4"
-"d029_v28_c004","d029_v28","d029","715.000","720.000","5.000","sitting","dev","1","source_bili_BV1HkXaBbEYz","4"
-"d029_v28_c005","d029_v28","d029","796.568","802.568","6.000","standing","dev","1","source_bili_BV1HkXaBbEYz","4"
-"d030_v29_c001","d030_v29","d030","30.279","34.051","3.772","standing","dev","1","source_bili_BV1wW4y1c7tT","3"
-"d030_v29_c002","d030_v29","d030","45.128","50.128","5.000","playing_alone","dev","0","source_bili_BV1wW4y1c7tT; excluded_from_5class_model","3"
-"d030_v29_c003","d030_v29","d030","65.128","70.128","5.000","playing_alone","dev","0","source_bili_BV1wW4y1c7tT; excluded_from_5class_model","3"
-"d031_v30_c001","d031_v30","d031","15.000","20.000","5.000","standing","dev","1","source_bili_BV134411j734","2"
-"d031_v30_c002","d031_v30","d031","32.411","37.411","5.000","standing","dev","1","source_bili_BV134411j734","2"
-"d031_v30_c003","d031_v30","d031","51.417","57.619","6.202","standing","dev","1","source_bili_BV134411j734","2"
-"d032_v31_c001","d032_v31","d032","10.000","15.000","5.000","sitting","test","1","source_bili_BV1ZE411P7vP",""
-"d032_v31_c002","d032_v31","d032","65.000","70.000","5.000","standing","test","1","source_bili_BV1ZE411P7vP",""
-"d032_v31_c003","d032_v31","d032","71.478","80.000","8.522","walking_run","test","1","source_bili_BV1ZE411P7vP",""
-"d032_v31_c004","d032_v31","d032","168.295","174.000","5.705","eating_drinking","test","1","source_bili_BV1ZE411P7vP",""
-"d033_v32_c001","d033_v32","d033","3.000","9.500","6.506","standing","dev","1","source_yt_GqWCH3AcRII_smartbench_0028;cand_01","0"
-"d033_v32_c002","d033_v32","d033","12.600","15.800","3.212","standing","dev","1","source_yt_GqWCH3AcRII_smartbench_0028;cand_02","0"
-"d034_v33_c001","d034_v33","d034","10.200","14.900","4.713","standing","dev","1","source_yt_mBMPOdZYdb0_smartbench_0062;cand_03","1"
-"d035_v34_c001","d035_v34","d035","0.100","4.400","4.338","standing","dev","1","source_yt_3AwEol8eZ0M_smartbench_0081;cand_05","4"
-"d035_v34_c002","d035_v34","d035","4.600","7.700","3.128","standing","dev","1","source_yt_3AwEol8eZ0M_smartbench_0081;cand_06","4"
-"d036_v35_c001","d036_v35","d036","16.000","18.100","2.125","walking_run","dev","1","source_yt_s9hvzyPGJq4_smartbench_0101;cand_07","1"
-"d037_v36_c001","d037_v36","d037","0.100","5.300","5.214","lying_sleeping","dev","1","source_yt_qPVd5EP6vRQ_smartbench_0205;cand_12","4"
-"d037_v36_c002","d037_v36","d037","5.600","11.400","5.839","lying_sleeping","dev","1","source_yt_qPVd5EP6vRQ_smartbench_0205;cand_13","4"
-"d037_v36_c003","d037_v36","d037","14.200","17.900","3.712","sitting","dev","1","source_yt_qPVd5EP6vRQ_smartbench_0205;cand_14","4"
-"d038_v37_c001","d038_v37","d038","34.000","39.800","5.839","standing","dev","1","source_yt_hA5PK6Dp0OI_smartbench_0214;cand_15","2"
-"d039_v38_c001","d039_v38","d039","0.100","2.900","2.836","walking_run","dev","1","source_yt_fXi4XiHaO0o_smartbench_0363;cand_16","3"
-"d039_v38_c002","d039_v38","d039","4.400","10.500","6.131","playing_alone","dev","0","source_yt_fXi4XiHaO0o_smartbench_0363;cand_17; excluded_from_5class_model","3"
-"d039_v38_c003","d039_v38","d039","11.000","19.000","8.008","playing_alone","dev","0","source_yt_fXi4XiHaO0o_smartbench_0363;cand_18; excluded_from_5class_model","3"
-"d039_v38_c004","d039_v38","d039","31.200","33.100","1.919","lying_sleeping","dev","1","source_yt_fXi4XiHaO0o_smartbench_0363;cand_19","3"
-"d040_v39_c001","d040_v39","d040","0.600","4.600","4.004","walking_run","dev","1","source_yt_cJLFWRlqUuo_smartbench_0396;cand_20","2"
-"d040_v39_c002","d040_v39","d040","11.400","15.400","4.004","walking_run","dev","1","source_yt_cJLFWRlqUuo_smartbench_0396;cand_21","2"
-"d041_v40_c001","d041_v40","d041","0.000","2.800","2.836","walking_run","dev","1","source_yt_v_3880_5gXk_smartbench_0399;cand_22","1"
-"d041_v40_c002","d041_v40","d041","14.500","19.500","5.005","standing","dev","1","source_yt_v_3880_5gXk_smartbench_0399;cand_23","1"
-"d041_v40_c003","d041_v40","d041","30.200","34.800","4.630","standing","dev","1","source_yt_v_3880_5gXk_smartbench_0399;cand_24","1"
-"d041_v40_c004","d041_v40","d041","35.000","38.000","3.003","walking_run","dev","1","source_yt_v_3880_5gXk_smartbench_0399;cand_25","1"
-"d042_v41_c001","d042_v41","d042","1.000","6.500","5.520","walking_run","dev","1","source_yt_exJOrP2l73A_smartbench_0451;cand_27","0"
-"d042_v41_c002","d042_v41","d042","18.000","22.900","4.920","standing","dev","1","source_yt_exJOrP2l73A_smartbench_0451;cand_28","0"
-"d043_v42_c001","d043_v42","d043","2.100","8.400","6.340","playing_alone","test","0","source_yt_IAUXOVtZqNk_smartbench_0630;cand_31; excluded_from_5class_model",""
-"d043_v42_c002","d043_v42","d043","11.800","15.500","3.712","playing_alone","test","0","source_yt_IAUXOVtZqNk_smartbench_0630;cand_32; excluded_from_5class_model",""
-"d044_v43_c001","d044_v43","d044","2.100","4.600","2.502","walking_run","dev","1","source_yt_eE2NIcXwu-k_smartbench_0709;cand_34","0"
-"d044_v43_c002","d044_v43","d044","16.900","19.000","2.127","walking_run","dev","1","source_yt_eE2NIcXwu-k_smartbench_0709;cand_35","0"
-"d045_v44_c001","d045_v44","d045","0.300","3.500","3.212","standing","dev","1","source_yt_EeWS1Zm6spk_smartbench_0717;cand_36","3"
-"d045_v44_c002","d045_v44","d045","10.000","13.000","3.003","walking_run","dev","1","source_yt_EeWS1Zm6spk_smartbench_0717;cand_37","3"
-"d045_v44_c003","d045_v44","d045","22.000","29.000","7.007","standing","dev","1","source_yt_EeWS1Zm6spk_smartbench_0717;cand_38","3"
-"d045_v44_c004","d045_v44","d045","29.200","36.200","7.007","standing","dev","1","source_yt_EeWS1Zm6spk_smartbench_0717;cand_39","3"
-"d046_v45_c001","d046_v45","d046","5.400","10.800","5.422","standing","dev","1","source_yt_LnS836TIknE_smartbench_0833;cand_41","3"
-"d047_v46_c001","d047_v46","d047","2.500","8.800","6.333","walking_run","dev","1","source_yt_v5aU-eSFzK4_smartbench_0880;cand_43","4"
-"d048_v47_c001","d048_v47","d048","9.000","16.500","7.508","playing_alone","dev","0","source_yt_R-GeEYQC5LU_smartbench_0885;cand_44; excluded_from_5class_model","4"
-"d049_v48_c001","d049_v48","d049","0.000","2.500","2.500","playing_alone","dev","0","source_yt_B8Wn_iyEDLQ_smartbench_0949;cand_45; excluded_from_5class_model","1"
-"d049_v48_c002","d049_v48","d049","15.200","20.000","4.800","playing_alone","dev","0","source_yt_B8Wn_iyEDLQ_smartbench_0949;cand_46; excluded_from_5class_model","1"
-"d049_v48_c003","d049_v48","d049","27.700","30.000","2.300","standing","dev","1","source_yt_B8Wn_iyEDLQ_smartbench_0949;cand_47","1"
-"d050_v49_c001","d050_v49","d050","3.000","10.500","7.517","standing","dev","1","source_yt_Dj5o17kMBDU;cand_03","1"
-"d051_v50_c001","d051_v50","d051","4.300","9.400","5.100","standing","dev","1","source_yt_lINL6XUNDbY;cand_04","2"
-"d052_v51_c001","d052_v51","d052","21.300","25.800","4.500","sitting","dev","1","source_yt_QZHz1TCwHoA;cand_05","3"
-"d053_v52_c001","d053_v52","d053","27.000","33.000","6.000","sitting","dev","1","source_yt_PurXX330bLI;cand_06","1"
-"d053_v52_c002","d053_v52","d053","48.500","55.500","7.000","sitting","dev","1","source_yt_PurXX330bLI;cand_07","1"
-"d053_v52_c003","d053_v52","d053","106.900","112.500","5.600","sitting","dev","1","source_yt_PurXX330bLI;cand_08","1"
-"d053_v52_c004","d053_v52","d053","115.000","122.000","7.000","eating_drinking","dev","1","source_yt_PurXX330bLI;cand_09","1"
-"d053_v52_c005","d053_v52","d053","122.500","126.500","4.000","eating_drinking","dev","1","source_yt_PurXX330bLI;cand_10","1"
-"d053_v52_c006","d053_v52","d053","173.000","180.500","7.500","sitting","dev","1","source_yt_PurXX330bLI;cand_11","1"
-"d054_v53_c001","d054_v53","d054","162.500","170.500","8.000","eating_drinking","test","1","source_yt_imUgLV2WBcE;cand_12",""
-"d055_v54_c001","d055_v54","d055","62.000","70.000","8.000","sitting","dev","1","source_yt_KM3mtILwHD0;cand_13","2"
-"d055_v54_c002","d055_v54","d055","85.000","93.000","8.000","sitting","dev","1","source_yt_KM3mtILwHD0;cand_14","2"
-"d056_v55_c001","d056_v55","d056","127.000","135.000","8.008","sitting","dev","1","source_yt_Da5X73ZGe6k;cand_16","3"
-"d057_v56_c001","d057_v56","d057","44.000","49.500","5.520","lying_sleeping","dev","1","source_yt__rGHn4tR2_U;cand_17","1"
-"d058_v57_c001","d058_v57","d058","72.000","79.000","7.000","lying_sleeping","dev","1","source_yt_gvU9sjuDWDc;cand_18","3"
-"d058_v57_c002","d058_v57","d058","100.000","107.000","7.000","lying_sleeping","dev","1","source_yt_gvU9sjuDWDc;cand_19","3"
-"d058_v57_c003","d058_v57","d058","120.000","127.000","7.000","lying_sleeping","dev","1","source_yt_gvU9sjuDWDc;cand_20","3"
-"d058_v57_c004","d058_v57","d058","140.000","147.000","7.000","lying_sleeping","dev","1","source_yt_gvU9sjuDWDc;cand_21","3"
-"d059_v58_c001","d059_v58","d059","177.000","184.000","7.000","eating_drinking","dev","1","source_yt_t2R_b9sJhi0;cand_24","4"
-"d060_v59_c001","d060_v59","d060","41.000","49.500","8.508","eating_drinking","dev","1","source_yt_Gsqym3mfLtQ;cand_25","1"
-"d061_v60_c001","d061_v60","d061","69.500","77.500","8.000","eating_drinking","dev","1","source_yt_-wtXimpDlgQ;cand_26","1"
-"d062_v61_c001","d062_v61","d062","6.500","14.000","7.508","eating_drinking","dev","1","source_yt_ZcbbxE6oO28;cand_36","0"
-"d062_v61_c002","d062_v61","d062","14.500","22.500","8.008","eating_drinking","dev","1","source_yt_ZcbbxE6oO28;cand_37","0"
-"d063_v62_c001","d063_v62","d063","150.500","154.500","4.004","sitting","dev","1","source_yt_7H9ShZtMlOY;cand_38","2"
-"d064_v63_c001","d064_v63","d064","192.000","197.000","5.011","playing_alone","test","0","source_yt_UXYFLqbzS28;cand_39; excluded_from_5class_model",""
-"d065_v64_c001","d065_v64","d065","3.000","10.500","7.508","lying_sleeping","dev","1","source_yt_NjEwvcF_vqs;cand_42","2"
-"d065_v64_c002","d065_v64","d065","12.000","19.500","7.508","lying_sleeping","dev","1","source_yt_NjEwvcF_vqs;cand_43","2"
-"d066_v65_c001","d066_v65","d066","264.000","271.000","7.000","lying_sleeping","dev","1","source_yt_bDiL5Jom5zM;cand_44","0"
-"d066_v65_c002","d066_v65","d066","285.000","292.000","7.000","lying_sleeping","dev","1","source_yt_bDiL5Jom5zM;cand_45","0"
-"d066_v65_c003","d066_v65","d066","342.000","349.000","7.000","standing","dev","1","source_yt_bDiL5Jom5zM;cand_46","0"
-"d066_v65_c004","d066_v65","d066","368.000","373.000","5.000","sitting","dev","1","source_yt_bDiL5Jom5zM;cand_47","0"
-"d066_v65_c005","d066_v65","d066","12060.000","12067.000","7.000","lying_sleeping","dev","1","source_yt_bDiL5Jom5zM;cand_51","0"
-"d066_v66_c001","d066_v66","d066","5160.000","5167.000","7.000","standing","dev","1","source_yt_0d9Ek5__p-o;cand_56","0"
-"d066_v66_c002","d066_v66","d066","5200.000","5207.000","7.000","sitting","dev","1","source_yt_0d9Ek5__p-o;cand_57","0"
-"d066_v66_c003","d066_v66","d066","5212.000","5219.000","7.000","sitting","dev","1","source_yt_0d9Ek5__p-o;cand_58","0"
-"d066_v66_c004","d066_v66","d066","5220.000","5227.000","7.000","sitting","dev","1","source_yt_0d9Ek5__p-o;cand_59","0"
-"d066_v66_c005","d066_v66","d066","5244.000","5251.000","7.000","lying_sleeping","dev","1","source_yt_0d9Ek5__p-o;cand_60","0"
-"d066_v66_c006","d066_v66","d066","5580.000","5587.000","7.000","lying_sleeping","dev","1","source_yt_0d9Ek5__p-o;cand_61","0"
-"d066_v66_c007","d066_v66","d066","5720.000","5727.000","7.000","lying_sleeping","dev","1","source_yt_0d9Ek5__p-o;cand_62","0"
-"d066_v67_c001","d066_v67","d066","6040.000","6047.000","7.000","sitting","dev","1","source_yt_cgezKfZp7SQ;cand_63","0"
-"d066_v67_c002","d066_v67","d066","6100.000","6107.000","7.000","sitting","dev","1","source_yt_cgezKfZp7SQ;cand_64","0"
-"d066_v67_c003","d066_v67","d066","6140.000","6147.000","7.000","sitting","dev","1","source_yt_cgezKfZp7SQ;cand_65","0"
-"d066_v67_c004","d066_v67","d066","6174.000","6181.000","7.000","lying_sleeping","dev","1","source_yt_cgezKfZp7SQ;cand_66","0"
-"d066_v67_c005","d066_v67","d066","6197.000","6204.000","7.000","sitting","dev","1","source_yt_cgezKfZp7SQ;cand_67","0"
-"d066_v67_c006","d066_v67","d066","6740.000","6747.000","7.000","sitting","dev","1","source_yt_cgezKfZp7SQ;cand_68","0"
-"d066_v67_c007","d066_v67","d066","6880.000","6887.000","7.000","sitting","dev","1","source_yt_cgezKfZp7SQ;cand_70","0"
+﻿clip_id,source_video_id,dog_id,start_sec,end_sec,duration_sec,behavior_label,split,valid,notes,cv_fold
+d001_v01_c001,d001_v01,d001,163.661,174.005,10.344,walking_run,dev,1,source_bili_BV1vNzaB2Ey2_P1,3
+d001_v01_c002,d001_v01,d001,242.355,252.012,9.657,walking_run,dev,0,source_bili_BV1vNzaB2Ey2_P1;multi-dog: corgi and border collie puppy both moving,3
+d001_v01_c003,d001_v01,d001,583.445,591.100,7.655,eating_drinking,dev,1,source_bili_BV1vNzaB2Ey2_P1,3
+d002_v02_c001,d002_v02,d002,18.421,24.348,5.927,walking_run,dev,1,source_bili_BV1zJ411D75S_P2,1
+d002_v02_c002,d002_v02,d002,43.668,49.335,5.667,playing_alone,dev,0,source_bili_BV1zJ411D75S_P2; excluded_from_5class_model,1
+d002_v02_c003,d002_v02,d002,80.326,85.662,5.336,lying_sleeping,dev,1,source_bili_BV1zJ411D75S_P2,1
+d002_v02_c004,d002_v02,d002,118.538,122.983,4.445,sitting,dev,1,source_bili_BV1zJ411D75S_P2,1
+d003_v03_c001,d003_v03,d003,15.023,20.023,5.000,walking_run,test,1,source_bili_BV1fs4y1P7Ag,
+d003_v03_c002,d003_v03,d003,170.023,175.142,5.119,sitting,test,1,source_bili_BV1fs4y1P7Ag,
+d004_v04_c001,d004_v04,d004,10.609,15.742,5.133,eating_drinking,test,1,source_bili_BV1Bt4y187tu,
+d004_v04_c002,d004_v04,d004,48.384,53.779,5.395,lying_sleeping,test,1,source_bili_BV1Bt4y187tu,
+d004_v04_c003,d004_v04,d004,69.621,74.846,5.225,standing,test,1,source_bili_BV1Bt4y187tu,
+d004_v04_c004,d004_v04,d004,82.052,87.358,5.306,standing,test,1,source_bili_BV1Bt4y187tu,
+d004_v04_c005,d004_v04,d004,103.100,104.443,1.343,walking_run,test,1,source_bili_BV1Bt4y187tu,
+d004_v04_c006,d004_v04,d004,104.933,108.133,3.200,lying_sleeping,test,1,source_bili_BV1Bt4y187tu,
+d005_v05_c001,d005_v05,d005,12.344,17.767,5.423,lying_sleeping,dev,1,source_bili_BV1t5411V7qj,2
+d006_v05_c001,d006_v05,d006,46.113,51.169,5.056,sitting,test,1,source_bili_BV1t5411V7qj,
+d007_v05_c001,d007_v05,d007,75.093,80.093,5.000,standing,dev,1,source_bili_BV1t5411V7qj,3
+d008_v05_c001,d008_v05,d008,87.891,92.891,5.000,standing,dev,1,source_bili_BV1t5411V7qj,1
+d009_v06_c001,d009_v06,d009,16.854,22.854,6.000,walking_run,dev,1,source_bili_BV1tA4y1D7x7,4
+d009_v06_c002,d009_v06,d009,35.046,39.678,4.632,walking_run,dev,1,source_bili_BV1tA4y1D7x7,4
+d009_v06_c003,d009_v06,d009,40.146,45.413,5.267,sitting,dev,1,source_bili_BV1tA4y1D7x7,4
+d009_v06_c004,d009_v06,d009,45.046,50.046,5.000,lying_sleeping,dev,1,source_bili_BV1tA4y1D7x7,4
+d009_v06_c005,d009_v06,d009,85.046,90.046,5.000,standing,dev,1,source_bili_BV1tA4y1D7x7,4
+d009_v06_c006,d009_v06,d009,145.046,150.481,5.435,lying_sleeping,dev,1,source_bili_BV1tA4y1D7x7,4
+d009_v06_c007,d009_v06,d009,240.046,245.046,5.000,lying_sleeping,dev,1,source_bili_BV1tA4y1D7x7,4
+d009_v06_c008,d009_v06,d009,350.355,355.950,5.595,lying_sleeping,dev,1,source_bili_BV1tA4y1D7x7,4
+d010_v07_c001,d010_v07,d010,37.713,42.998,5.285,eating_drinking,dev,1,source_bili_BV1qb411h7SQ,0
+d010_v07_c002,d010_v07,d010,56.030,61.387,5.357,walking_run,dev,1,source_bili_BV1qb411h7SQ,0
+d010_v07_c003,d010_v07,d010,118.310,123.482,5.172,playing_alone,dev,0,source_bili_BV1qb411h7SQ; excluded_from_5class_model,0
+d010_v07_c004,d010_v07,d010,170.000,175.000,5.000,playing_alone,dev,0,source_bili_BV1qb411h7SQ; excluded_from_5class_model,0
+d010_v07_c005,d010_v07,d010,255.000,260.000,5.000,playing_alone,dev,0,source_bili_BV1qb411h7SQ; excluded_from_5class_model,0
+d011_v08_c001,d011_v08,d011,115.000,120.000,5.000,standing,dev,1,source_bili_BV1pCeGz3Ebg,2
+d011_v08_c002,d011_v08,d011,120.000,125.000,5.000,walking_run,dev,1,source_bili_BV1pCeGz3Ebg,2
+d011_v08_c003,d011_v08,d011,135.000,140.000,5.000,walking_run,dev,1,source_bili_BV1pCeGz3Ebg,2
+d011_v08_c004,d011_v08,d011,170.665,178.665,8.000,eating_drinking,dev,1,source_bili_BV1pCeGz3Ebg,2
+d011_v08_c005,d011_v08,d011,265.963,272.425,6.462,sitting,dev,1,source_bili_BV1pCeGz3Ebg,2
+d011_v08_c006,d011_v08,d011,280.000,285.000,5.000,playing_alone,dev,0,source_bili_BV1pCeGz3Ebg; excluded_from_5class_model,2
+d012_v09_c001,d012_v09,d012,30.023,35.023,5.000,playing_alone,dev,0,source_bili_BV1Fh411M7nq; excluded_from_5class_model,2
+d012_v09_c002,d012_v09,d012,50.023,55.023,5.000,playing_alone,dev,0,source_bili_BV1Fh411M7nq; excluded_from_5class_model,2
+d012_v09_c003,d012_v09,d012,85.023,90.023,5.000,playing_alone,dev,0,source_bili_BV1Fh411M7nq; excluded_from_5class_model,2
+d012_v09_c004,d012_v09,d012,104.023,109.023,5.000,eating_drinking,dev,1,source_bili_BV1Fh411M7nq,2
+d012_v09_c005,d012_v09,d012,114.634,118.634,4.000,eating_drinking,dev,1,source_bili_BV1Fh411M7nq,2
+d012_v09_c006,d012_v09,d012,120.023,125.023,5.000,lying_sleeping,dev,1,source_bili_BV1Fh411M7nq,2
+d012_v09_c007,d012_v09,d012,175.023,180.023,5.000,sitting,dev,1,source_bili_BV1Fh411M7nq,2
+d013_v11_c001,d013_v11,d013,25.467,30.133,4.666,standing,test,1,source_bili_BV147411J7Dz,
+d013_v11_c002,d013_v11,d013,25.400,27.333,1.933,walking_run,test,1,source_bili_BV147411J7Dz;source is 4x fast-forward here; file repeats each frame 4 times (7.7 s at real speed),
+d013_v11_c003,d013_v11,d013,32.700,35.067,2.367,eating_drinking,test,1,source_bili_BV147411J7Dz,
+d013_v11_c004,d013_v11,d013,105.000,110.000,5.000,standing,test,1,source_bili_BV147411J7Dz,
+d013_v11_c005,d013_v11,d013,135.000,140.000,5.000,standing,test,1,source_bili_BV147411J7Dz,
+d013_v11_c006,d013_v11,d013,155.000,160.000,5.000,lying_sleeping,test,1,source_bili_BV147411J7Dz,
+d013_v11_c007,d013_v11,d013,195.000,200.000,5.000,lying_sleeping,test,1,source_bili_BV147411J7Dz,
+d014_v12_c001,d014_v12,d014,30.048,35.048,5.000,lying_sleeping,test,1,source_bili_BV1C54y1z7CG,
+d014_v12_c002,d014_v12,d014,48.428,53.221,4.793,walking_run,test,1,source_bili_BV1C54y1z7CG,
+d014_v12_c003,d014_v12,d014,130.048,135.048,5.000,sitting,test,1,source_bili_BV1C54y1z7CG,
+d014_v12_c004,d014_v12,d014,145.048,152.509,7.461,lying_sleeping,test,1,source_bili_BV1C54y1z7CG,
+d014_v12_c005,d014_v12,d014,177.927,183.546,5.619,playing_alone,test,0,source_bili_BV1C54y1z7CG; excluded_from_5class_model,
+d014_v12_c006,d014_v12,d014,203.479,208.964,5.485,lying_sleeping,test,1,source_bili_BV1C54y1z7CG,
+d015_v13_c001,d015_v13,d015,35.046,40.046,5.000,walking_run,dev,1,source_bili_BV1Rt411Z72R,3
+d015_v13_c002,d015_v13,d015,75.046,80.046,5.000,sitting,dev,1,source_bili_BV1Rt411Z72R,3
+d015_v13_c003,d015_v13,d015,110.046,113.046,3.000,sitting,dev,1,source_bili_BV1Rt411Z72R,3
+d015_v13_c004,d015_v13,d015,114.446,120.179,5.733,lying_sleeping,dev,1,source_bili_BV1Rt411Z72R,3
+d015_v13_c005,d015_v13,d015,140.046,145.046,5.000,lying_sleeping,dev,1,source_bili_BV1Rt411Z72R,3
+d016_v14_c001,d016_v14,d016,5.000,10.000,5.000,lying_sleeping,dev,1,source_bili_BV1Wk4y1C7AS,1
+d016_v14_c002,d016_v14,d016,19.451,23.824,4.373,walking_run,dev,1,source_bili_BV1Wk4y1C7AS,1
+d016_v14_c003,d016_v14,d016,65.000,70.000,5.000,lying_sleeping,dev,1,source_bili_BV1Wk4y1C7AS,1
+d016_v14_c004,d016_v14,d016,75.000,80.000,5.000,lying_sleeping,dev,1,source_bili_BV1Wk4y1C7AS,1
+d017_v15_c001,d017_v15,d017,20.046,25.046,5.000,eating_drinking,dev,1,source_bili_BV1C54y1p7J2,4
+d017_v15_c002,d017_v15,d017,88.825,93.821,4.996,walking_run,dev,1,source_bili_BV1C54y1p7J2,4
+d017_v15_c003,d017_v15,d017,110.046,115.046,5.000,eating_drinking,dev,1,source_bili_BV1C54y1p7J2,4
+d018_v16_c001,d018_v16,d018,10.010,15.015,5.005,walking_run,test,1,source_bili_BV1bJ411i7gm,
+d018_v16_c002,d018_v16,d018,30.030,35.035,5.005,sitting,test,1,source_bili_BV1bJ411i7gm,
+d018_v16_c003,d018_v16,d018,60.060,65.065,5.005,standing,test,1,source_bili_BV1bJ411i7gm,
+d018_v16_c004,d018_v16,d018,98.796,104.007,5.211,standing,test,1,source_bili_BV1bJ411i7gm,
+d018_v16_c005,d018_v16,d018,165.890,171.427,5.537,sitting,test,1,source_bili_BV1bJ411i7gm,
+d019_v17_c001,d019_v17,d019,15.015,20.020,5.005,sitting,dev,1,source_bili_BV1wQ4y1C7LT,4
+d019_v17_c002,d019_v17,d019,71.886,77.886,6.000,lying_sleeping,dev,1,source_bili_BV1wQ4y1C7LT,4
+d019_v17_c003,d019_v17,d019,95.095,100.100,5.005,walking_run,dev,1,source_bili_BV1wQ4y1C7LT,4
+d020_v18_c001,d020_v18,d020,30.043,35.043,5.000,lying_sleeping,dev,1,source_bili_BV1fd4y1M7oP,2
+d020_v18_c002,d020_v18,d020,65.043,70.043,5.000,lying_sleeping,dev,1,source_bili_BV1fd4y1M7oP,2
+d020_v18_c003,d020_v18,d020,90.043,95.043,5.000,lying_sleeping,dev,1,source_bili_BV1fd4y1M7oP,2
+d020_v18_c004,d020_v18,d020,105.043,109.876,4.833,lying_sleeping,dev,1,source_bili_BV1fd4y1M7oP,2
+d021_v19_c001,d021_v19,d021,20.039,25.044,5.005,eating_drinking,test,1,source_bili_BV1hW411z72w,
+d021_v19_c002,d021_v19,d021,270.289,275.294,5.005,eating_drinking,test,1,source_bili_BV1hW411z72w,
+d022_v20_c001,d022_v20,d022,5.023,10.023,5.000,eating_drinking,dev,1,source_bili_BV15xy6YWEeM,3
+d022_v20_c002,d022_v20,d022,50.023,55.023,5.000,eating_drinking,dev,1,source_bili_BV15xy6YWEeM,3
+d023_v22_c001,d023_v22,d023,5.000,10.000,5.000,lying_sleeping,dev,1,source_bili_BV1ACpK6mExD,3
+d023_v22_c002,d023_v22,d023,50.000,55.000,5.000,sitting,dev,1,source_bili_BV1ACpK6mExD,3
+d024_v23_c001,d024_v23,d024,0.000,5.046,5.046,sitting,dev,0,source_bili_BV14T411N7J8;multi-dog: two pomeranians in frame,
+d024_v23_c002,d024_v23,d024,7.969,11.169,3.200,lying_sleeping,dev,0,source_bili_BV14T411N7J8;multi-dog: two pomeranians in frame,
+d024_v23_c003,d024_v23,d024,7.969,13.636,5.667,lying_sleeping,dev,0,source_bili_BV14T411N7J8;overlaps seg5 and seg6; label not stable,
+d024_v23_c005,d024_v23,d024,35.046,40.046,5.000,walking_run,dev,0,source_bili_BV14T411N7J8;multi-dog: two pomeranians in frame,
+d025_v24_c001,d025_v24,d025,195.000,200.000,5.000,lying_sleeping,dev,1,source_bili_BV1vv41147XW,4
+d025_v24_c002,d025_v24,d025,215.000,220.000,5.000,lying_sleeping,dev,0,"source_bili_BV1vv41147XW;night infrared: dog curled under a quilt, detector scores 0.04-0.3, skeleton unusable",4
+d025_v24_c003,d025_v24,d025,317.202,322.495,5.293,standing,dev,1,source_bili_BV1vv41147XW,4
+d026_v25_c001,d026_v25,d026,31.382,36.914,5.532,playing_alone,dev,0,source_bili_BV1hd4y1s7Mt; excluded_from_5class_model,4
+d026_v25_c002,d026_v25,d026,55.046,60.046,5.000,playing_alone,dev,0,source_bili_BV1hd4y1s7Mt; excluded_from_5class_model,4
+d026_v25_c003,d026_v25,d026,76.933,82.933,6.000,sitting,dev,1,source_bili_BV1hd4y1s7Mt,4
+d027_v26_c001,d027_v26,d027,57.417,63.406,5.989,lying_sleeping,dev,1,source_bili_BV11Zy5YiEJQ,1
+d027_v26_c002,d027_v26,d027,71.874,77.657,5.783,lying_sleeping,dev,1,source_bili_BV11Zy5YiEJQ,1
+d027_v26_c003,d027_v26,d027,135.023,140.023,5.000,lying_sleeping,dev,1,source_bili_BV11Zy5YiEJQ,1
+d028_v27_c001,d028_v27,d028,5.000,10.000,5.000,playing_alone,test,0,source_bili_BV13qEM6REuC; excluded_from_5class_model,
+d028_v27_c002,d028_v27,d028,26.904,31.270,4.366,playing_alone,test,0,source_bili_BV13qEM6REuC; excluded_from_5class_model,
+d028_v27_c003,d028_v27,d028,49.088,52.569,3.481,playing_alone,test,0,source_bili_BV13qEM6REuC; excluded_from_5class_model,
+d028_v27_c004,d028_v27,d028,76.464,81.951,5.487,playing_alone,test,0,source_bili_BV13qEM6REuC; excluded_from_5class_model,
+d029_v28_c001,d029_v28,d029,195.000,200.000,5.000,playing_alone,dev,0,source_bili_BV1HkXaBbEYz; excluded_from_5class_model,4
+d029_v28_c002,d029_v28,d029,310.000,315.000,5.000,eating_drinking,dev,1,source_bili_BV1HkXaBbEYz,4
+d029_v28_c003,d029_v28,d029,320.000,325.000,5.000,lying_sleeping,dev,1,source_bili_BV1HkXaBbEYz,4
+d029_v28_c004,d029_v28,d029,715.000,720.000,5.000,sitting,dev,1,source_bili_BV1HkXaBbEYz,4
+d029_v28_c005,d029_v28,d029,796.568,802.568,6.000,standing,dev,1,source_bili_BV1HkXaBbEYz,4
+d030_v29_c001,d030_v29,d030,30.279,34.051,3.772,standing,dev,1,source_bili_BV1wW4y1c7tT,3
+d030_v29_c002,d030_v29,d030,45.128,50.128,5.000,playing_alone,dev,0,source_bili_BV1wW4y1c7tT; excluded_from_5class_model,3
+d030_v29_c003,d030_v29,d030,65.128,70.128,5.000,playing_alone,dev,0,source_bili_BV1wW4y1c7tT; excluded_from_5class_model,3
+d031_v30_c001,d031_v30,d031,15.000,20.000,5.000,standing,dev,1,source_bili_BV134411j734,2
+d031_v30_c002,d031_v30,d031,32.411,37.411,5.000,standing,dev,1,source_bili_BV134411j734,2
+d031_v30_c003,d031_v30,d031,51.417,57.619,6.202,standing,dev,1,source_bili_BV134411j734,2
+d032_v31_c001,d032_v31,d032,10.000,15.000,5.000,sitting,test,1,source_bili_BV1ZE411P7vP,
+d032_v31_c002,d032_v31,d032,65.000,70.000,5.000,standing,test,1,source_bili_BV1ZE411P7vP,
+d032_v31_c003,d032_v31,d032,71.478,80.000,8.522,walking_run,test,1,source_bili_BV1ZE411P7vP,
+d032_v31_c004,d032_v31,d032,168.295,174.000,5.705,eating_drinking,test,1,source_bili_BV1ZE411P7vP,
+d033_v32_c001,d033_v32,d033,3.000,9.500,6.506,standing,dev,1,source_yt_GqWCH3AcRII_smartbench_0028;cand_01,0
+d033_v32_c002,d033_v32,d033,12.600,15.800,3.212,standing,dev,1,source_yt_GqWCH3AcRII_smartbench_0028;cand_02,0
+d034_v33_c001,d034_v33,d034,10.200,14.900,4.713,standing,dev,1,source_yt_mBMPOdZYdb0_smartbench_0062;cand_03,1
+d035_v34_c001,d035_v34,d035,0.100,4.400,4.338,standing,dev,1,source_yt_3AwEol8eZ0M_smartbench_0081;cand_05,4
+d035_v34_c002,d035_v34,d035,4.600,7.700,3.128,standing,dev,1,source_yt_3AwEol8eZ0M_smartbench_0081;cand_06,4
+d036_v35_c001,d036_v35,d036,16.000,18.100,2.125,walking_run,dev,1,source_yt_s9hvzyPGJq4_smartbench_0101;cand_07,1
+d037_v36_c001,d037_v36,d037,0.100,5.300,5.214,lying_sleeping,dev,1,source_yt_qPVd5EP6vRQ_smartbench_0205;cand_12,4
+d037_v36_c002,d037_v36,d037,5.600,11.400,5.839,lying_sleeping,dev,1,source_yt_qPVd5EP6vRQ_smartbench_0205;cand_13,4
+d037_v36_c003,d037_v36,d037,14.200,17.900,3.712,sitting,dev,1,source_yt_qPVd5EP6vRQ_smartbench_0205;cand_14,4
+d038_v37_c001,d038_v37,d038,34.000,39.800,5.839,standing,dev,1,source_yt_hA5PK6Dp0OI_smartbench_0214;cand_15,2
+d039_v38_c001,d039_v38,d039,0.100,2.900,2.836,walking_run,dev,1,source_yt_fXi4XiHaO0o_smartbench_0363;cand_16,3
+d039_v38_c002,d039_v38,d039,4.400,10.500,6.131,playing_alone,dev,0,source_yt_fXi4XiHaO0o_smartbench_0363;cand_17; excluded_from_5class_model,3
+d039_v38_c003,d039_v38,d039,11.000,19.000,8.008,playing_alone,dev,0,source_yt_fXi4XiHaO0o_smartbench_0363;cand_18; excluded_from_5class_model,3
+d039_v38_c004,d039_v38,d039,31.200,33.100,1.919,lying_sleeping,dev,1,source_yt_fXi4XiHaO0o_smartbench_0363;cand_19,3
+d040_v39_c001,d040_v39,d040,0.600,4.600,4.004,walking_run,dev,1,source_yt_cJLFWRlqUuo_smartbench_0396;cand_20,2
+d040_v39_c002,d040_v39,d040,11.400,15.400,4.004,walking_run,dev,1,source_yt_cJLFWRlqUuo_smartbench_0396;cand_21,2
+d041_v40_c001,d041_v40,d041,0.000,2.800,2.836,walking_run,dev,1,source_yt_v_3880_5gXk_smartbench_0399;cand_22,1
+d041_v40_c002,d041_v40,d041,14.500,19.500,5.005,standing,dev,1,source_yt_v_3880_5gXk_smartbench_0399;cand_23,1
+d041_v40_c003,d041_v40,d041,30.200,34.800,4.630,standing,dev,1,source_yt_v_3880_5gXk_smartbench_0399;cand_24,1
+d041_v40_c004,d041_v40,d041,35.000,38.000,3.003,walking_run,dev,1,source_yt_v_3880_5gXk_smartbench_0399;cand_25,1
+d042_v41_c001,d042_v41,d042,1.000,6.500,5.520,walking_run,dev,1,source_yt_exJOrP2l73A_smartbench_0451;cand_27,0
+d042_v41_c002,d042_v41,d042,18.000,22.900,4.920,standing,dev,1,source_yt_exJOrP2l73A_smartbench_0451;cand_28,0
+d043_v42_c001,d043_v42,d043,2.100,8.400,6.340,playing_alone,test,0,source_yt_IAUXOVtZqNk_smartbench_0630;cand_31; excluded_from_5class_model,
+d043_v42_c002,d043_v42,d043,11.800,15.500,3.712,playing_alone,test,0,source_yt_IAUXOVtZqNk_smartbench_0630;cand_32; excluded_from_5class_model,
+d044_v43_c001,d044_v43,d044,2.100,4.600,2.502,walking_run,dev,1,source_yt_eE2NIcXwu-k_smartbench_0709;cand_34,0
+d044_v43_c002,d044_v43,d044,16.900,19.000,2.127,walking_run,dev,1,source_yt_eE2NIcXwu-k_smartbench_0709;cand_35,0
+d045_v44_c001,d045_v44,d045,0.300,3.500,3.212,standing,dev,1,source_yt_EeWS1Zm6spk_smartbench_0717;cand_36,3
+d045_v44_c002,d045_v44,d045,10.000,13.000,3.003,walking_run,dev,1,source_yt_EeWS1Zm6spk_smartbench_0717;cand_37,3
+d045_v44_c003,d045_v44,d045,22.000,29.000,7.007,standing,dev,1,source_yt_EeWS1Zm6spk_smartbench_0717;cand_38,3
+d045_v44_c004,d045_v44,d045,29.200,36.200,7.007,standing,dev,1,source_yt_EeWS1Zm6spk_smartbench_0717;cand_39,3
+d046_v45_c001,d046_v45,d046,5.400,10.800,5.422,standing,dev,1,source_yt_LnS836TIknE_smartbench_0833;cand_41,3
+d047_v46_c001,d047_v46,d047,2.500,8.800,6.333,walking_run,dev,1,source_yt_v5aU-eSFzK4_smartbench_0880;cand_43,4
+d048_v47_c001,d048_v47,d048,9.000,16.500,7.508,playing_alone,dev,0,source_yt_R-GeEYQC5LU_smartbench_0885;cand_44; excluded_from_5class_model,4
+d049_v48_c001,d049_v48,d049,0.000,2.500,2.500,playing_alone,dev,0,source_yt_B8Wn_iyEDLQ_smartbench_0949;cand_45; excluded_from_5class_model,1
+d049_v48_c002,d049_v48,d049,15.200,20.000,4.800,playing_alone,dev,0,source_yt_B8Wn_iyEDLQ_smartbench_0949;cand_46; excluded_from_5class_model,1
+d049_v48_c003,d049_v48,d049,27.700,30.000,2.300,standing,dev,1,source_yt_B8Wn_iyEDLQ_smartbench_0949;cand_47,1
+d050_v49_c001,d050_v49,d050,3.000,10.500,7.517,standing,dev,1,source_yt_Dj5o17kMBDU;cand_03,1
+d051_v50_c001,d051_v50,d051,4.300,9.400,5.100,standing,dev,1,source_yt_lINL6XUNDbY;cand_04,2
+d052_v51_c001,d052_v51,d052,21.300,25.800,4.500,sitting,dev,1,source_yt_QZHz1TCwHoA;cand_05,3
+d053_v52_c001,d053_v52,d053,27.000,33.000,6.000,sitting,dev,1,source_yt_PurXX330bLI;cand_06,1
+d053_v52_c002,d053_v52,d053,48.500,55.500,7.000,sitting,dev,1,source_yt_PurXX330bLI;cand_07,1
+d053_v52_c003,d053_v52,d053,106.900,112.500,5.600,sitting,dev,1,source_yt_PurXX330bLI;cand_08,1
+d053_v52_c004,d053_v52,d053,115.000,122.000,7.000,eating_drinking,dev,1,source_yt_PurXX330bLI;cand_09,1
+d053_v52_c005,d053_v52,d053,122.500,126.500,4.000,eating_drinking,dev,1,source_yt_PurXX330bLI;cand_10,1
+d053_v52_c006,d053_v52,d053,173.000,180.500,7.500,sitting,dev,1,source_yt_PurXX330bLI;cand_11,1
+d054_v53_c001,d054_v53,d054,162.500,170.500,8.000,eating_drinking,test,1,source_yt_imUgLV2WBcE;cand_12,
+d055_v54_c001,d055_v54,d055,62.000,70.000,8.000,sitting,dev,1,source_yt_KM3mtILwHD0;cand_13,2
+d055_v54_c002,d055_v54,d055,85.000,93.000,8.000,sitting,dev,1,source_yt_KM3mtILwHD0;cand_14,2
+d056_v55_c001,d056_v55,d056,127.000,135.000,8.008,sitting,dev,1,source_yt_Da5X73ZGe6k;cand_16,3
+d057_v56_c001,d057_v56,d057,44.000,49.500,5.520,lying_sleeping,dev,1,source_yt__rGHn4tR2_U;cand_17,1
+d058_v57_c001,d058_v57,d058,72.000,79.000,7.000,lying_sleeping,dev,1,source_yt_gvU9sjuDWDc;cand_18,3
+d058_v57_c002,d058_v57,d058,100.000,107.000,7.000,lying_sleeping,dev,1,source_yt_gvU9sjuDWDc;cand_19,3
+d058_v57_c003,d058_v57,d058,120.000,127.000,7.000,lying_sleeping,dev,1,source_yt_gvU9sjuDWDc;cand_20,3
+d058_v57_c004,d058_v57,d058,140.000,147.000,7.000,lying_sleeping,dev,1,source_yt_gvU9sjuDWDc;cand_21,3
+d059_v58_c001,d059_v58,d059,177.000,184.000,7.000,eating_drinking,dev,1,source_yt_t2R_b9sJhi0;cand_24,4
+d060_v59_c001,d060_v59,d060,41.000,49.500,8.508,eating_drinking,dev,1,source_yt_Gsqym3mfLtQ;cand_25,1
+d061_v60_c001,d061_v60,d061,69.500,77.500,8.000,eating_drinking,dev,1,source_yt_-wtXimpDlgQ;cand_26,1
+d062_v61_c001,d062_v61,d062,6.500,14.000,7.508,eating_drinking,dev,1,source_yt_ZcbbxE6oO28;cand_36,0
+d062_v61_c002,d062_v61,d062,14.500,22.500,8.008,eating_drinking,dev,1,source_yt_ZcbbxE6oO28;cand_37,0
+d063_v62_c001,d063_v62,d063,150.500,154.500,4.004,sitting,dev,1,source_yt_7H9ShZtMlOY;cand_38,2
+d064_v63_c001,d064_v63,d064,192.000,197.000,5.011,playing_alone,test,0,source_yt_UXYFLqbzS28;cand_39; excluded_from_5class_model,
+d065_v64_c001,d065_v64,d065,3.000,10.500,7.508,lying_sleeping,dev,1,source_yt_NjEwvcF_vqs;cand_42,2
+d065_v64_c002,d065_v64,d065,12.000,19.500,7.508,lying_sleeping,dev,1,source_yt_NjEwvcF_vqs;cand_43,2
+d066_v65_c001,d066_v65,d066,264.000,271.000,7.000,lying_sleeping,dev,1,source_yt_bDiL5Jom5zM;cand_44,0
+d066_v65_c002,d066_v65,d066,285.000,292.000,7.000,lying_sleeping,dev,1,source_yt_bDiL5Jom5zM;cand_45,0
+d066_v65_c003,d066_v65,d066,342.000,349.000,7.000,standing,dev,1,source_yt_bDiL5Jom5zM;cand_46,0
+d066_v65_c004,d066_v65,d066,368.000,373.000,5.000,sitting,dev,1,source_yt_bDiL5Jom5zM;cand_47,0
+d066_v65_c005,d066_v65,d066,12060.000,12067.000,7.000,lying_sleeping,dev,1,source_yt_bDiL5Jom5zM;cand_51,0
+d066_v66_c001,d066_v66,d066,5160.000,5167.000,7.000,standing,dev,1,source_yt_0d9Ek5__p-o;cand_56,0
+d066_v66_c002,d066_v66,d066,5200.000,5207.000,7.000,sitting,dev,1,source_yt_0d9Ek5__p-o;cand_57,0
+d066_v66_c003,d066_v66,d066,5212.000,5219.000,7.000,sitting,dev,1,source_yt_0d9Ek5__p-o;cand_58,0
+d066_v66_c004,d066_v66,d066,5220.000,5227.000,7.000,sitting,dev,1,source_yt_0d9Ek5__p-o;cand_59,0
+d066_v66_c005,d066_v66,d066,5244.000,5251.000,7.000,lying_sleeping,dev,1,source_yt_0d9Ek5__p-o;cand_60,0
+d066_v66_c006,d066_v66,d066,5580.000,5587.000,7.000,lying_sleeping,dev,1,source_yt_0d9Ek5__p-o;cand_61,0
+d066_v66_c007,d066_v66,d066,5720.000,5727.000,7.000,lying_sleeping,dev,1,source_yt_0d9Ek5__p-o;cand_62,0
+d066_v67_c001,d066_v67,d066,6040.000,6047.000,7.000,sitting,dev,1,source_yt_cgezKfZp7SQ;cand_63,0
+d066_v67_c002,d066_v67,d066,6100.000,6107.000,7.000,sitting,dev,1,source_yt_cgezKfZp7SQ;cand_64,0
+d066_v67_c003,d066_v67,d066,6140.000,6147.000,7.000,sitting,dev,1,source_yt_cgezKfZp7SQ;cand_65,0
+d066_v67_c004,d066_v67,d066,6174.000,6181.000,7.000,lying_sleeping,dev,1,source_yt_cgezKfZp7SQ;cand_66,0
+d066_v67_c005,d066_v67,d066,6197.000,6204.000,7.000,sitting,dev,1,source_yt_cgezKfZp7SQ;cand_67,0
+d066_v67_c006,d066_v67,d066,6740.000,6747.000,7.000,sitting,dev,1,source_yt_cgezKfZp7SQ;cand_68,0
+d066_v67_c007,d066_v67,d066,6880.000,6887.000,7.000,sitting,dev,1,source_yt_cgezKfZp7SQ;cand_70,0
+apt_clip1,apt_apt_clip1,apt_apt_clip1,0.000,1.000,1.000,walking_run,train,1,external_APT;on leash,
+apt_clip2,apt_apt_clip2,apt_apt_clip2,0.000,1.000,1.000,walking_run,train,1,external_APT,
+apt_clip3,apt_apt_clip3,apt_apt_clip3,0.000,1.000,1.000,walking_run,train,1,external_APT;on leash,
+apt_clip4,apt_apt_clip4,apt_apt_clip4,0.000,1.000,1.000,walking_run,train,1,external_APT;stops at the end,
+apt_clip5,apt_apt_clip5,apt_apt_clip5,0.000,1.000,1.000,walking_run,train,1,external_APT;sniffing while walking,
+apt_clip6,apt_apt_clip6,apt_apt_clip6,0.000,1.000,1.000,walking_run,train,1,external_APT,
+apt_v10c1,apt_v10,apt_v10,0.000,0.800,0.800,walking_run,train,1,external_APT,
+apt_v10c2,apt_v10,apt_v10,0.000,1.000,1.000,walking_run,train,1,external_APT,
+apt_v10c3,apt_v10,apt_v10,0.000,1.000,1.000,walking_run,train,1,external_APT,
+apt_v12c1,apt_v12,apt_v12,0.000,1.000,1.000,walking_run,train,1,external_APT;slow walk sniffing,
+apt_v14c2,apt_v14,apt_v14,0.000,1.000,1.000,walking_run,train,1,external_APT,
+apt_v14c3,apt_v14,apt_v14,0.000,1.000,1.000,walking_run,train,1,external_APT,
+apt_v14c4,apt_v14,apt_v14,0.000,1.000,1.000,walking_run,train,1,external_APT,
+apt_v14c5,apt_v14,apt_v14,0.000,1.000,1.000,walking_run,train,1,external_APT,
+apt_v16c3,apt_v16,apt_v16,0.000,1.000,1.000,standing,train,1,external_APT,
+apt_v18c7,apt_v18,apt_v18,0.000,1.000,1.000,walking_run,train,1,external_APT,
+apt_v22c2,apt_v22,apt_v22,0.000,1.000,1.000,walking_run,train,1,external_APT,
+apt_v22c3,apt_v22,apt_v22,0.000,1.000,1.000,walking_run,train,1,external_APT;jumps at the end,
+apt_v22c4,apt_v22,apt_v22,0.000,1.000,1.000,walking_run,train,1,external_APT,
+apt_v23c1,apt_v23,apt_v23,0.000,1.000,1.000,walking_run,train,1,external_APT,
+apt_v23c2,apt_v23,apt_v23,0.000,1.000,1.000,walking_run,train,1,external_APT,
+apt_v24c2,apt_v24,apt_v24,0.000,1.000,1.000,walking_run,train,1,external_APT,
+apt_v2c2,apt_v02,apt_v02,0.000,1.000,1.000,walking_run,train,1,external_APT;on leash,
+apt_v2c3,apt_v02,apt_v02,0.000,1.000,1.000,standing,train,1,external_APT;on leash,
+apt_v3c4,apt_v03,apt_v03,0.000,1.000,1.000,walking_run,train,1,external_APT,
+apt_v6c1,apt_v06,apt_v06,0.000,1.000,1.000,walking_run,train,1,external_APT,
+apt_v6c2,apt_v06,apt_v06,0.000,1.000,1.000,walking_run,train,1,external_APT,
+apt_v6c3,apt_v06,apt_v06,0.000,1.000,1.000,walking_run,train,1,external_APT;slow walk,
+apt_v7c3,apt_v07,apt_v07,0.000,1.000,1.000,walking_run,train,1,external_APT;puppy,
+apt_v8c4,apt_v08,apt_v08,0.000,1.000,1.000,standing,train,1,external_APT,
+apt_v9c5,apt_v09,apt_v09,0.000,1.000,1.000,walking_run,train,1,external_APT,

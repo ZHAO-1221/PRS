@@ -1,28 +1,30 @@
 {
-  "base_accuracy": 0.7153284671532847,
-  "base_macro_f1": 0.6953230677368608,
+  "base_accuracy": 0.708029197080292,
+  "base_macro_f1": 0.6888480963480964,
   "final_accuracy": 0.7737226277372263,
-  "final_macro_f1": 0.7620305113961565,
-  "multiclass_model": "logistic_c0.3",
+  "final_macro_f1": 0.7646699064735009,
+  "multiclass_model": "logistic_c1.0",
   "multiclass_alpha": 1.0,
+  "feature_version": "head_duration_v1",
   "pairwise_stages": [
     {
       "positive": "standing",
-      "negative": "lying_sleeping",
-      "depth": 2,
-      "leaf": 1,
-      "gate": "close",
-      "margin": 1.0,
-      "alpha": 0.3
-    },
-    {
-      "positive": "standing",
-      "negative": "walking_run",
-      "depth": 2,
+      "negative": "eating_drinking",
+      "depth": 3,
       "leaf": 2,
       "gate": "all",
       "margin": 0.0,
+      "alpha": 0.1
+    },
+    {
+      "positive": "eating_drinking",
+      "negative": "sitting",
+      "depth": 2,
+      "leaf": 1,
+      "gate": "pair_top",
+      "margin": 0.0,
       "alpha": 0.5
     }
-  ]
+  ],
+  "eating_duration_stage": null
 }

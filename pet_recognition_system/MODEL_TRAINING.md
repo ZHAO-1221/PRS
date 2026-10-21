@@ -14,8 +14,11 @@ pip install -r requirements-training.txt
 pip install -e .
 ```
 
-Set `<skeleton-dir>` to the Hugging Face dataset's
-`data/skeletons_generated/` directory.
+For dog-behaviour retraining, create one `<dog-skeleton-dir>` containing the
+files from both Hugging Face directories `data/skeletons_generated/` and
+`data/skeletons_generated_APT/`. Rename each APT file from `<clip_id>.npz` to
+`dog_<clip_id>.npz`. Interaction training continues to use
+`data/skeletons_generated/` directly.
 
 ## Dog behaviour
 
@@ -24,7 +27,7 @@ Set `<skeleton-dir>` to the Hugging Face dataset's
 ```bash
 python tools/cross_validate_dog_behavior.py \
   --manifest outputs/best_models/manifests/dog_behavior_manifest_5class_v4.csv \
-  --skeleton-dir <skeleton-dir> \
+  --skeleton-dir <dog-skeleton-dir> \
   --model motion_aux_tcn \
   --folds 5 \
   --epochs 80 \
@@ -39,7 +42,7 @@ python tools/cross_validate_dog_behavior.py \
 ```bash
 python tools/cross_validate_dog_5class_fusion.py \
   --cv-dir work_dirs/dog_behavior_5class_v4_cv \
-  --skeleton-dir <skeleton-dir> \
+  --skeleton-dir <dog-skeleton-dir> \
   --feature-version head_duration_v1 \
   --folds 5 \
   --seed 28 \
@@ -55,7 +58,7 @@ part of the selected release.
 ```bash
 python tools/evaluate_dog_5class_ensemble.py \
   --manifest outputs/best_models/manifests/dog_behavior_manifest_5class_v4.csv \
-  --skeleton-dir <skeleton-dir> \
+  --skeleton-dir <dog-skeleton-dir> \
   --cv-dir work_dirs/dog_behavior_5class_v4_cv \
   --fusion-dir work_dirs/dog_behavior_5class_v5_head_duration_fusion \
   --feature-version head_duration_v1 \
@@ -69,7 +72,7 @@ python tools/evaluate_dog_5class_ensemble.py \
 ```bash
 python tools/cross_validate_interaction_relation.py \
   --manifest outputs/best_models/manifests/interaction_manifest.csv \
-  --skeleton-dir <skeleton-dir> \
+  --skeleton-dir <data>/skeletons_generated \
   --folds 5 \
   --augmentations 0 \
   --seed 28 \
@@ -82,7 +85,7 @@ python tools/cross_validate_interaction_relation.py \
 python tools/evaluate_interaction_ensemble.py \
   work_dirs/interaction_relation_cv5_noaug \
   --manifest outputs/best_models/manifests/interaction_manifest.csv \
-  --skeleton-dir <skeleton-dir> \
+  --skeleton-dir <data>/skeletons_generated \
   --split test \
   --output-dir work_dirs/interaction_retrained_test
 ```

@@ -13,12 +13,14 @@ not older model versions. Experimental and superseded checkpoints are excluded.
 
 | Task | Model | Classes | Development result | Test result |
 |---|---|---:|---:|---:|
-| Dog behaviour | Motion-aware TCN + engineered geometry ensemble | 5 | 77.37% accuracy / 76.20% macro-F1 | 69.70% accuracy / 69.93% macro-F1 |
+| Dog behaviour | Motion-aware TCN + engineered geometry ensemble | 5 | 77.37% accuracy / 76.47% macro-F1 | 78.79% accuracy / 78.83% macro-F1 |
 | Human-dog interaction | Relation features + 5-fold ExtraTrees ensemble | 4 | 82.11% OOF accuracy / 82.50% macro-F1 | 57.14% accuracy / 57.27% macro-F1 |
 
 The dog test set has been used as an iterative benchmark, so its score must not
 be described as a one-shot unbiased final estimate. The interaction test set is
 small (21 clips), and its result is reported separately from cross-validation.
+The selected dog model adds 31 curated APT skeleton clips to training only;
+validation and the fixed 33-clip test split contain no APT clips.
 
 ## Directory layout
 
