@@ -10,16 +10,20 @@
   "target_frames": 32,
   "human_skeleton_layout": "coco_17",
   "dog_skeleton_layout": "ap10k_17",
-  "model": "relation_features_extratrees_seed_ensemble",
+  "model": "relation_features_soft_vote_seed_ensemble",
   "models": 5,
   "training_protocol": "full_train_val_seed_ensemble",
   "training_seeds": [29, 30, 31, 32, 33],
   "training_augmentations_per_clip": 0,
   "model_parameters": {
+    "classifier": "soft_vote",
     "n_estimators": 500,
     "min_samples_leaf": 1,
     "max_features": "sqrt",
-    "hand_feeding_weight": 1.5
+    "hand_feeding_weight": 1.5,
+    "svm_c": 0.005,
+    "svm_weight": 0.2,
+    "tree_weight": 0.8
   },
   "split_manifest": "outputs/best_models/manifests/interaction_manifest_mixed_v2.csv",
   "split": {
@@ -30,11 +34,11 @@
     "identity_overlap": 0
   },
   "evaluation": {
-    "oof_accuracy": 0.7422680412371134,
-    "oof_macro_f1": 0.7298337692325817,
+    "oof_accuracy": 0.7731958762886598,
+    "oof_macro_f1": 0.7589121472054406,
     "oof_samples": 97,
     "test_accuracy": 0.7083333333333334,
-    "test_macro_f1": 0.7074175824175825,
+    "test_macro_f1": 0.6936188811188811,
     "test_samples": 24
   },
   "previous_fixed_test_evaluation": {

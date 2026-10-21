@@ -9,8 +9,12 @@ from pathlib import Path
 
 import joblib
 import numpy as np
-from sklearn.ensemble import ExtraTreesClassifier
+from sklearn.ensemble import ExtraTreesClassifier, VotingClassifier
+from sklearn.linear_model import LogisticRegression
 from sklearn.model_selection import StratifiedGroupKFold
+from sklearn.pipeline import make_pipeline
+from sklearn.preprocessing import StandardScaler
+from sklearn.svm import SVC
 
 from pet_recognition.datasets.interaction import (
     CLASS_TO_INDEX, INTERACTION_CLASSES, InteractionSkeletonDataset,
@@ -51,6 +55,66 @@ def parse_max_features(value):
     return float(value)
 
 
+def build_model(args, seed, class_weight, max_features):
+    if args.classifier == "extra_trees":
+        return ExtraTreesClassifier(
+            n_estimators=args.n_estimators,
+            max_depth=None,
+            min_samples_leaf=args.min_samples_leaf,
+            max_features=max_features,
+            class_weight=class_weight,
+            random_state=seed,
+        )
+    if args.classifier in {"svm_rbf", "svm_linear"}:
+        kernel = "rbf" if args.classifier == "svm_rbf" else "linear"
+        return make_pipeline(
+            StandardScaler(),
+            SVC(
+                C=args.svm_c,
+                gamma=args.svm_gamma,
+                kernel=kernel,
+                class_weight=class_weight,
+                probability=True,
+                random_state=seed,
+            ),
+        )
+    if args.classifier == "logistic":
+        return make_pipeline(
+            StandardScaler(),
+            LogisticRegression(
+                C=args.svm_c,
+                class_weight=class_weight,
+                max_iter=5000,
+                random_state=seed,
+            ),
+        )
+    if args.classifier == "soft_vote":
+        tree = ExtraTreesClassifier(
+            n_estimators=args.n_estimators,
+            max_depth=None,
+            min_samples_leaf=args.min_samples_leaf,
+            max_features=max_features,
+            class_weight=class_weight,
+            random_state=seed,
+        )
+        svm = make_pipeline(
+            StandardScaler(),
+            SVC(
+                C=args.svm_c,
+                kernel="linear",
+                class_weight="balanced",
+                probability=True,
+                random_state=seed,
+            ),
+        )
+        return VotingClassifier(
+            estimators=[("tree", tree), ("svm", svm)],
+            voting="soft",
+            weights=(1.0 - args.svm_weight, args.svm_weight),
+        )
+    raise ValueError(args.classifier)
+
+
 def main():
     project = Path(__file__).resolve().parents[1]
     parser = argparse.ArgumentParser()
@@ -70,6 +134,14 @@ def main():
         default="balanced",
     )
     parser.add_argument("--hand-feeding-weight", type=float, default=1.0)
+    parser.add_argument(
+        "--classifier",
+        choices=("extra_trees", "svm_rbf", "svm_linear", "logistic", "soft_vote"),
+        default="extra_trees",
+    )
+    parser.add_argument("--svm-c", type=float, default=1.0)
+    parser.add_argument("--svm-gamma", default="scale")
+    parser.add_argument("--svm-weight", type=float, default=0.5)
     args = parser.parse_args()
     if not args.data_root and not args.skeleton_dir:
         parser.error("set PET_DATA_ROOT/--data-root or pass --skeleton-dir")
@@ -126,14 +198,7 @@ def main():
                 train_y.append(labels[index])
         for dataset in datasets:
             dataset.training = False; dataset.strong_augmentation = False
-        model = ExtraTreesClassifier(
-            n_estimators=args.n_estimators,
-            max_depth=None,
-            min_samples_leaf=args.min_samples_leaf,
-            max_features=max_features,
-            class_weight=class_weight,
-            random_state=args.seed + fold,
-        )
+        model = build_model(args, args.seed + fold, class_weight, max_features)
         model.fit(np.stack(train_x), np.asarray(train_y))
         fold_probability = model.predict_proba(base_features[val_indices])
         fold_prediction = model.classes_[fold_probability.argmax(axis=1)]
@@ -157,11 +222,15 @@ def main():
         "clips": len(rows), "identity_components": int(len(np.unique(groups))),
         "augmentations_per_training_clip": args.augmentations,
         "model_parameters": {
+            "classifier": args.classifier,
             "n_estimators": args.n_estimators,
             "min_samples_leaf": args.min_samples_leaf,
             "max_features": args.max_features,
             "class_weight": args.class_weight,
             "hand_feeding_weight": args.hand_feeding_weight,
+            "svm_c": args.svm_c,
+            "svm_gamma": args.svm_gamma,
+            "svm_weight": args.svm_weight,
         },
         "accuracy_mean": float(accuracy.mean()), "accuracy_std": float(accuracy.std()),
         "macro_f1_mean": float(macro_f1.mean()), "macro_f1_std": float(macro_f1.std()),

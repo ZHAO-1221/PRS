@@ -1,5 +1,5 @@
 {
-  "protocol": "full train+val ExtraTrees seed ensemble",
+  "protocol": "full train+val classical-model seed ensemble",
   "clips": 97,
   "models": 5,
   "seeds": [
@@ -10,10 +10,14 @@
     33
   ],
   "model_parameters": {
+    "classifier": "soft_vote",
     "n_estimators": 500,
     "min_samples_leaf": 1,
     "max_features": "sqrt",
     "class_weight": "balanced",
-    "hand_feeding_weight": 1.5
+    "hand_feeding_weight": 1.5,
+    "svm_c": 0.005,
+    "svm_gamma": "scale",
+    "svm_weight": 0.2
   }
 }

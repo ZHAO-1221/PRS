@@ -4,42 +4,46 @@
   "identity_components": 47,
   "augmentations_per_training_clip": 0,
   "model_parameters": {
+    "classifier": "soft_vote",
     "n_estimators": 500,
     "min_samples_leaf": 1,
     "max_features": "sqrt",
     "class_weight": "balanced",
-    "hand_feeding_weight": 1.5
+    "hand_feeding_weight": 1.5,
+    "svm_c": 0.005,
+    "svm_gamma": "scale",
+    "svm_weight": 0.2
   },
-  "accuracy_mean": 0.7436842105263157,
-  "accuracy_std": 0.08197019930076539,
-  "macro_f1_mean": 0.7317929292929293,
-  "macro_f1_std": 0.08436091272355625,
+  "accuracy_mean": 0.7742105263157895,
+  "accuracy_std": 0.05780854828524624,
+  "macro_f1_mean": 0.7582864357864358,
+  "macro_f1_std": 0.06615045202205445,
   "out_of_fold": {
-    "accuracy": 0.7422680412371134,
-    "macro_f1": 0.7298337692325817,
+    "accuracy": 0.7731958762886598,
+    "macro_f1": 0.7589121472054406,
     "per_class": {
       "no_interaction": {
-        "precision": 0.896551724137931,
+        "precision": 0.9285714285714286,
         "recall": 0.9629629629629629,
-        "f1": 0.9285714285714286,
+        "f1": 0.9454545454545454,
         "support": 27
       },
       "hand_feeding": {
-        "precision": 0.6,
-        "recall": 0.5217391304347826,
-        "f1": 0.5581395348837209,
+        "precision": 0.6111111111111112,
+        "recall": 0.4782608695652174,
+        "f1": 0.5365853658536586,
         "support": 23
       },
       "petting": {
-        "precision": 0.6956521739130435,
-        "recall": 0.64,
-        "f1": 0.6666666666666666,
+        "precision": 0.7307692307692307,
+        "recall": 0.76,
+        "f1": 0.7450980392156863,
         "support": 25
       },
       "playing_together": {
-        "precision": 0.72,
-        "recall": 0.8181818181818182,
-        "f1": 0.7659574468085107,
+        "precision": 0.76,
+        "recall": 0.8636363636363636,
+        "f1": 0.8085106382978724,
         "support": 22
       }
     },
@@ -52,21 +56,21 @@
       ],
       [
         2,
-        12,
-        5,
+        11,
+        6,
         4
       ],
       [
-        1,
-        5,
-        16,
-        3
+        0,
+        4,
+        19,
+        2
       ],
       [
         0,
         3,
-        1,
-        18
+        0,
+        19
       ]
     ]
   }

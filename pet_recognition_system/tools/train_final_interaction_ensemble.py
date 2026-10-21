@@ -7,7 +7,11 @@ from pathlib import Path
 
 import joblib
 import numpy as np
-from sklearn.ensemble import ExtraTreesClassifier
+from sklearn.ensemble import ExtraTreesClassifier, VotingClassifier
+from sklearn.linear_model import LogisticRegression
+from sklearn.pipeline import make_pipeline
+from sklearn.preprocessing import StandardScaler
+from sklearn.svm import SVC
 
 from pet_recognition.datasets.interaction import (
     INTERACTION_CLASSES,
@@ -22,6 +26,66 @@ def parse_max_features(value):
     if value in {"sqrt", "log2"}:
         return value
     return float(value)
+
+
+def build_model(args, seed, class_weight, max_features):
+    if args.classifier == "extra_trees":
+        return ExtraTreesClassifier(
+            n_estimators=args.n_estimators,
+            max_depth=None,
+            min_samples_leaf=args.min_samples_leaf,
+            max_features=max_features,
+            class_weight=class_weight,
+            random_state=seed,
+        )
+    if args.classifier in {"svm_rbf", "svm_linear"}:
+        kernel = "rbf" if args.classifier == "svm_rbf" else "linear"
+        return make_pipeline(
+            StandardScaler(),
+            SVC(
+                C=args.svm_c,
+                gamma=args.svm_gamma,
+                kernel=kernel,
+                class_weight=class_weight,
+                probability=True,
+                random_state=seed,
+            ),
+        )
+    if args.classifier == "logistic":
+        return make_pipeline(
+            StandardScaler(),
+            LogisticRegression(
+                C=args.svm_c,
+                class_weight=class_weight,
+                max_iter=5000,
+                random_state=seed,
+            ),
+        )
+    if args.classifier == "soft_vote":
+        tree = ExtraTreesClassifier(
+            n_estimators=args.n_estimators,
+            max_depth=None,
+            min_samples_leaf=args.min_samples_leaf,
+            max_features=max_features,
+            class_weight=class_weight,
+            random_state=seed,
+        )
+        svm = make_pipeline(
+            StandardScaler(),
+            SVC(
+                C=args.svm_c,
+                kernel="linear",
+                class_weight="balanced",
+                probability=True,
+                random_state=seed,
+            ),
+        )
+        return VotingClassifier(
+            estimators=[("tree", tree), ("svm", svm)],
+            voting="soft",
+            weights=(1.0 - args.svm_weight, args.svm_weight),
+        )
+    raise ValueError(args.classifier)
 
 
 def main() -> None:
@@ -40,6 +104,14 @@ def main() -> None:
         default="balanced",
     )
     parser.add_argument("--hand-feeding-weight", type=float, default=1.0)
+    parser.add_argument(
+        "--classifier",
+        choices=("extra_trees", "svm_rbf", "svm_linear", "logistic", "soft_vote"),
+        default="extra_trees",
+    )
+    parser.add_argument("--svm-c", type=float, default=1.0)
+    parser.add_argument("--svm-gamma", default="scale")
+    parser.add_argument("--svm-weight", type=float, default=0.5)
     args = parser.parse_args()
 
     datasets = [
@@ -66,14 +138,7 @@ def main() -> None:
     output = Path(args.output_dir)
     output.mkdir(parents=True, exist_ok=True)
     for index in range(1, args.models + 1):
-        model = ExtraTreesClassifier(
-            n_estimators=args.n_estimators,
-            max_depth=None,
-            min_samples_leaf=args.min_samples_leaf,
-            max_features=max_features,
-            class_weight=class_weight,
-            random_state=args.seed + index,
-        )
+        model = build_model(args, args.seed + index, class_weight, max_features)
         model.fit(x, y)
         joblib.dump(
             {
@@ -87,16 +152,20 @@ def main() -> None:
         )
 
     summary = {
-        "protocol": "full train+val ExtraTrees seed ensemble",
+        "protocol": "full train+val classical-model seed ensemble",
         "clips": len(y),
         "models": args.models,
         "seeds": list(range(args.seed + 1, args.seed + args.models + 1)),
         "model_parameters": {
+            "classifier": args.classifier,
             "n_estimators": args.n_estimators,
             "min_samples_leaf": args.min_samples_leaf,
             "max_features": args.max_features,
             "class_weight": args.class_weight,
             "hand_feeding_weight": args.hand_feeding_weight,
+            "svm_c": args.svm_c,
+            "svm_gamma": args.svm_gamma,
+            "svm_weight": args.svm_weight,
         },
     }
     (output / "training_summary.json").write_text(

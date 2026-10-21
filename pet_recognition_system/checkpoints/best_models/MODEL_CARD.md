@@ -24,18 +24,20 @@ systems and not veterinary diagnostic tools.
 
 - Input: synchronized COCO-17 human and AP-10K-17 dog skeletons plus frame mask.
 - Classes: `no_interaction`, `hand_feeding`, `petting`, `playing_together`.
-- Architecture: five ExtraTrees classifiers operating on summarized human-dog
-  relation features; final probabilities are averaged across five seeds.
+- Architecture: five seed ensembles operating on summarized human-dog relation
+  features. Each seed uses an 80% ExtraTrees / 20% standardized linear-SVM soft
+  vote, and final probabilities are averaged across seeds.
 - Training protocol: 5-fold identity-grouped CV for development, followed by
   final fitting on all 97 train/validation clips with no synthetic augmentation.
-  Hand-feeding receives a 1.5 class weight selected by cross-validation.
-- OOF result: 74.23% accuracy, 72.98% macro-F1 on 97 clips.
-- Mixed-v2 test result: 17/24 correct, 70.83% accuracy, 70.74% macro-F1.
+  Hand-feeding receives a 1.5 tree-class weight; the SVM uses `C=0.005`. Both
+  settings and the 20% SVM vote were selected by cross-validation.
+- OOF result: 77.32% accuracy, 75.89% macro-F1 on 97 clips.
+- Mixed-v2 test result: 17/24 correct, 70.83% accuracy, 69.36% macro-F1.
 - Test composition: 6 clips per class and no human, dog or source-video overlap
   with training. Half of this set was selected from previously correct OOF
   examples, so the score is a demonstration benchmark rather than an unbiased
   one-shot estimate.
-- Main limitation: hand feeding has 50.00% recall on the mixed-v2 test set.
+- Main limitation: hand feeding has 33.33% recall on the mixed-v2 test set.
 
 ## Data and privacy
 
