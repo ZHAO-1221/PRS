@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Analyze a clip</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;700;800;900&amp;family=JetBrains+Mono:wght@700&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:#19384a;text-decoration:none}a:hover{color:#0e2330}
+</style>
+</helmet>
+<div style="width: 390px; height: 844px; box-sizing: border-box; background: #fff8e9; color: #19384a; font-family: Nunito, system-ui, sans-serif; display: flex; flex-direction: column; overflow: hidden">
+  <div style="flex: 1; padding: 24px 18px 0; display: flex; flex-direction: column; gap: 16px; overflow: hidden">
+    <header style="display: flex; align-items: center; justify-content: space-between">
+      <div style="font-weight: 900; font-size: 14px; letter-spacing: 0.06em">ANALYZE A CLIP</div>
+      <span style="font-size: 11px; font-weight: 800; background: #fffdf8; border: 1px solid #d9ddcf; border-radius: 99px; padding: 6px 10px">On-device</span>
+    </header>
+
+    <section>
+      <div style="font-family: 'JetBrains Mono', ui-monospace, monospace; font-weight: 700; font-size: 10px; letter-spacing: 0.12em; color: #b8402e">STEP 3 OF 4</div>
+      <h1 style="margin: 6px 0 4px; font-weight: 900; font-size: 32px; line-height: 1.04; letter-spacing: -0.03em">Reading Milo's<br>body language…</h1>
+      <p style="margin: 0; font-size: 12px; color: #4f6470">living_room_0908.mp4 · recorded Sun 22 Oct, 09:08 · 2 min 04 s</p>
+    </section>
+
+    <div style="background: #fffdf8; border-radius: 18px; padding: 8px; box-shadow: 0 10px 0 rgba(25,56,74,0.09); position: relative">
+      <img src="../assets/cover-feeding.jpg" alt="Frame from the uploaded clip" style="display: block; width: 100%; height: 150px; object-fit: cover; border-radius: 12px; filter: saturate(0.6)">
+      <div style="position: absolute; left: 8px; right: 8px; bottom: 8px; height: 6px; background: rgba(25,56,74,0.25); border-radius: 0 0 12px 12px; overflow: hidden">
+        <div style="width: {{progress}}; height: 100%; background: #ffd45c"></div>
+      </div>
+    </div>
+
+    <ol aria-label="Analysis steps" style="list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px">
+      <sc-for list="{{steps}}" as="st" hint-placeholder-count="4">
+        <li style="display: flex; align-items: center; gap: 12px; background: {{st.bg}}; border: 1px solid #d9ddcf; border-radius: 16px; padding: 10px 12px">
+          <span style="width: 32px; height: 32px; flex: none; border-radius: 10px; background: {{st.dot}}; display: grid; place-items: center; font-weight: 900; font-size: 13px; color: #19384a">{{st.mark}}</span>
+          <span style="flex: 1; min-width: 0">
+            <b style="display: block; font-size: 14px">{{st.title}}</b>
+            <span style="font-size: 11px; color: #4f6470">{{st.sub}}</span>
+          </span>
+          <span style="font-size: 11px; font-weight: 800; color: #4f6470">{{st.state}}</span>
+        </li>
+      </sc-for>
+    </ol>
+
+    <a href="Result.dc.html" style="margin-top: auto; margin-bottom: 16px; height: 52px; border-radius: 16px; background: #19384a; color: #fff8e9; display: flex; align-items: center; justify-content: center; font-weight: 900; font-size: 15px">See the result</a>
+  </div>
+
+  <nav aria-label="Main" style="height: 72px; background: #fffdf8; border-top: 1px solid #d9ddcf; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); font-size: 11px; font-weight: 800">
+    <a href="Main.dc.html" style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px">
+      <svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5h16v14H4z"></path><path d="M8 9h8M8 13h5"></path></svg>Story
+    </a>
+    <a href="Upload.dc.html" aria-current="page" style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; color: #b8402e">
+      <svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 16V4M7 9l5-5 5 5"></path><path d="M4 16v4h16v-4"></path></svg>Upload
+    </a>
+    <a href="Week.dc.html" style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px">
+      <svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 20V11M12 20V5M19 20v-7"></path></svg>Week
+    </a>
+  </nav>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  renderVals() {
+    const done = { bg: '#fffdf8', dot: '#6dc8c6', mark: '✓', state: 'Done' };
+    return {
+      progress: '68%',
+      steps: [
+        { ...done, title: 'Find dog & owner', sub: 'RTMDet boxes, tracked frame to frame' },
+        { ...done, title: 'Trace 17 keypoints', sub: 'RTMPose skeletons at 15 fps' },
+        { bg: '#fff1c9', dot: '#ffd45c', mark: '3', state: '68%', title: 'Recognise behaviour', sub: 'Motion-aware TCN · 5 behaviours' },
+        { bg: '#fff8e9', dot: '#e7e3d6', mark: '4', state: 'Next', title: 'Read the interaction', sub: 'Owner–dog relation · 5 types' }
+      ]
+    };
+  }
+}
+</script>
+</body>
+</html>
