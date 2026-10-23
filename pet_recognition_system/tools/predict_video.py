@@ -35,6 +35,25 @@ from pet_recognition.inference.video_pipeline import (
 )
 
 
+OFFICIAL_CLIP_MODEL = "openai/clip-vit-base-patch32"
+
+
+def _clip_model_source(data_root: Path) -> str:
+    """Prefer a complete local CLIP snapshot, otherwise use the official Hub model."""
+    local = data_root / "models" / "clip-vit-base-patch32"
+    weight_files = (
+        "model.safetensors",
+        "pytorch_model.bin",
+        "model.safetensors.index.json",
+        "pytorch_model.bin.index.json",
+    )
+    if (local / "config.json").exists() and any(
+        (local / name).exists() for name in weight_files
+    ):
+        return str(local)
+    return OFFICIAL_CLIP_MODEL
+
+
 def _pose_stack(data_root: Path, device: str):
     models = data_root / "models"
     detector_path = models / "rtmdet-m_coco" / "rtmdet_m_8xb32-300e_coco_20220719_112220-229f527c.pth"
@@ -64,10 +83,7 @@ def _records_from_video(video: Path, data_root: Path, task: str, device: str,
     visual_encoder = None
     if use_visual and task in ("interaction", "both"):
         from pet_recognition.inference.interaction_visual import InteractionVisualEncoder
-        clip_path = data_root / "models" / "clip-vit-base-patch32"
-        if not (clip_path / "config.json").exists():
-            raise FileNotFoundError(f"missing local CLIP model: {clip_path}")
-        visual_encoder = InteractionVisualEncoder(device, str(clip_path))
+        visual_encoder = InteractionVisualEncoder(device, _clip_model_source(data_root))
     streams = ("dog",) if task == "dog_behavior" else ("person", "dog")
     metadata = probe_video(video)
     records, windows = [], []

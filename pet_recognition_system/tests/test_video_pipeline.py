@@ -134,6 +134,18 @@ def test_public_predict_video_function(tmp_path):
     assert response["timeline"]["interaction"][0]["label"] in INTERACTION_CLASSES
 
 
+def test_clip_source_prefers_complete_local_snapshot(tmp_path):
+    from tools.predict_video import OFFICIAL_CLIP_MODEL, _clip_model_source
+
+    local = tmp_path / "models" / "clip-vit-base-patch32"
+    assert _clip_model_source(tmp_path) == OFFICIAL_CLIP_MODEL
+    local.mkdir(parents=True)
+    (local / "config.json").write_text("{}", encoding="utf-8")
+    assert _clip_model_source(tmp_path) == OFFICIAL_CLIP_MODEL
+    (local / "model.safetensors").write_bytes(b"placeholder")
+    assert _clip_model_source(tmp_path) == str(local)
+
+
 def test_raw_video_orchestration_with_replaceable_pose_stack(tmp_path, monkeypatch):
     from tools import predict_video
 
