@@ -64,7 +64,10 @@ def _records_from_video(video: Path, data_root: Path, task: str, device: str,
     visual_encoder = None
     if use_visual and task in ("interaction", "both"):
         from pet_recognition.inference.interaction_visual import InteractionVisualEncoder
-        visual_encoder = InteractionVisualEncoder(device)
+        clip_path = data_root / "models" / "clip-vit-base-patch32"
+        if not (clip_path / "config.json").exists():
+            raise FileNotFoundError(f"missing local CLIP model: {clip_path}")
+        visual_encoder = InteractionVisualEncoder(device, str(clip_path))
     streams = ("dog",) if task == "dog_behavior" else ("person", "dog")
     metadata = probe_video(video)
     records, windows = [], []
@@ -100,6 +103,94 @@ def _record_from_npz(path: Path):
     return [record], windows, metadata
 
 
+def predict_video(
+    input_path: str | Path,
+    output_dir: str | Path | None = None,
+    *,
+    task: str = "both",
+    data_root: str | Path | None = None,
+    model_root: str | Path | None = None,
+    window_seconds: float = DEFAULT_WINDOW_SECONDS,
+    stride_seconds: float | None = None,
+    min_window_seconds: float = DEFAULT_MIN_WINDOW_SECONDS,
+    min_detection: float = 0.5,
+    smoothing_radius: int = 1,
+    device: str = "cpu",
+    export_clips: bool = False,
+) -> dict:
+    """Run the complete inference pipeline for one video or skeleton file.
+
+    This is the public Python entry point intended for use by an API or another
+    application. It writes ``result.json`` and ``timeline.csv`` and returns
+    their paths together with the merged timeline.
+    """
+    input_path = Path(input_path)
+    if not input_path.exists():
+        raise FileNotFoundError(f"input does not exist: {input_path}")
+    if task not in {"dog_behavior", "interaction", "both"}:
+        raise ValueError(f"unsupported task: {task}")
+
+    model_root = Path(model_root) if model_root else PROJECT_ROOT / "checkpoints" / "best_models"
+    output = (Path(output_dir) if output_dir else
+              PROJECT_ROOT / "outputs" / "predictions" / input_path.stem)
+    if input_path.suffix.lower() == ".npz":
+        records, windows, metadata = _record_from_npz(input_path)
+    else:
+        resolved_data_root = data_root or os.environ.get("PET_DATA_ROOT")
+        if not resolved_data_root:
+            raise ValueError("raw video requires data_root or PET_DATA_ROOT")
+        records, windows, metadata = _records_from_video(
+            input_path, Path(resolved_data_root), task, device,
+            window_seconds, stride_seconds, min_window_seconds,
+            use_visual=True,
+        )
+    if not records:
+        raise RuntimeError("no usable video windows were produced")
+
+    apply_predictions(
+        windows, records, task=task, model_root=model_root,
+        device=device, min_detection=min_detection,
+    )
+    timeline = {}
+    if task in ("dog_behavior", "both"):
+        dog_timeline = smooth_and_merge(
+            windows, "dog_behavior", DOG_BEHAVIOR_CLASSES,
+            metadata["duration_sec"], smoothing_radius,
+        )
+        if dog_timeline:
+            timeline["dog_behavior"] = dog_timeline
+    if task in ("interaction", "both"):
+        timeline["interaction"] = smooth_and_merge(
+            windows, "interaction", INTERACTION_CLASSES,
+            metadata["duration_sec"], smoothing_radius,
+        )
+
+    result = {
+        "input": str(input_path.resolve()),
+        "task": task,
+        "metadata": metadata,
+        "configuration": {
+            "window_seconds": window_seconds,
+            "stride_seconds": stride_seconds or window_seconds,
+            "min_detection": min_detection,
+            "smoothing_radius": smoothing_radius,
+        },
+        "windows": windows,
+        "timeline": timeline,
+    }
+    json_path, csv_path = write_results(output, result)
+    if export_clips:
+        if input_path.suffix.lower() == ".npz":
+            raise ValueError("export_clips requires a video input")
+        result["exported_clips"] = export_timeline_clips(input_path, output, timeline)
+        json_path, csv_path = write_results(output, result)
+    return {
+        "result_json": str(json_path),
+        "timeline_csv": str(csv_path),
+        "timeline": timeline,
+    }
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument("input", type=Path, help="MP4 video or a precomputed skeleton NPZ")
@@ -117,52 +208,24 @@ def main():
     parser.add_argument("--device", default="cpu")
     parser.add_argument("--export-clips", action="store_true")
     args = parser.parse_args()
-    if not args.input.exists():
-        parser.error(f"input does not exist: {args.input}")
-    output = args.output_dir or PROJECT_ROOT / "outputs" / "predictions" / args.input.stem
-    if args.input.suffix.lower() == ".npz":
-        records, windows, metadata = _record_from_npz(args.input)
-    else:
-        if args.data_root is None:
-            parser.error("raw video requires PET_DATA_ROOT or --data-root")
-        try:
-            records, windows, metadata = _records_from_video(
-                args.input, args.data_root, args.task, args.device,
-                args.window_seconds, args.stride_seconds, args.min_window_seconds,
-                use_visual=True,
-            )
-        except (FileNotFoundError, RuntimeError, ValueError) as error:
-            parser.error(str(error))
-    if not records:
-        raise RuntimeError("no usable video windows were produced")
-    apply_predictions(windows, records, task=args.task, model_root=args.model_root,
-                      device=args.device, min_detection=args.min_detection)
-    timeline = {}
-    if args.task in ("dog_behavior", "both"):
-        timeline["dog_behavior"] = smooth_and_merge(
-            windows, "dog_behavior", DOG_BEHAVIOR_CLASSES,
-            metadata["duration_sec"], args.smoothing_radius
+    try:
+        result = predict_video(
+            args.input,
+            args.output_dir,
+            task=args.task,
+            data_root=args.data_root,
+            model_root=args.model_root,
+            window_seconds=args.window_seconds,
+            stride_seconds=args.stride_seconds,
+            min_window_seconds=args.min_window_seconds,
+            min_detection=args.min_detection,
+            smoothing_radius=args.smoothing_radius,
+            device=args.device,
+            export_clips=args.export_clips,
         )
-    if args.task in ("interaction", "both"):
-        timeline["interaction"] = smooth_and_merge(
-            windows, "interaction", INTERACTION_CLASSES,
-            metadata["duration_sec"], args.smoothing_radius
-        )
-    result = {"input": str(args.input.resolve()), "task": args.task,
-              "metadata": metadata, "configuration": {
-                  "window_seconds": args.window_seconds,
-                  "stride_seconds": args.stride_seconds or args.window_seconds,
-                  "min_detection": args.min_detection,
-                  "smoothing_radius": args.smoothing_radius,
-              }, "windows": windows, "timeline": timeline}
-    json_path, csv_path = write_results(output, result)
-    if args.export_clips:
-        if args.input.suffix.lower() == ".npz":
-            parser.error("--export-clips requires a video input")
-        result["exported_clips"] = export_timeline_clips(args.input, output, timeline)
-        json_path, csv_path = write_results(output, result)
-    print(json.dumps({"result_json": str(json_path), "timeline_csv": str(csv_path),
-                      "timeline": timeline}, indent=2, ensure_ascii=False))
+    except (FileNotFoundError, RuntimeError, ValueError) as error:
+        parser.error(str(error))
+    print(json.dumps(result, indent=2, ensure_ascii=False))
 
 
 if __name__ == "__main__":

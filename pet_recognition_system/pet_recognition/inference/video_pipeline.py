@@ -33,6 +33,15 @@ from pet_recognition.preprocessing.skeleton import (
 
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
+
+# The released estimators were saved with NumPy 2, whose internal pickle path
+# changed from ``numpy.core`` to ``numpy._core``.  NumPy 1.26 is retained here
+# for compatibility with the OpenMMLab/PyTorch runtime, so expose the new path
+# while loading trusted project-owned joblib files.
+if "numpy._core" not in sys.modules:
+    sys.modules["numpy._core"] = np.core
+    sys.modules["numpy._core.multiarray"] = np.core.multiarray
+    sys.modules["numpy._core.numeric"] = np.core.numeric
 TOOLS_ROOT = PROJECT_ROOT / "tools"
 if str(TOOLS_ROOT) not in sys.path:
     sys.path.insert(0, str(TOOLS_ROOT))
@@ -329,9 +338,11 @@ def apply_predictions(windows: list[dict], records: list[dict], *, task: str,
                       model_root: str | Path, device: str = "cpu",
                       min_detection: float = 0.5) -> None:
     """Attach raw class probabilities to every sufficiently detected window."""
+    rates = [detection_rates(record) for record in records]
     if task in ("dog_behavior", "both"):
-        valid = [index for index, record in enumerate(records)
-                 if detection_rates(record)["dog"] >= min_detection]
+        valid = [index for index, values in enumerate(rates)
+                 if values["dog"] >= min_detection
+                 and (task != "both" or values["person"] < min_detection)]
         if valid:
             predictor = DogBehaviorPredictor(Path(model_root) / "dog_behavior", device)
             probabilities = predictor.predict([records[index] for index in valid])
@@ -340,10 +351,13 @@ def apply_predictions(windows: list[dict], records: list[dict], *, task: str,
                     "status": "ok", "raw_probabilities": _probability_dict(DOG_BEHAVIOR_CLASSES, values)
                 }
         for index in set(range(len(records))) - set(valid):
-            windows[index]["dog_behavior"] = {"status": "insufficient_detection"}
+            status = ("suppressed_by_interaction" if task == "both"
+                      and all(rates[index][name] >= min_detection for name in ("person", "dog"))
+                      else "insufficient_detection")
+            windows[index]["dog_behavior"] = {"status": status}
     if task in ("interaction", "both"):
-        valid = [index for index, record in enumerate(records)
-                 if all(value >= min_detection for value in detection_rates(record).values())]
+        valid = [index for index, values in enumerate(rates)
+                 if all(value >= min_detection for value in values.values())]
         if valid:
             predictor = InteractionPredictor(Path(model_root) / "interaction")
             probabilities = predictor.predict([records[index] for index in valid])
@@ -361,6 +375,8 @@ def smooth_and_merge(windows: list[dict], task: str, classes: tuple[str, ...],
     radius = max(int(radius), 0)
     for index, window in enumerate(windows):
         value = window.get(task, {"status": "insufficient_detection"})
+        if value.get("status") == "suppressed_by_interaction":
+            continue
         if value.get("status") != "ok":
             value.update({"label": "insufficient_detection", "confidence": 0.0})
             continue
@@ -388,6 +404,8 @@ def smooth_and_merge(windows: list[dict], task: str, classes: tuple[str, ...],
     segments: list[dict] = []
     for index, window in enumerate(windows):
         value = window.get(task, {"label": "insufficient_detection", "confidence": 0.0})
+        if value.get("status") == "suppressed_by_interaction":
+            continue
         current = {"start_sec": round(float(boundaries[index]), 3),
                    "end_sec": round(float(boundaries[index + 1]), 3),
                    "label": value["label"], "confidence": float(value["confidence"]),
@@ -426,8 +444,19 @@ def write_results(output_dir: str | Path, result: dict) -> tuple[Path, Path]:
 def export_timeline_clips(video: str | Path, output_dir: str | Path, timeline: dict) -> list[str]:
     ffmpeg = shutil.which("ffmpeg")
     if not ffmpeg:
-        raise RuntimeError("--export-clips requires ffmpeg on PATH")
-    root = Path(output_dir) / "clips"
+        try:
+            import imageio_ffmpeg
+            ffmpeg = imageio_ffmpeg.get_ffmpeg_exe()
+        except (ImportError, RuntimeError):
+            ffmpeg = None
+    if not ffmpeg or not Path(ffmpeg).exists():
+        raise RuntimeError("--export-clips requires ffmpeg or the imageio-ffmpeg package")
+    output = Path(output_dir).resolve()
+    root = output / "clips"
+    # This directory contains generated artifacts only. Recreate it so a second
+    # run cannot leave clips from tasks that are now intentionally suppressed.
+    if root.exists():
+        shutil.rmtree(root)
     exported = []
     for task, segments in timeline.items():
         task_dir = root / task

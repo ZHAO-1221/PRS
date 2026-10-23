@@ -113,8 +113,25 @@ def test_cli_predicts_precomputed_skeleton_with_released_models(tmp_path):
     ], cwd=PROJECT, check=True, capture_output=True, text=True)
     result = json.loads((output / "result.json").read_text(encoding="utf-8"))
     assert (output / "timeline.csv").exists()
-    assert result["timeline"]["dog_behavior"][0]["label"] in DOG_BEHAVIOR_CLASSES
+    assert "dog_behavior" not in result["timeline"]
     assert result["timeline"]["interaction"][0]["label"] in INTERACTION_CLASSES
+
+
+def test_public_predict_video_function(tmp_path):
+    from tools.predict_video import predict_video
+
+    record = synthetic_record()
+    skeleton_path = tmp_path / "window.npz"
+    np.savez_compressed(skeleton_path, skeletons=record["skeletons"], boxes=record["boxes"],
+                        image_size=record["image_size"], fps=record["fps"])
+    output = tmp_path / "function_prediction"
+    response = predict_video(
+        skeleton_path, output, task="both", smoothing_radius=0,
+    )
+    assert Path(response["result_json"]).exists()
+    assert Path(response["timeline_csv"]).exists()
+    assert "dog_behavior" not in response["timeline"]
+    assert response["timeline"]["interaction"][0]["label"] in INTERACTION_CLASSES
 
 
 def test_raw_video_orchestration_with_replaceable_pose_stack(tmp_path, monkeypatch):

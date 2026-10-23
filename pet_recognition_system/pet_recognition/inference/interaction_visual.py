@@ -1,6 +1,8 @@
 """Frozen CLIP encoder used by the released interaction fusion model."""
 from __future__ import annotations
 
+from pathlib import Path
+
 import cv2
 import numpy as np
 import torch
@@ -44,7 +46,10 @@ class InteractionVisualEncoder:
                 "multimodal interaction inference requires the transformers package"
             ) from error
         self.device = device
-        self.model = CLIPModel.from_pretrained(model_name).to(device).eval()
+        self.model = CLIPModel.from_pretrained(
+            model_name,
+            local_files_only=Path(model_name).exists(),
+        ).to(device).eval()
 
     def encode(self, frames: list[np.ndarray], boxes: np.ndarray, samples: int = 8) -> np.ndarray:
         if not frames:
