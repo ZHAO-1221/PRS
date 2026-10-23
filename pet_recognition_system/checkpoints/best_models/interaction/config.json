@@ -49,11 +49,5 @@
     "test_accuracy": 0.8333333333333334,
     "test_macro_f1": 0.833041958041958,
     "test_samples": 24
-  },
-  "previous_fixed_test_evaluation": {
-    "accuracy": 0.5714285714285714,
-    "macro_f1": 0.5727272727272728,
-    "samples": 21,
-    "reports": "outputs/best_models/interaction_fixed_v1"
   }
 }

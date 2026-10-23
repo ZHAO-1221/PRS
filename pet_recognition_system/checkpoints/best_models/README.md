@@ -20,8 +20,7 @@ The dog test set has been used as an iterative benchmark, so its score must not
 be described as a one-shot unbiased final estimate. The interaction mixed-v2
 test set has 24 clips (6 per class); half were selected from previously correct
 group-OOF examples, so it is a demonstration benchmark rather than an unbiased
-one-shot estimate. The earlier 21-clip fixed-test reports are retained under
-`outputs/best_models/interaction_fixed_v1/`.
+one-shot estimate.
 The selected dog model adds 31 curated APT skeleton clips to training only;
 validation and the fixed 33-clip test split contain no APT clips.
 

@@ -18,7 +18,6 @@ tools/evaluate_dog_5class_ensemble.py
 tools/evaluate_interaction_ensemble.py
 tools/evaluate_interaction_multimodal.py
 tools/extract_interaction_clip_features.py
-tools/prepare_interaction_mixed_split.py
 tools/predict_video.py
 tools/train_dog_behavior.py
 tools/train_dog_eating_specialist.py

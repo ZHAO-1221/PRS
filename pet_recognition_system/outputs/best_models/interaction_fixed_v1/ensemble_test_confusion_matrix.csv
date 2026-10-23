@@ -1,5 +1,0 @@
-actual\predicted,no_interaction,hand_feeding,petting,playing_together
-no_interaction,4,0,1,0
-hand_feeding,0,2,2,0
-petting,0,4,2,0
-playing_together,2,0,0,4
