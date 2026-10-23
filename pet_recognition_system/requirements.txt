@@ -2,3 +2,5 @@
 numpy==1.26.4
 onnxruntime==1.23.2
 pillow==12.3.0
+opencv-python==4.11.0.86
+transformers>=4.45,<6

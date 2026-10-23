@@ -14,7 +14,7 @@ not older model versions. Experimental and superseded checkpoints are excluded.
 | Task | Model | Classes | Development result | Test result |
 |---|---|---:|---:|---:|
 | Dog behaviour | Motion-aware TCN + engineered geometry ensemble | 5 | 77.37% accuracy / 76.47% macro-F1 | 78.79% accuracy / 78.83% macro-F1 |
-| Human-dog interaction | Relation features + ExtraTrees/linear-SVM soft vote | 4 | 77.32% OOF accuracy / 75.89% macro-F1 | 70.83% accuracy / 69.36% macro-F1 |
+| Human-dog interaction | Relation ensemble + frozen CLIP visual context | 4 | 77.32% OOF accuracy / 76.13% macro-F1 | 83.33% accuracy / 83.30% macro-F1 |
 
 The dog test set has been used as an iterative benchmark, so its score must not
 be described as a one-shot unbiased final estimate. The interaction mixed-v2
@@ -36,6 +36,7 @@ pet_recognition_system/
 │   │   └── config.json
 │   ├── interaction/
 │   │   ├── checkpoints/fold_1..5.joblib
+│   │   ├── rgb/fold_1..5.joblib
 │   │   └── config.json
 │   ├── MODEL_CARD.md
 │   ├── SOURCE_FILES.txt
@@ -54,9 +55,10 @@ pip install -r requirements-training.txt
 pip install -e .
 ```
 
-Both models expect generated skeleton NPZ files, not raw videos. Set
-`PET_DATA_ROOT` to the downloaded Hugging Face `data/` directory or pass the
-skeleton directory explicitly.
+The dog model expects generated skeleton NPZ files. The interaction model also
+uses eight frozen CLIP frame features from the raw clip. Set `PET_DATA_ROOT` to
+the downloaded Hugging Face `data/` directory or pass the data directories
+explicitly.
 
 Complete retraining commands are documented in the repository root's
 [`MODEL_TRAINING.md`](../../MODEL_TRAINING.md).
@@ -79,10 +81,11 @@ ensemble's 834-dimensional engineered feature vector.
 ## Reproduce interaction evaluation
 
 ```bash
-python tools/evaluate_interaction_ensemble.py \
-  checkpoints/best_models/interaction/checkpoints \
+python tools/evaluate_interaction_multimodal.py \
+  --model-root checkpoints/best_models/interaction \
   --manifest outputs/best_models/manifests/interaction_manifest_mixed_v2.csv \
   --skeleton-dir <data>/skeletons_generated \
+  --feature-dir <generated-interaction-clip-features> \
   --split test \
   --output-dir work_dirs/released_interaction_evaluation
 ```

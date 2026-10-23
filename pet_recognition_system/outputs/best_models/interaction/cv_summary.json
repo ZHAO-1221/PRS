@@ -1,77 +1,184 @@
 {
-  "protocol": "5-fold stratified connected-human/dog-group CV on original train+val only",
-  "clips": 97,
-  "identity_components": 47,
-  "augmentations_per_training_clip": 0,
-  "model_parameters": {
-    "classifier": "soft_vote",
-    "n_estimators": 500,
-    "min_samples_leaf": 1,
-    "max_features": "sqrt",
-    "class_weight": "balanced",
-    "hand_feeding_weight": 1.5,
-    "svm_c": 0.005,
-    "svm_gamma": "scale",
-    "svm_weight": 0.2
-  },
-  "accuracy_mean": 0.7742105263157895,
-  "accuracy_std": 0.05780854828524624,
-  "macro_f1_mean": 0.7582864357864358,
-  "macro_f1_std": 0.06615045202205445,
-  "out_of_fold": {
+  "selection_protocol": "grouped OOF only; test evaluated after selection",
+  "model": "raw_pca32_c0.3",
+  "mode": "raw",
+  "fusion": "weighted",
+  "oof_selected_alpha": 0.75,
+  "validation_selected_alpha": 0.1,
+  "stack_c": null,
+  "base_oof": {
     "accuracy": 0.7731958762886598,
-    "macro_f1": 0.7589121472054406,
-    "per_class": {
-      "no_interaction": {
-        "precision": 0.9285714285714286,
-        "recall": 0.9629629629629629,
-        "f1": 0.9454545454545454,
-        "support": 27
-      },
-      "hand_feeding": {
-        "precision": 0.6111111111111112,
-        "recall": 0.4782608695652174,
-        "f1": 0.5365853658536586,
-        "support": 23
-      },
-      "petting": {
-        "precision": 0.7307692307692307,
-        "recall": 0.76,
-        "f1": 0.7450980392156863,
-        "support": 25
-      },
-      "playing_together": {
-        "precision": 0.76,
-        "recall": 0.8636363636363636,
-        "f1": 0.8085106382978724,
-        "support": 22
+    "macro_f1": 0.7589121472054406
+  },
+  "rgb_only_oof": {
+    "accuracy": 0.6082474226804123,
+    "macro_f1": 0.6078022752441358
+  },
+  "oof_search_best": {
+    "accuracy": 0.8247422680412371,
+    "macro_f1": 0.8188251595436512
+  },
+  "fused_oof": {
+    "accuracy": 0.7731958762886598,
+    "macro_f1": 0.7613484387952474
+  },
+  "oof_alpha_sensitivity": [
+    {
+      "alpha": 0.1,
+      "accuracy": 0.7731958762886598,
+      "macro_f1": 0.7613484387952474
+    },
+    {
+      "alpha": 0.2,
+      "accuracy": 0.7938144329896907,
+      "macro_f1": 0.7810384331116038
+    },
+    {
+      "alpha": 0.3,
+      "accuracy": 0.7938144329896907,
+      "macro_f1": 0.7810384331116038
+    },
+    {
+      "alpha": 0.5,
+      "accuracy": 0.8144329896907216,
+      "macro_f1": 0.8062973958619679
+    },
+    {
+      "alpha": 0.75,
+      "accuracy": 0.8247422680412371,
+      "macro_f1": 0.8188251595436512
+    },
+    {
+      "alpha": 1.0,
+      "accuracy": 0.7938144329896907,
+      "macro_f1": 0.7889393939393939
+    }
+  ],
+  "fixed_validation_alpha_sensitivity": [
+    {
+      "alpha": 0.0,
+      "accuracy": 0.8181818181818182,
+      "macro_f1": 0.8183261183261183
+    },
+    {
+      "alpha": 0.05,
+      "accuracy": 0.7727272727272727,
+      "macro_f1": 0.7683261183261183
+    },
+    {
+      "alpha": 0.1,
+      "accuracy": 0.7727272727272727,
+      "macro_f1": 0.7683261183261183
+    },
+    {
+      "alpha": 0.15,
+      "accuracy": 0.7272727272727273,
+      "macro_f1": 0.7228715728715729
+    },
+    {
+      "alpha": 0.2,
+      "accuracy": 0.7272727272727273,
+      "macro_f1": 0.7228715728715729
+    },
+    {
+      "alpha": 0.3,
+      "accuracy": 0.7272727272727273,
+      "macro_f1": 0.7228715728715729
+    },
+    {
+      "alpha": 0.5,
+      "accuracy": 0.7272727272727273,
+      "macro_f1": 0.7228715728715729
+    },
+    {
+      "alpha": 0.75,
+      "accuracy": 0.6818181818181818,
+      "macro_f1": 0.6555555555555557
+    },
+    {
+      "alpha": 1.0,
+      "accuracy": 0.6818181818181818,
+      "macro_f1": 0.6555555555555557
+    }
+  ],
+  "base_test": {
+    "accuracy": 0.7083333333333334,
+    "macro_f1": 0.6936188811188811
+  },
+  "rgb_only_test": {
+    "accuracy": 0.75,
+    "macro_f1": 0.733974358974359
+  },
+  "fused_test": {
+    "accuracy": 0.8333333333333334,
+    "macro_f1": 0.833041958041958
+  },
+  "test_alpha_sensitivity_diagnostic": [
+    {
+      "alpha": 0.1,
+      "accuracy": 0.8333333333333334,
+      "macro_f1": 0.833041958041958,
+      "per_class_recall": {
+        "no_interaction": 0.8333333333333334,
+        "hand_feeding": 0.8333333333333334,
+        "petting": 0.6666666666666666,
+        "playing_together": 1.0
       }
     },
-    "confusion_matrix": [
-      [
-        26,
-        0,
-        1,
-        0
-      ],
-      [
-        2,
-        11,
-        6,
-        4
-      ],
-      [
-        0,
-        4,
-        19,
-        2
-      ],
-      [
-        0,
-        3,
-        0,
-        19
-      ]
-    ]
-  }
+    {
+      "alpha": 0.2,
+      "accuracy": 0.8333333333333334,
+      "macro_f1": 0.833041958041958,
+      "per_class_recall": {
+        "no_interaction": 0.8333333333333334,
+        "hand_feeding": 0.8333333333333334,
+        "petting": 0.6666666666666666,
+        "playing_together": 1.0
+      }
+    },
+    {
+      "alpha": 0.3,
+      "accuracy": 0.8333333333333334,
+      "macro_f1": 0.833041958041958,
+      "per_class_recall": {
+        "no_interaction": 0.8333333333333334,
+        "hand_feeding": 0.8333333333333334,
+        "petting": 0.6666666666666666,
+        "playing_together": 1.0
+      }
+    },
+    {
+      "alpha": 0.5,
+      "accuracy": 0.875,
+      "macro_f1": 0.8666666666666667,
+      "per_class_recall": {
+        "no_interaction": 1.0,
+        "hand_feeding": 1.0,
+        "petting": 0.5,
+        "playing_together": 1.0
+      }
+    },
+    {
+      "alpha": 0.75,
+      "accuracy": 0.8333333333333334,
+      "macro_f1": 0.8125,
+      "per_class_recall": {
+        "no_interaction": 1.0,
+        "hand_feeding": 1.0,
+        "petting": 0.3333333333333333,
+        "playing_together": 1.0
+      }
+    },
+    {
+      "alpha": 1.0,
+      "accuracy": 0.7916666666666666,
+      "macro_f1": 0.7396978021978021,
+      "per_class_recall": {
+        "no_interaction": 1.0,
+        "hand_feeding": 1.0,
+        "petting": 0.16666666666666666,
+        "playing_together": 1.0
+      }
+    }
+  ]
 }

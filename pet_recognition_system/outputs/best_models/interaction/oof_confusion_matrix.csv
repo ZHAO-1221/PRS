@@ -1,5 +1,5 @@
 actual\predicted,no_interaction,hand_feeding,petting,playing_together
 no_interaction,26,0,1,0
-hand_feeding,2,11,6,4
-petting,0,4,19,2
+hand_feeding,2,12,6,3
+petting,0,4,18,3
 playing_together,0,3,0,19
