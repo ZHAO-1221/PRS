@@ -1,0 +1,138 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Clip result</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;700;800;900&amp;family=JetBrains+Mono:wght@700&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:#19384a;text-decoration:none}a:hover{color:#0e2330}
+</style>
+</helmet>
+<div style="width: 390px; height: 844px; box-sizing: border-box; background: #fff8e9; color: #19384a; font-family: Nunito, system-ui, sans-serif; display: flex; flex-direction: column; overflow: hidden">
+  <div style="flex: 1; padding: 20px 18px 0; display: flex; flex-direction: column; gap: 14px; overflow: hidden">
+    <header style="display: flex; align-items: center; gap: 8px">
+      <a href="Main.dc.html" aria-label="Back to story" style="width: 44px; height: 44px; border-radius: 50%; background: #fffdf8; border: 1px solid #d9ddcf; display: grid; place-items: center; box-sizing: border-box">
+        <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"></path></svg>
+      </a>
+      <div style="flex: 1">
+        <div style="font-family: 'JetBrains Mono', ui-monospace, monospace; font-weight: 700; font-size: 10px; letter-spacing: 0.12em; color: #b8402e">09:08–09:10 · LIVING ROOM</div>
+        <div style="font-weight: 900; font-size: 18px">Clip result</div>
+      </div>
+    </header>
+
+    <div style="background: #fffdf8; border-radius: 18px; padding: 8px; box-shadow: 0 8px 0 rgba(25,56,74,0.09); position: relative">
+      <div style="position: relative; height: 190px; border-radius: 12px; overflow: hidden">
+        <img src="../assets/cover-feeding.jpg" alt="Owner holding a bowl while Milo eats" style="display: block; width: 100%; height: 100%; object-fit: cover">
+        <sc-if value="{{showSkeleton}}" hint-placeholder-val="{{ true }}">
+          <svg viewBox="0 0 1672 941" preserveAspectRatio="xMidYMid slice" role="img" aria-label="Detected skeletons: dog in yellow, owner in teal" style="position: absolute; inset: 0; width: 100%; height: 100%">
+            <rect x="740" y="360" width="660" height="400" rx="16" fill="none" stroke="#ffd45c" stroke-width="6" stroke-dasharray="22 14"></rect>
+            <rect x="420" y="215" width="360" height="480" rx="16" fill="none" stroke="#6dc8c6" stroke-width="6" stroke-dasharray="22 14"></rect>
+            <g stroke="#ffd45c" stroke-width="9" stroke-linecap="round" fill="none">
+              <path d="M770 600L790 670L820 610L770 600M795 605L880 500L1260 440"></path>
+              <path d="M880 500L930 540L950 640L945 740M880 500L900 560L910 640L905 690"></path>
+              <path d="M1260 440L1230 500L1220 600L1210 690M1260 440L1190 520L1170 590L1160 630"></path>
+            </g>
+            <g fill="#19384a" stroke="#ffd45c" stroke-width="5">
+              <circle cx="770" cy="600" r="11"></circle><circle cx="820" cy="610" r="11"></circle><circle cx="790" cy="670" r="11"></circle><circle cx="880" cy="500" r="11"></circle><circle cx="1260" cy="440" r="11"></circle>
+              <circle cx="930" cy="540" r="11"></circle><circle cx="950" cy="640" r="11"></circle><circle cx="945" cy="740" r="11"></circle><circle cx="900" cy="560" r="11"></circle><circle cx="910" cy="640" r="11"></circle><circle cx="905" cy="690" r="11"></circle>
+              <circle cx="1230" cy="500" r="11"></circle><circle cx="1220" cy="600" r="11"></circle><circle cx="1210" cy="690" r="11"></circle><circle cx="1190" cy="520" r="11"></circle><circle cx="1170" cy="590" r="11"></circle><circle cx="1160" cy="630" r="11"></circle>
+            </g>
+            <g stroke="#6dc8c6" stroke-width="9" stroke-linecap="round" fill="none">
+              <path d="M715 340L640 290L590 270L480 340L590 650M640 290L700 450L705 720M480 340L560 520L620 600"></path>
+            </g>
+            <g fill="#19384a" stroke="#6dc8c6" stroke-width="5">
+              <circle cx="715" cy="340" r="11"></circle><circle cx="640" cy="290" r="11"></circle><circle cx="590" cy="270" r="11"></circle><circle cx="480" cy="340" r="11"></circle><circle cx="700" cy="450" r="11"></circle><circle cx="705" cy="720" r="11"></circle><circle cx="560" cy="520" r="11"></circle><circle cx="590" cy="650" r="11"></circle>
+            </g>
+          </svg>
+        </sc-if>
+      </div>
+      <button onClick="{{toggle}}" aria-pressed="{{pressed}}" style="position: absolute; right: 16px; top: 16px; min-height: 36px; border: 2px solid #19384a; border-radius: 99px; background: #ffd45c; color: #19384a; font-family: inherit; font-weight: 900; font-size: 11px; padding: 0 12px; cursor: pointer">{{toggleLabel}}</button>
+    </div>
+
+    <section aria-label="Behaviour" style="background: #fffdf8; border: 1px solid #d9ddcf; border-radius: 20px; padding: 14px">
+      <div style="display: flex; justify-content: space-between; align-items: baseline">
+        <span style="font-size: 10px; font-weight: 900; letter-spacing: 0.1em; color: #4f6470">MILO IS</span>
+        <span style="font-size: 10px; color: #4f6470">5 behaviours</span>
+      </div>
+      <div style="font-weight: 900; font-size: 24px; letter-spacing: -0.02em; margin: 2px 0 10px">Eating / drinking</div>
+      <div style="display: flex; flex-direction: column; gap: 6px">
+        <sc-for list="{{behaviours}}" as="b" hint-placeholder-count="5">
+          <div style="display: grid; grid-template-columns: 96px minmax(0, 1fr) 36px; align-items: center; gap: 8px; font-size: 11px">
+            <span style="font-weight: 800">{{b.name}}</span>
+            <span style="height: 10px; background: #f0ebdc; border-radius: 99px; overflow: hidden"><span style="display: block; height: 100%; width: {{b.pct}}; background: {{b.color}}; border-radius: 99px"></span></span>
+            <span style="text-align: right; font-weight: 800">{{b.pct}}</span>
+          </div>
+        </sc-for>
+      </div>
+    </section>
+
+    <section aria-label="Interaction" style="background: #19384a; color: #fff8e9; border-radius: 20px; padding: 14px">
+      <div style="display: flex; justify-content: space-between; align-items: baseline">
+        <span style="font-size: 10px; font-weight: 900; letter-spacing: 0.1em; color: #c9d6dc">WITH YOU</span>
+        <span style="font-size: 10px; color: #c9d6dc">5 interactions</span>
+      </div>
+      <div style="font-weight: 900; font-size: 24px; letter-spacing: -0.02em; margin: 2px 0 10px">Feeding</div>
+      <div style="display: flex; flex-wrap: wrap; gap: 6px">
+        <sc-for list="{{interactions}}" as="it" hint-placeholder-count="4">
+          <span style="border-radius: 99px; padding: 6px 10px; font-size: 11px; font-weight: 800; background: {{it.bg}}; color: {{it.fg}}">{{it.name}} {{it.pct}}</span>
+        </sc-for>
+      </div>
+    </section>
+  </div>
+
+  <nav aria-label="Main" style="height: 72px; background: #fffdf8; border-top: 1px solid #d9ddcf; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); font-size: 11px; font-weight: 800">
+    <a href="Main.dc.html" aria-current="page" style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; color: #b8402e">
+      <svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5h16v14H4z"></path><path d="M8 9h8M8 13h5"></path></svg>Story
+    </a>
+    <a href="Upload.dc.html" style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px">
+      <svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 16V4M7 9l5-5 5 5"></path><path d="M4 16v4h16v-4"></path></svg>Upload
+    </a>
+    <a href="Week.dc.html" style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px">
+      <svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 20V11M12 20V5M19 20v-7"></path></svg>Week
+    </a>
+  </nav>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = { skeleton: true };
+  }
+  renderVals() {
+    const on = this.state.skeleton;
+    const top = { bg: '#ffd45c', fg: '#19384a' };
+    const rest = { bg: '#2b4f63', fg: '#fff8e9' };
+    return {
+      showSkeleton: on,
+      pressed: on ? 'true' : 'false',
+      toggleLabel: on ? 'Skeleton on' : 'Skeleton off',
+      toggle: () => this.setState({ skeleton: !on }),
+      // example scores for the demo clip
+      behaviours: [
+        { name: 'Eating/drinking', pct: '81%', color: '#d9503c' },
+        { name: 'Standing', pct: '11%', color: '#6dc8c6' },
+        { name: 'Walking/run', pct: '4%', color: '#ffd45c' },
+        { name: 'Sitting', pct: '3%', color: '#8fa8e0' },
+        { name: 'Lying/sleep', pct: '1%', color: '#9cc59a' }
+      ],
+      interactions: [
+        { ...top, name: 'Feeding', pct: '72%' },
+        { ...rest, name: 'Petting', pct: '12%' },
+        { ...rest, name: 'Gaming', pct: '8%' },
+        { ...rest, name: 'Quiet together', pct: '5%' },
+        { ...rest, name: 'None', pct: '3%' }
+      ]
+    };
+  }
+}
+</script>
+</body>
+</html>

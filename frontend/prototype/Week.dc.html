@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Milo's week</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;700;800;900&amp;family=JetBrains+Mono:wght@700&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:#19384a;text-decoration:none}a:hover{color:#0e2330}
+</style>
+</helmet>
+<div style="width: 390px; height: 844px; box-sizing: border-box; background: #fff8e9; color: #19384a; font-family: Nunito, system-ui, sans-serif; display: flex; flex-direction: column; overflow: hidden">
+  <div style="flex: 1; padding: 24px 18px 0; display: flex; flex-direction: column; gap: 14px; overflow: hidden">
+    <header style="display: flex; align-items: center; justify-content: space-between">
+      <div style="font-weight: 900; font-size: 14px; letter-spacing: 0.06em">MILO'S WEEK</div>
+      <span style="font-size: 11px; font-weight: 800; background: #fffdf8; border: 1px solid #d9ddcf; border-radius: 99px; padding: 6px 10px">Oct 16–22</span>
+    </header>
+
+    <section>
+      <div style="font-family: 'JetBrains Mono', ui-monospace, monospace; font-weight: 700; font-size: 10px; letter-spacing: 0.12em; color: #b8402e">WEEKLY ROUND-UP</div>
+      <h1 style="margin: 6px 0 4px; font-weight: 900; font-size: 32px; line-height: 1.04; letter-spacing: -0.03em">A sleepy week<br>with one big walk</h1>
+      <p style="margin: 0; font-size: 12px; color: #4f6470">[N] clips · minutes per day, placed by recording time</p>
+    </section>
+
+    <div style="background: #fffdf8; border: 1px solid #d9ddcf; border-radius: 20px; padding: 14px">
+      <div role="img" aria-label="Stacked daily minutes per behaviour, Monday to Sunday" style="display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 8px; align-items: end; height: 150px">
+        <sc-for list="{{days}}" as="d" hint-placeholder-count="7">
+          <div style="display: flex; flex-direction: column; gap: 2px; align-items: stretch">
+            <span style="height: {{d.walk}}; background: #ffd45c; border-radius: 6px 6px 2px 2px"></span>
+            <span style="height: {{d.eat}}; background: #d9503c; border-radius: 2px"></span>
+            <span style="height: {{d.stand}}; background: #6dc8c6; border-radius: 2px"></span>
+            <span style="height: {{d.sit}}; background: #8fa8e0; border-radius: 2px"></span>
+            <span style="height: {{d.lie}}; background: #9cc59a; border-radius: 2px 2px 6px 6px"></span>
+          </div>
+        </sc-for>
+      </div>
+      <div style="display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 8px; margin-top: 6px; text-align: center; font-size: 10px; font-weight: 800; color: #4f6470">
+        <span>M</span><span>T</span><span>W</span><span>T</span><span>F</span><span>S</span><span>S</span>
+      </div>
+      <div style="display: flex; flex-wrap: wrap; gap: 6px 12px; margin-top: 10px; font-size: 10px; font-weight: 800">
+        <span style="display: flex; align-items: center; gap: 4px"><i style="width: 10px; height: 10px; border-radius: 3px; background: #ffd45c"></i>Walk/run</span>
+        <span style="display: flex; align-items: center; gap: 4px"><i style="width: 10px; height: 10px; border-radius: 3px; background: #d9503c"></i>Eat/drink</span>
+        <span style="display: flex; align-items: center; gap: 4px"><i style="width: 10px; height: 10px; border-radius: 3px; background: #6dc8c6"></i>Stand</span>
+        <span style="display: flex; align-items: center; gap: 4px"><i style="width: 10px; height: 10px; border-radius: 3px; background: #8fa8e0"></i>Sit</span>
+        <span style="display: flex; align-items: center; gap: 4px"><i style="width: 10px; height: 10px; border-radius: 3px; background: #9cc59a"></i>Lie/sleep</span>
+      </div>
+    </div>
+
+    <section aria-label="How the app reads Milo" style="background: #19384a; color: #fff8e9; border-radius: 20px; padding: 14px; display: flex; flex-direction: column; gap: 10px">
+      <div style="font-size: 10px; font-weight: 900; letter-spacing: 0.1em; color: #c9d6dc">HOW SURE ARE WE?</div>
+      <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px">
+        <div style="background: #2b4f63; border-radius: 14px; padding: 10px">
+          <span style="font-size: 11px; font-weight: 800; color: #c9d6dc">Behaviour</span>
+          <strong style="display: block; font-size: 26px; font-weight: 900">78.8%</strong>
+          <span style="font-size: 10px; color: #c9d6dc">accuracy · 33 test clips</span>
+        </div>
+        <div style="background: #2b4f63; border-radius: 14px; padding: 10px">
+          <span style="font-size: 11px; font-weight: 800; color: #c9d6dc">Interaction</span>
+          <strong style="display: block; font-size: 26px; font-weight: 900">[ACC]%</strong>
+          <span style="font-size: 10px; color: #c9d6dc">5-class model · [N] test clips</span>
+        </div>
+      </div>
+      <p style="margin: 0; font-size: 11px; line-height: 1.5; color: #c9d6dc">Skeleton-only: video stays on your camera, only 17 body points per frame are read.</p>
+    </section>
+  </div>
+
+  <nav aria-label="Main" style="height: 72px; background: #fffdf8; border-top: 1px solid #d9ddcf; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); font-size: 11px; font-weight: 800">
+    <a href="Main.dc.html" style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px">
+      <svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5h16v14H4z"></path><path d="M8 9h8M8 13h5"></path></svg>Story
+    </a>
+    <a href="Upload.dc.html" style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px">
+      <svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 16V4M7 9l5-5 5 5"></path><path d="M4 16v4h16v-4"></path></svg>Upload
+    </a>
+    <a href="Week.dc.html" aria-current="page" style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; color: #b8402e">
+      <svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 20V11M12 20V5M19 20v-7"></path></svg>Week
+    </a>
+  </nav>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  renderVals() {
+    // placeholder minutes for the mockup; replace with real per-day totals
+    const rows = [[8,6,14,10,60],[12,5,10,14,52],[6,7,18,8,64],[10,6,12,16,48],[14,5,10,10,56],[30,8,16,12,40],[9,7,12,10,58]];
+    const px = (m) => Math.round(m * 1.2) + 'px';
+    return {
+      days: rows.map(([walk, eat, stand, sit, lie]) => ({ walk: px(walk), eat: px(eat), stand: px(stand), sit: px(sit), lie: px(lie) }))
+    };
+  }
+}
+</script>
+</body>
+</html>

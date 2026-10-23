@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Upload a clip</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;700;800;900&amp;family=JetBrains+Mono:wght@700&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:#19384a;text-decoration:none}a:hover{color:#0e2330}
+</style>
+</helmet>
+<div style="width: 390px; height: 844px; box-sizing: border-box; background: #fff8e9; color: #19384a; font-family: Nunito, system-ui, sans-serif; display: flex; flex-direction: column; overflow: hidden">
+  <div style="flex: 1; padding: 24px 18px 0; display: flex; flex-direction: column; gap: 14px; overflow: hidden">
+    <header style="display: flex; align-items: center; justify-content: space-between">
+      <div style="font-weight: 900; font-size: 14px; letter-spacing: 0.06em">UPLOAD A CLIP</div>
+      <span style="display: flex; align-items: center; gap: 6px; font-size: 11px; font-weight: 800; background: #fffdf8; border: 1px solid #d9ddcf; border-radius: 99px; padding: 6px 10px">
+        <i style="width: 8px; height: 8px; border-radius: 50%; background: #8a969c"></i>No camera linked
+      </span>
+    </header>
+
+    <section>
+      <div style="font-family: 'JetBrains Mono', ui-monospace, monospace; font-weight: 700; font-size: 10px; letter-spacing: 0.12em; color: #b8402e">MANUAL MODE</div>
+      <h1 style="margin: 6px 0 4px; font-weight: 900; font-size: 30px; line-height: 1.05; letter-spacing: -0.03em">Bring your own<br>footage</h1>
+      <p style="margin: 0; font-size: 12px; line-height: 1.5; color: #4f6470">A linked camera streams clips here on its own. Until then, upload a video and it runs through the same analysis.</p>
+    </section>
+
+    <label for="clip" style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; min-height: 124px; background: #fffdf8; border: 2px dashed #6dc8c6; border-radius: 20px; padding: 14px; cursor: pointer; text-align: center">
+      <span style="width: 44px; height: 44px; border-radius: 14px; background: #ffd45c; display: grid; place-items: center">
+        <svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="#19384a" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 16V4M7 9l5-5 5 5"></path><path d="M4 16v4h16v-4"></path></svg>
+      </span>
+      <b style="font-size: 14px">{{fileLabel}}</b>
+      <span style="font-size: 11px; color: #4f6470">{{fileHint}}</span>
+    </label>
+    <input id="clip" type="file" accept="video/*" onChange="{{pickFile}}" style="position: absolute; width: 1px; height: 1px; opacity: 0">
+
+    <fieldset style="margin: 0; border: 1px solid #d9ddcf; border-radius: 20px; background: #fffdf8; padding: 12px 14px 14px; display: flex; flex-direction: column; gap: 10px">
+      <legend style="padding: 0 6px; font-size: 10px; font-weight: 900; letter-spacing: 0.1em; color: #4f6470">WHEN WAS IT RECORDED?</legend>
+      <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px">
+        <label style="display: flex; flex-direction: column; gap: 4px; font-size: 11px; font-weight: 800">Date
+          <input type="date" value="{{date}}" onChange="{{setDate}}" style="height: 44px; box-sizing: border-box; border: 1px solid #c9cfc2; border-radius: 12px; padding: 0 10px; font-family: inherit; font-size: 14px; color: #19384a; background: #fff8e9">
+        </label>
+        <label style="display: flex; flex-direction: column; gap: 4px; font-size: 11px; font-weight: 800">Start time
+          <input type="time" value="{{time}}" onChange="{{setTime}}" style="height: 44px; box-sizing: border-box; border: 1px solid #c9cfc2; border-radius: 12px; padding: 0 10px; font-family: inherit; font-size: 14px; color: #19384a; background: #fff8e9">
+        </label>
+      </div>
+      <p style="margin: 0; font-size: 11px; line-height: 1.45; color: #4f6470">Filled in from the video's creation time when it has one. This places the clip in the daily story and the weekly report.</p>
+    </fieldset>
+
+    <label style="display: flex; flex-direction: column; gap: 4px; font-size: 11px; font-weight: 800">Which camera would have seen it?
+      <select style="height: 44px; border: 1px solid #c9cfc2; border-radius: 12px; padding: 0 10px; font-family: inherit; font-size: 14px; color: #19384a; background: #fffdf8">
+        <option>Living room</option>
+        <option>Kitchen</option>
+        <option>Bedroom</option>
+        <option>Garden</option>
+      </select>
+    </label>
+
+    <a href="Analyze.dc.html" style="margin-top: auto; margin-bottom: 16px; height: 52px; border-radius: 16px; background: #19384a; color: #fff8e9; display: flex; align-items: center; justify-content: center; font-weight: 900; font-size: 15px">Start analysis</a>
+  </div>
+
+  <nav aria-label="Main" style="height: 72px; background: #fffdf8; border-top: 1px solid #d9ddcf; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); font-size: 11px; font-weight: 800">
+    <a href="Main.dc.html" style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px">
+      <svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5h16v14H4z"></path><path d="M8 9h8M8 13h5"></path></svg>Story
+    </a>
+    <a href="Upload.dc.html" aria-current="page" style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; color: #b8402e">
+      <svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 16V4M7 9l5-5 5 5"></path><path d="M4 16v4h16v-4"></path></svg>Upload
+    </a>
+    <a href="Week.dc.html" style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px">
+      <svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 20V11M12 20V5M19 20v-7"></path></svg>Week
+    </a>
+  </nav>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = { file: null, date: '2026-10-22', time: '09:08' };
+  }
+  renderVals() {
+    const f = this.state.file;
+    return {
+      fileLabel: f ? f.name : 'Choose a video',
+      fileHint: f ? 'Tap to pick a different one' : 'MP4 or MOV · one dog, up to 5 min',
+      date: this.state.date,
+      time: this.state.time,
+      pickFile: (e) => {
+        const file = e.target.files && e.target.files[0];
+        if (!file) return;
+        const t = new Date(file.lastModified); // shortcut: lastModified stands in for the recording time; the real app reads the video's creation metadata
+        const pad = (n) => String(n).padStart(2, '0');
+        this.setState({ file: { name: file.name }, date: t.getFullYear() + '-' + pad(t.getMonth() + 1) + '-' + pad(t.getDate()), time: pad(t.getHours()) + ':' + pad(t.getMinutes()) });
+      },
+      setDate: (e) => this.setState({ date: e.target.value }),
+      setTime: (e) => this.setState({ time: e.target.value })
+    };
+  }
+}
+</script>
+</body>
+</html>
