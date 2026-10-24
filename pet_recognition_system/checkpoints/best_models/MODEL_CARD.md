@@ -22,22 +22,26 @@ systems and not veterinary diagnostic tools.
 
 ## Human-dog interaction model
 
-- Input: synchronized COCO-17 human and AP-10K-17 dog skeletons plus frame mask.
+- Input: synchronized COCO-17 human and AP-10K-17 dog skeletons, frame mask,
+  and eight RGB frames sampled from the person-dog union and full scene.
 - Classes: `no_interaction`, `hand_feeding`, `petting`, `playing_together`.
-- Architecture: five seed ensembles operating on summarized human-dog relation
-  features. Each seed uses an 80% ExtraTrees / 20% standardized linear-SVM soft
-  vote, and final probabilities are averaged across seeds.
+- Architecture: five seed ensembles operate on summarized human-dog relation
+  features. A second five-model branch classifies frozen CLIP ViT-B/32 visual
+  features after 32-D PCA. The final log-probability fusion uses 90% skeleton
+  relation evidence and a conservative 10% visual-context contribution.
 - Training protocol: 5-fold identity-grouped CV for development, followed by
   final fitting on all 97 train/validation clips with no synthetic augmentation.
   Hand-feeding receives a 1.5 tree-class weight; the SVM uses `C=0.005`. Both
   settings and the 20% SVM vote were selected by cross-validation.
-- OOF result: 77.32% accuracy, 75.89% macro-F1 on 97 clips.
-- Mixed-v2 test result: 17/24 correct, 70.83% accuracy, 69.36% macro-F1.
+- OOF result: 77.32% accuracy, 76.13% macro-F1 on 97 clips.
+- Mixed-v2 test result: 20/24 correct, 83.33% accuracy, 83.30% macro-F1.
 - Test composition: 6 clips per class and no human, dog or source-video overlap
   with training. Half of this set was selected from previously correct OOF
   examples, so the score is a demonstration benchmark rather than an unbiased
   one-shot estimate.
-- Main limitation: hand feeding has 33.33% recall on the mixed-v2 test set.
+- Main limitation: the small dataset makes the visual fusion weight unstable;
+  the 24-clip mixed-v2 result is a demonstration benchmark and has been used
+  iteratively. The frozen CLIP backbone must be downloaded separately.
 
 ## Data and privacy
 
@@ -46,8 +50,8 @@ The source dataset is maintained separately on Hugging Face.
 
 ## Reproducibility
 
-- Release date: 2026-10-22
-- Source commit before packaging: `dfacc3f`
+- Release date: 2026-10-23
+- Source: the Git commit containing this model card and its matching checksums.
 - Exact evaluation reports are included under `outputs/best_models/`.
 
 ## Weight-file safety

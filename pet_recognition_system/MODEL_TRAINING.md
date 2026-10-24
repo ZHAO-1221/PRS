@@ -67,16 +67,10 @@ python tools/evaluate_dog_5class_ensemble.py \
 
 ## Human-dog interaction
 
-### 1. Recreate the mixed-v2 split
+The frozen identity-grouped split used by the selected release is stored at
+`outputs/best_models/manifests/interaction_manifest_mixed_v2.csv`.
 
-```bash
-python tools/prepare_interaction_mixed_split.py \
-  --manifest outputs/best_models/manifests/interaction_manifest.csv \
-  --selection outputs/demo_evaluation/interaction/mixed_demo_predictions.csv \
-  --output outputs/best_models/manifests/interaction_manifest_mixed_v2.csv
-```
-
-### 2. Run five-fold identity-grouped cross-validation
+### 1. Run five-fold identity-grouped cross-validation
 
 ```bash
 python tools/cross_validate_interaction_relation.py \
@@ -94,7 +88,7 @@ python tools/cross_validate_interaction_relation.py \
   --output-dir work_dirs/interaction_relation_mixed_v2_cv5_noaug
 ```
 
-### 3. Fit the final five-seed ensemble on all train and validation clips
+### 2. Fit the final five-seed ensemble on all train and validation clips
 
 ```bash
 python tools/train_final_interaction_ensemble.py \
@@ -111,15 +105,44 @@ python tools/train_final_interaction_ensemble.py \
   --svm-weight 0.2
 ```
 
-### 4. Evaluate the frozen final ensemble
+### 3. Extract frozen CLIP interaction features
 
 ```bash
-python tools/evaluate_interaction_ensemble.py \
-  work_dirs/interaction_relation_mixed_v2_final \
+python tools/extract_interaction_clip_features.py \
+  --manifest outputs/best_models/manifests/interaction_manifest_mixed_v2.csv \
+  --video-dir <data>/interaction \
+  --skeleton-dir <data>/skeletons_generated \
+  --output-dir outputs/interaction_clip_features_clip_v2 \
+  --frames 8
+```
+
+### 4. Train and evaluate the conservative multimodal fusion
+
+The visual branch is selected with grouped OOF predictions. The released model
+uses a conservative visual log-probability weight of `0.1`; the relation branch
+remains the primary decision source.
+
+```bash
+python tools/cross_validate_interaction_rgb_fusion.py \
   --manifest outputs/best_models/manifests/interaction_manifest_mixed_v2.csv \
   --skeleton-dir <data>/skeletons_generated \
+  --feature-dir outputs/interaction_clip_features_clip_v2 \
+  --base-oof-dir work_dirs/interaction_relation_mixed_v2_cv5_noaug \
+  --base-final-dir work_dirs/interaction_relation_mixed_v2_final \
+  --output-dir work_dirs/interaction_multimodal_release \
+  --deployment-alpha 0.1
+```
+
+### 5. Evaluate the frozen final ensemble
+
+```bash
+python tools/evaluate_interaction_multimodal.py \
+  --model-root checkpoints/best_models/interaction \
+  --manifest outputs/best_models/manifests/interaction_manifest_mixed_v2.csv \
+  --skeleton-dir <data>/skeletons_generated \
+  --feature-dir outputs/interaction_clip_features_clip_v2 \
   --split test \
-  --output-dir work_dirs/interaction_relation_mixed_v2_final
+  --output-dir work_dirs/interaction_multimodal_release_check
 ```
 
 ## Relevant files
@@ -136,9 +159,10 @@ tools/
 ├── train_dog_standing_specialist.py
 ├── train_dog_walking_specialist.py
 ├── cross_validate_interaction_relation.py
-├── prepare_interaction_mixed_split.py
 ├── train_final_interaction_ensemble.py
-└── evaluate_interaction_ensemble.py
+├── extract_interaction_clip_features.py
+├── cross_validate_interaction_rgb_fusion.py
+└── evaluate_interaction_multimodal.py
 
 pet_recognition/models/
 └── skeleton_tcn.py

@@ -10,8 +10,14 @@
   "target_frames": 32,
   "human_skeleton_layout": "coco_17",
   "dog_skeleton_layout": "ap10k_17",
-  "model": "relation_features_soft_vote_seed_ensemble",
+  "model": "skeleton_relation_clip_visual_fusion",
   "models": 5,
+  "rgb_models": 5,
+  "visual_backbone": "openai/clip-vit-base-patch32",
+  "visual_backbone_policy": "frozen",
+  "visual_frames_per_clip": 8,
+  "visual_feature_dim": 4608,
+  "visual_fusion_weight": 0.1,
   "training_protocol": "full_train_val_seed_ensemble",
   "training_seeds": [29, 30, 31, 32, 33],
   "training_augmentations_per_clip": 0,
@@ -23,7 +29,10 @@
     "hand_feeding_weight": 1.5,
     "svm_c": 0.005,
     "svm_weight": 0.2,
-    "tree_weight": 0.8
+    "tree_weight": 0.8,
+    "rgb_classifier": "StandardScaler_PCA32_LogisticRegression",
+    "rgb_logistic_c": 0.3,
+    "fusion": "weighted_log_probability"
   },
   "split_manifest": "outputs/best_models/manifests/interaction_manifest_mixed_v2.csv",
   "split": {
@@ -35,16 +44,10 @@
   },
   "evaluation": {
     "oof_accuracy": 0.7731958762886598,
-    "oof_macro_f1": 0.7589121472054406,
+    "oof_macro_f1": 0.7613484387952474,
     "oof_samples": 97,
-    "test_accuracy": 0.7083333333333334,
-    "test_macro_f1": 0.6936188811188811,
+    "test_accuracy": 0.8333333333333334,
+    "test_macro_f1": 0.833041958041958,
     "test_samples": 24
-  },
-  "previous_fixed_test_evaluation": {
-    "accuracy": 0.5714285714285714,
-    "macro_f1": 0.5727272727272728,
-    "samples": 21,
-    "reports": "outputs/best_models/interaction_fixed_v1"
   }
 }

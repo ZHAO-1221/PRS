@@ -111,9 +111,63 @@ history. Superseded ST-GCN, LSTM, Transformer, RGB-fusion, hierarchical and
 ablation checkpoints are excluded.
 
 - Dog behaviour: motion-aware TCN with geometry fusion, five classes.
-- Human-dog interaction: relation-feature ExtraTrees ensemble, four classes.
+- Human-dog interaction: relation-feature ensemble fused with a frozen CLIP
+  visual branch, four classes.
 
 Install `requirements-training.txt`, then follow [MODEL_TRAINING.md](MODEL_TRAINING.md)
 to retrain or evaluate the published ensembles.
+
+## End-to-end video prediction
+
+Predict both dog behaviour and human-dog interaction from one video:
+
+```bash
+python tools/predict_video.py input.mp4 --task both --data-root <PET_DATA_ROOT>
+```
+
+Other Python applications, including an HTTP service, can call the same public
+entry point directly:
+
+```python
+from tools.predict_video import predict_video
+
+result = predict_video(
+    input_path="uploads/example.mp4",
+    output_dir="outputs/example",
+    data_root="path/to/data",
+    task="both",
+)
+```
+
+The data root must contain the three pose-pipeline weights documented above:
+
+```text
+<PET_DATA_ROOT>/models/
+├── rtmdet-m_coco/rtmdet_m_8xb32-300e_coco_20220719_112220-229f527c.pth
+├── rtmpose-m_coco_human/end2end.onnx
+└── rtmpose-m_ap10k/end2end.onnx
+```
+
+Interaction prediction uses the frozen official
+[`openai/clip-vit-base-patch32`](https://huggingface.co/openai/clip-vit-base-patch32)
+model. If `<PET_DATA_ROOT>/models/clip-vit-base-patch32/` contains a complete
+local snapshot, it is used first. Otherwise Transformers downloads the official
+model on the first run and reuses its local Hugging Face cache afterwards. A
+local snapshot is therefore only required for offline inference.
+
+Videos up to eight seconds are classified as one clip. Longer videos are read
+lazily and divided into four-second windows, so a long recording is not loaded
+fully into memory. The command writes `result.json` with window probabilities
+and merged timelines, plus `timeline.csv` with one row per time segment. Use
+`--export-clips` to render each merged segment with FFmpeg. Other useful modes:
+
+```bash
+python tools/predict_video.py input.mp4 --task dog_behavior --data-root <PET_DATA_ROOT>
+python tools/predict_video.py input.mp4 --task interaction --data-root <PET_DATA_ROOT>
+python tools/predict_video.py skeleton_window.npz --task both
+```
+
+The NPZ form bypasses pose extraction and is useful for testing an existing
+`skeletons`, `boxes`, `fps`, `image_size` record against the released models.
 
 Tests: `python -m pytest -q`.
