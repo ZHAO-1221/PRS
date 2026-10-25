@@ -39,10 +39,15 @@ export async function getJob(jobId) {
   const elapsed = Date.now() - job.started;
   const done = elapsed >= STEPS.length * STEP_MS;
   if (done && !clips.includes(job.clip)) clips.push(Object.assign(job.clip, { result: makeResult(UPLOAD_RESULT_PARTS) }));
+  const step = Math.min(STEPS.length, Math.floor(elapsed / STEP_MS));
+  const windows = Math.min(10, Math.floor((elapsed % STEP_MS) / (STEP_MS / 10)) + 1); // fake keypoint windows
   return {
     job_id: jobId,
     status: done ? 'done' : 'running',
-    step: Math.min(STEPS.length, Math.floor(elapsed / STEP_MS)),
+    step,
+    stages: STEPS.map((name, i) => i < step ? { name, status: 'done', done: 1, total: 1 }
+      : i === step ? { name, status: 'running', done: name === 'keypoints' ? windows : 0, total: name === 'keypoints' ? 10 : 1 }
+      : { name, status: 'pending', done: 0, total: 0 }),
     progress: Math.min(1, elapsed / (STEPS.length * STEP_MS)),
     error: null,
     clip: job.clip

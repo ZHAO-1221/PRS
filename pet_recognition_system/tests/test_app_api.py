@@ -77,6 +77,8 @@ def test_upload_analyse_list_and_read(tmp_path, video_bytes):
 
     job = wait_done(client, clip_id)
     assert (job["status"], job["step"], job["progress"]) == ("done", 4, 1.0)
+    assert [(s["name"], s["status"]) for s in job["stages"]] == [
+        ("detect", "done"), ("keypoints", "done"), ("behaviour", "done"), ("interaction", "done")]
     assert job["clip"]["file_name"] == "living room.mp4"  # directory parts of the client name are dropped
     assert not list(tmp_path.rglob("living room.mp4"))
 
@@ -128,6 +130,7 @@ def test_failed_analysis_is_reported(tmp_path, video_bytes):
     clip_id = upload(client, video_bytes).json()["clip_id"]
     job = wait_done(client, clip_id)
     assert job["status"] == "failed" and "rtmdet" in job["error"]
+    assert [s["status"] for s in job["stages"]] == ["failed", "pending", "pending", "pending"]
     assert client.get("/api/clips").json() == []  # failed clips stay out of the story
     assert client.get(f"/api/clips/{clip_id}").json()["status"] == "failed"
 
@@ -138,3 +141,4 @@ def test_restart_marks_unfinished_clips_failed(tmp_path, video_bytes):
     restarted = TestClient(create_app(tmp_path, analyse=fake_pipeline))
     job = restarted.get(f"/api/jobs/{clip_id}").json()
     assert job["status"] == "failed" and "restarted" in job["error"]
+    assert {s["status"] for s in job["stages"]} == {"pending"}

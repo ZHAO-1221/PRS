@@ -190,7 +190,7 @@ PET_DATA_ROOT=<data-root> uvicorn app.server:app --port 8000
 | Endpoint | Purpose |
 |---|---|
 | `POST /api/clips` | multipart `video`, `recorded_at` (`YYYY-MM-DDTHH:MM`), `camera`; returns `{job_id, clip_id}` and analyses in the background |
-| `GET /api/jobs/{job_id}` | `status` (`queued`/`running`/`done`/`failed`), `step` (finished steps, 0-4), `progress`, `error` |
+| `GET /api/jobs/{job_id}` | `status` (`queued`/`running`/`done`/`failed`), `step` (finished steps, 0-4), `progress`, `error`, `stages` (per stage `name`, `status` `pending`/`running`/`done`/`failed`, `done`/`total`) |
 | `GET /api/clips?from=&to=` | analysed clips in a date range, results without per-window data |
 | `GET /api/clips/{clip_id}` | one clip with its full `result.json` |
 | `GET /api/clips/{clip_id}/cover` | JPEG cover taken about one second into the video |

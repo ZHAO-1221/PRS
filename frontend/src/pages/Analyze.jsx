@@ -34,6 +34,7 @@ export default function Analyze() {
   if (!job) return <main className="screen"><p className="sub">Starting…</p></main>;
   const done = job.status === 'done';
   const failed = job.status === 'failed';
+  const failedAt = job.stages.findIndex((s) => s.status === 'failed');
 
   return (
     <main className="screen">
@@ -43,7 +44,7 @@ export default function Analyze() {
       </header>
 
       <section>
-        <div className="eyebrow">{done ? 'All steps done' : failed ? `Stopped at step ${job.step + 1}` : `Step ${job.step + 1} of ${STEPS.length}`}</div>
+        <div className="eyebrow">{done ? 'All steps done' : failed ? (failedAt >= 0 ? `Stopped at step ${failedAt + 1}` : 'Stopped') : `Step ${job.step + 1} of ${STEPS.length}`}</div>
         <h1 className="title">{done ? 'Analysis' : failed ? 'Analysis' : 'Reading'}<br />{done ? 'complete' : failed ? 'failed' : 'body language…'}</h1>
         <p className="sub">{job.clip.file_name} · recorded {prettyTime(job.clip.recorded_at)} · {job.clip.camera}</p>
       </section>
@@ -56,13 +57,15 @@ export default function Analyze() {
       </div>
 
       <ol className="steps" aria-label="Analysis steps">
-        {STEPS.map((step, i) => {
-          const state = i < job.step ? 'done' : i === job.step ? (failed ? 'next' : 'running') : 'next';
+        {job.stages.map(({ name, status, done: count, total }, i) => {
+          const state = status === 'done' || status === 'running' ? status : 'next';
           return (
-            <li key={step} className={`step ${state}`}>
-              <span className="step-dot">{state === 'done' ? '✓' : i + 1}</span>
-              <span className="step-text"><b>{STEP_TEXT[step][0]}</b><span>{STEP_TEXT[step][1]}</span></span>
-              <span className="step-state">{state === 'done' ? 'Done' : state === 'running' ? 'Working' : failed && i === job.step ? 'Failed' : 'Next'}</span>
+            <li key={name} className={`step ${state}`}>
+              <span className="step-dot">{status === 'done' ? '✓' : i + 1}</span>
+              <span className="step-text"><b>{STEP_TEXT[name][0]}</b><span>{STEP_TEXT[name][1]}</span></span>
+              <span className="step-state">
+                {status === 'done' ? 'Done' : status === 'running' ? `Working${total > 1 ? ` ${count}/${total}` : ''}` : status === 'failed' ? 'Failed' : 'Next'}
+              </span>
             </li>
           );
         })}

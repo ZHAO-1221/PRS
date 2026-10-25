@@ -41,6 +41,12 @@ def run_pipeline(video: Path, output_dir: Path, progress) -> None:
                   device=os.environ.get("PET_DEVICE", "cpu"), progress=progress)
 
 
+def _stages(status: str) -> list[dict]:
+    """One entry per pipeline stage, all in the same status, for the Analyze screen."""
+    done = 1 if status == "done" else 0
+    return [{"name": name, "status": status, "done": done, "total": done} for name in STAGES]
+
+
 def _parse_recorded_at(value: str) -> str:
     if not re.fullmatch(r"\d{4}-\d{2}-\d{2}T\d{2}:\d{2}(:\d{2})?", value or ""):
         raise HTTPException(422, "recorded_at must look like YYYY-MM-DDTHH:MM")
@@ -127,6 +133,9 @@ def create_app(store: Path | None = None, *, analyse=None, max_upload_bytes: int
             index = STAGES.index(stage)
             job["step"] = index
             job["progress"] = (index + min(done / max(total, 1), 1)) / len(STAGES)
+            for earlier in job["stages"][:index]:
+                earlier.update(status="done", done=earlier["total"])
+            job["stages"][index].update(status="running", done=done, total=total)
 
         meta = read_meta(path)
         try:
@@ -134,10 +143,11 @@ def create_app(store: Path | None = None, *, analyse=None, max_upload_bytes: int
             if not (path / "result.json").exists():
                 raise RuntimeError("the analysis produced no result")
             meta.update(status="done", error=None)
-            job.update(status="done", step=len(STAGES), progress=1.0)
+            job.update(status="done", step=len(STAGES), progress=1.0, stages=_stages("done"))
         except Exception as error:  # report any pipeline failure on the job instead of losing it
             meta.update(status="failed", error=str(error) or type(error).__name__)
             job.update(status="failed", error=meta["error"])
+            job["stages"][job["step"]]["status"] = "failed"
         write_meta(path, meta)
 
     @app.post("/api/clips", status_code=202)
@@ -174,7 +184,7 @@ def create_app(store: Path | None = None, *, analyse=None, max_upload_bytes: int
                 "recorded_at": recorded, "camera": camera, "duration_sec": duration,
                 "status": "processing", "error": None}
         write_meta(path, meta)
-        jobs[clip_id] = {"status": "queued", "step": 0, "progress": 0.0, "error": None}
+        jobs[clip_id] = {"status": "queued", "step": 0, "progress": 0.0, "error": None, "stages": _stages("pending")}
         executor.submit(work, clip_id)
         return {"job_id": clip_id, "clip_id": clip_id}
 
@@ -185,7 +195,8 @@ def create_app(store: Path | None = None, *, analyse=None, max_upload_bytes: int
         # jobs only live in memory; after a restart fall back to the stored clip status
         job = jobs.get(job_id) or {"status": meta["status"] if meta["status"] != "processing" else "failed",
                                    "step": len(STAGES) if meta["status"] == "done" else 0,
-                                   "progress": 1.0 if meta["status"] == "done" else 0.0, "error": meta.get("error")}
+                                   "progress": 1.0 if meta["status"] == "done" else 0.0, "error": meta.get("error"),
+                                   "stages": _stages("done" if meta["status"] == "done" else "pending")}
         return {"job_id": job_id, **job, "clip": public(path, meta, windows=False) | {"result": None}}
 
     @app.get("/api/clips")
