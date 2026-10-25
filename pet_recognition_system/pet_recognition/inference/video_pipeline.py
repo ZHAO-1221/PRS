@@ -336,10 +336,12 @@ def _probability_dict(classes: tuple[str, ...], values: np.ndarray) -> dict[str,
 
 def apply_predictions(windows: list[dict], records: list[dict], *, task: str,
                       model_root: str | Path, device: str = "cpu",
-                      min_detection: float = 0.5) -> None:
+                      min_detection: float = 0.5, progress=None) -> None:
     """Attach raw class probabilities to every sufficiently detected window."""
+    report = progress or (lambda stage, done, total: None)
     rates = [detection_rates(record) for record in records]
     if task in ("dog_behavior", "both"):
+        report("behaviour", 0, 1)
         valid = [index for index, values in enumerate(rates)
                  if values["dog"] >= min_detection
                  and (task != "both" or values["person"] < min_detection)]
@@ -356,6 +358,7 @@ def apply_predictions(windows: list[dict], records: list[dict], *, task: str,
                       else "insufficient_detection")
             windows[index]["dog_behavior"] = {"status": status}
     if task in ("interaction", "both"):
+        report("interaction", 0, 1)
         valid = [index for index, values in enumerate(rates)
                  if all(value >= min_detection for value in values.values())]
         if valid:

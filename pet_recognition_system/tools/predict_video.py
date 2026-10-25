@@ -8,6 +8,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import math
 import os
 from pathlib import Path
 import sys
@@ -78,7 +79,9 @@ def _pose_stack(data_root: Path, device: str):
 
 def _records_from_video(video: Path, data_root: Path, task: str, device: str,
                         window_seconds: float, stride_seconds: float | None,
-                        min_window_seconds: float, use_visual: bool = False):
+                        min_window_seconds: float, use_visual: bool = False, progress=None):
+    report = progress or (lambda stage, done, total: None)
+    report("detect", 0, 1)
     detector, poses, extract_skeletons = _pose_stack(data_root, device)
     visual_encoder = None
     if use_visual and task in ("interaction", "both"):
@@ -86,6 +89,8 @@ def _records_from_video(video: Path, data_root: Path, task: str, device: str,
         visual_encoder = InteractionVisualEncoder(device, _clip_model_source(data_root))
     streams = ("dog",) if task == "dog_behavior" else ("person", "dog")
     metadata = probe_video(video)
+    # only an estimate for progress reporting; iter_video_windows decides the real count
+    expected = max(1, math.ceil(metadata["duration_sec"] / (stride_seconds or window_seconds)))
     records, windows = [], []
     for index, window in enumerate(iter_video_windows(
         video, window_seconds=window_seconds, stride_seconds=stride_seconds,
@@ -105,6 +110,7 @@ def _records_from_video(video: Path, data_root: Path, task: str, device: str,
         print(f"window {index + 1}: {window['start_sec']:.1f}-{window['end_sec']:.1f}s, "
               f"person={windows[-1]['detection']['person']:.0%}, "
               f"dog={windows[-1]['detection']['dog']:.0%}", flush=True)
+        report("keypoints", min(index + 1, expected), expected)
     return records, windows, metadata
 
 
@@ -133,12 +139,15 @@ def predict_video(
     smoothing_radius: int = 1,
     device: str = "cpu",
     export_clips: bool = False,
+    progress=None,
 ) -> dict:
     """Run the complete inference pipeline for one video or skeleton file.
 
     This is the public Python entry point intended for use by an API or another
     application. It writes ``result.json`` and ``timeline.csv`` and returns
-    their paths together with the merged timeline.
+    their paths together with the merged timeline. ``progress``, when given, is
+    called as ``progress(stage, done, total)`` with stage one of ``detect``,
+    ``keypoints``, ``behaviour`` and ``interaction``.
     """
     input_path = Path(input_path)
     if not input_path.exists():
@@ -158,14 +167,14 @@ def predict_video(
         records, windows, metadata = _records_from_video(
             input_path, Path(resolved_data_root), task, device,
             window_seconds, stride_seconds, min_window_seconds,
-            use_visual=True,
+            use_visual=True, progress=progress,
         )
     if not records:
         raise RuntimeError("no usable video windows were produced")
 
     apply_predictions(
         windows, records, task=task, model_root=model_root,
-        device=device, min_detection=min_detection,
+        device=device, min_detection=min_detection, progress=progress,
     )
     timeline = {}
     if task in ("dog_behavior", "both"):

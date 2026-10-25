@@ -1,0 +1,7 @@
+# Mobile app backend (app/server.py) on top of the inference stack; the pose stack itself is set up as in README.md.
+-r requirements-training.txt
+fastapi>=0.115,<1
+uvicorn>=0.32,<1
+python-multipart>=0.0.18,<1
+pytest>=8,<9
+httpx>=0.27,<1

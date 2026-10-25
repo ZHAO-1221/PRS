@@ -10,11 +10,16 @@ retraining commands are in [MODEL_TRAINING.md](MODEL_TRAINING.md).
 ## Setup
 
 ```bash
-conda create -n PRS-project python=3.10 -y
-conda activate PRS-project
+conda create -n PRS-project-311 python=3.11 -y
+conda activate PRS-project-311
 pip install -r requirements.txt          # keypoint evaluation and ONNX inference
 pip install -e .
 ```
+
+Python 3.11 is required: the released scikit-learn models in `checkpoints/best_models/` were saved with
+scikit-learn 1.9.1 (pinned in `requirements-training.txt`), which needs Python 3.11+, and pickled models only load
+reliably with the version that saved them. Re-export the `.joblib` files and update the pin together if either
+changes.
 
 Fine-tuning RTMPose also needs the OpenMMLab stack. This is the CPU build: OpenMMLab publishes no Windows mmcv
 wheel for the CUDA 12.8 PyTorch an RTX 50 card needs. mmpose is installed with `--no-deps` because its chumpy
@@ -23,7 +28,7 @@ dependency does not build with current pip and is not needed here.
 ```bash
 pip install "setuptools<81"
 pip install torch==2.1.0 torchvision==0.16.0 --index-url https://download.pytorch.org/whl/cpu
-pip install mmengine==0.10.7 onnx==1.23.2
+pip install mmengine==0.10.7 onnx==1.23.2 ml-dtypes==0.5.4   # newer ml-dtypes wants NumPy 2
 pip install mmcv==2.1.0 -f https://download.openmmlab.com/mmcv/dist/cpu/torch2.1.0/index.html
 pip install mmdet==3.2.0 json_tricks==3.17.3 munkres==2.0.0 xtcocotools==1.14.3 albumentations==1.3.1
 pip install mmpose==1.3.2 --no-deps
@@ -171,3 +176,26 @@ The NPZ form bypasses pose extraction and is useful for testing an existing
 `skeletons`, `boxes`, `fps`, `image_size` record against the released models.
 
 Tests: `python -m pytest -q`.
+
+## Mobile app backend
+
+`app/server.py` is a FastAPI service around `predict_video()` for the mobile frontend in `../frontend`.
+Install its extra dependencies, then run it from this folder:
+
+```bash
+pip install -r requirements-app.txt
+PET_DATA_ROOT=<data-root> uvicorn app.server:app --port 8000
+```
+
+| Endpoint | Purpose |
+|---|---|
+| `POST /api/clips` | multipart `video`, `recorded_at` (`YYYY-MM-DDTHH:MM`), `camera`; returns `{job_id, clip_id}` and analyses in the background |
+| `GET /api/jobs/{job_id}` | `status` (`queued`/`running`/`done`/`failed`), `step` (finished steps, 0-4), `progress`, `error` |
+| `GET /api/clips?from=&to=` | analysed clips in a date range, results without per-window data |
+| `GET /api/clips/{clip_id}` | one clip with its full `result.json` |
+| `GET /api/clips/{clip_id}/cover` | JPEG cover taken about one second into the video |
+| `GET /api/models/metrics` | test accuracy, macro-F1 and test clip count from `outputs/best_models/` |
+
+Uploads are limited to 500 MB of mp4/mov/avi/mkv/m4v and are stored under `outputs/app_store/clips/<clip_id>/`
+(override with `PET_APP_STORE`). One clip is analysed at a time; `PET_DEVICE` picks the inference device
+(default `cpu`). Tests: `python -m pytest tests/test_app_api.py`.
