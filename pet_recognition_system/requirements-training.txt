@@ -1,7 +1,9 @@
 -r requirements.txt
-torch>=2.1,<3
+# the mmcv 2.1 CPU wheels used by the OpenMMLab stack are built for torch 2.1.0 (install it as in README.md)
+torch==2.1.0
 matplotlib>=3.8,<4
-huggingface_hub>=0.36,<2
+# transformers 4.51 requires huggingface_hub < 1.0
+huggingface_hub>=0.36,<1
 # must match the version that saved checkpoints/best_models/**/*.joblib
 scikit-learn==1.9.1
 joblib>=1.4,<2

@@ -1,7 +1,9 @@
 # Keypoint evaluation and ONNX inference (Python 3.11). Fine-tuning needs more: see Setup in README.md.
+# NumPy 2 is out: torch 2.1 and mmcv 2.1 are built against NumPy 1
 numpy==1.26.4
-onnxruntime==1.23.2
-pillow==12.3.0
+onnxruntime==1.31.0
+pillow==13.0.0
+# opencv-python 5 requires NumPy 2
 opencv-python==4.11.0.86
 # newer releases (4.57 checked) need torch >= 2.2, but the OpenMMLab stack pins torch 2.1; 4.51.3 is verified
 transformers>=4.45,<4.52
