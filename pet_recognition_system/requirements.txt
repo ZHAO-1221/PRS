@@ -1,6 +1,7 @@
-# Keypoint evaluation and ONNX inference (Python 3.10). Fine-tuning needs more: see Setup in README.md.
+# Keypoint evaluation and ONNX inference (Python 3.11). Fine-tuning needs more: see Setup in README.md.
 numpy==1.26.4
 onnxruntime==1.23.2
 pillow==12.3.0
 opencv-python==4.11.0.86
-transformers>=4.45,<6
+# newer releases (4.57 checked) need torch >= 2.2, but the OpenMMLab stack pins torch 2.1; 4.51.3 is verified
+transformers>=4.45,<4.52
