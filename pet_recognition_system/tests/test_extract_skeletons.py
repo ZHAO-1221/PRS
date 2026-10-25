@@ -59,6 +59,15 @@ def test_frames_before_the_first_confident_box_are_followed_backwards():
     assert follow([[weak_elsewhere], [DOG]]) == [None, DOG]  # a weak box elsewhere before the start is not taken
 
 
+def test_a_person_needs_a_strong_box_to_start_and_weak_boxes_never_carry_it():
+    coat = (0, 0, 20, 40, 0.43, "person")  # clutter: confident for a dog, never 0.5
+    _, boxes = run([{"person": [coat], "dog": [DOG]}] * 3)
+    assert (boxes[0] == 0).all() and (boxes[1, :, 4] > 0).all()
+    person, half_hidden, weak = ((0, 0, 20, 40, s, "person") for s in (0.9, 0.35, 0.2))
+    _, boxes = run([{"person": [p], "dog": [DOG]} for p in (half_hidden, person, half_hidden, weak)])
+    assert np.allclose(boxes[0, :, 4], [0.35, 0.9, 0.35, 0])  # 0.3 continues both ways, 0.2 does not
+
+
 def test_dog_only_clips_leave_the_person_stream_empty_and_confidence_stays_above_zero():
     person = (0, 0, 20, 40, 0.9, "person")
     skeletons, boxes = run([{"person": [person], "dog": [DOG]}] * 2, streams=("dog",), confidence=-0.01)

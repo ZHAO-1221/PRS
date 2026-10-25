@@ -20,14 +20,16 @@ def iou(a, b):
     return overlap / ((a[2] - a[0]) * (a[3] - a[1]) + (b[2] - b[0]) * (b[3] - b[1]) - overlap)
 
 
-def choose(boxes, last=None):
+def choose(boxes, last=None, low_score=None):
     """First appearance (no last box): the highest-scoring candidate. After that: of the confident candidates
     overlapping the last box, or the weak ones overlapping it a lot, the one overlapping it most; None when
-    there is none, so another person or dog never takes over."""
+    there is none, so another person or dog never takes over. low_score: the score a weak box needs
+    (default FOLLOW_LOW_SCORE); FOLLOW_MIN_SCORE or more turns weak boxes off."""
     if last is None:
         return max(boxes, key=lambda b: b[4], default=None)
+    low_score = FOLLOW_LOW_SCORE if low_score is None else low_score  # read at call time: tools may change it
     near = [b for b in boxes if (b[4] >= FOLLOW_MIN_SCORE and iou(b, last) > 0)
-            or (b[4] >= FOLLOW_LOW_SCORE and iou(b, last) >= FOLLOW_LOW_MIN_IOU)]
+            or (b[4] >= low_score and iou(b, last) >= FOLLOW_LOW_MIN_IOU)]
     return max(near, key=lambda b: iou(b, last), default=None)
 
 

@@ -8,24 +8,31 @@ from pet_recognition.models.rtmdet import choose
 STREAMS = ("person", "dog")  # stream order in the output arrays
 MIN_BOX_SCORE = 0.3  # a new target needs this score; a followed one is checked by RTMDet's choose() instead
 REACQUIRE_AFTER = 3  # missed frames after which a confident box anywhere may take over the track
+# The weak-box rules exist for a lying dog. For people they only let clutter in: on sample clips real people
+# scored 0.85-0.90, while a wall photo, a coat on a chair, a cup and the dog itself were taken as a person at
+# 0.1-0.43. So a person track needs 0.5 to start (96% of real-person frames in the interaction clips reach it)
+# and no weak box ever starts or continues it; once started it still continues at choose()'s 0.3.
+PERSON_MIN_BOX_SCORE = 0.5
+# per stream: (score a new track needs, score a weak box needs; None = RTMDet's FOLLOW_LOW_SCORE)
+STREAM_SCORES = {"person": (PERSON_MIN_BOX_SCORE, PERSON_MIN_BOX_SCORE), "dog": (MIN_BOX_SCORE, None)}
 
 
-def track(per_frame, seed=None):
+def track(per_frame, seed=None, min_score=MIN_BOX_SCORE, low_score=None):
     """Follow one target through a clip. per_frame: its candidate boxes in each frame.
 
     Without a box to follow, a frame takes its highest-scoring candidate if it scores MIN_BOX_SCORE; while
     following, RTMDet's choose() picks the candidate overlapping the last box seen. The last box is kept
     through misses, so a weak box where the target was last seen still picks the track up again (a dog hidden
     behind or jumping on its owner comes back at 0.1-0.3); after REACQUIRE_AFTER missed frames a confident box
-    elsewhere may also start it again. seed: a box to follow from the first frame on. Returns a box or None
-    per frame.
+    elsewhere may also start it again. seed: a box to follow from the first frame on. min_score replaces
+    MIN_BOX_SCORE and low_score is passed to choose() (see STREAM_SCORES). Returns a box or None per frame.
     """
     chosen, last, missed = [], seed, 0
     for boxes in per_frame:
-        box = choose(boxes, last) if last is not None else None
+        box = choose(boxes, last, low_score) if last is not None else None
         if box is None and (last is None or missed >= REACQUIRE_AFTER):  # lost, e.g. the box jumped
             best = max(boxes, key=lambda b: b[4], default=None)
-            box = best if best is not None and best[4] >= MIN_BOX_SCORE else None
+            box = best if best is not None and best[4] >= min_score else None
         chosen.append(box)
         if box is None:
             missed += 1
@@ -34,22 +41,24 @@ def track(per_frame, seed=None):
     return chosen
 
 
-def follow(per_frame):
+def follow(per_frame, min_score=MIN_BOX_SCORE, low_score=None):
     """Pick one target's box in every frame of a clip: start from the first frame with a box scoring
-    MIN_BOX_SCORE (its best box), or, if no frame has one, from the clip's highest-scoring box (a far or lying
-    dog often stays at 0.1-0.3); then track() from there forwards and also backwards to the clip's start, so the
-    frames before the target first scores well are not lost."""
-    confident = [t for t, boxes in enumerate(per_frame) if any(b[4] >= MIN_BOX_SCORE for b in boxes)]
+    min_score (its best box), or, if no frame has one, from the clip's highest-scoring box if it scores
+    low_score (a far or lying dog often stays at 0.1-0.3; low_score >= min_score turns this off); then track()
+    from there forwards and also backwards to the clip's start, so the frames before the target first scores
+    well are not lost."""
+    low_score = rtmdet.FOLLOW_LOW_SCORE if low_score is None else low_score
+    confident = [t for t, boxes in enumerate(per_frame) if any(b[4] >= min_score for b in boxes)]
     if confident:
         start = confident[0]
         seed = max(per_frame[start], key=lambda b: b[4])
     else:
         best = max(((b, t) for t, boxes in enumerate(per_frame) for b in boxes), key=lambda x: x[0][4], default=None)
-        if best is None or best[0][4] < rtmdet.FOLLOW_LOW_SCORE:
+        if best is None or best[0][4] < low_score:
             return [None] * len(per_frame)
         seed, start = best
-    before = track(per_frame[start::-1], seed)[::-1]  # from the start frame back to the first one
-    return before[:-1] + track(per_frame[start:], seed)
+    before = track(per_frame[start::-1], seed, min_score, low_score)[::-1]  # from the start frame back to the first
+    return before[:-1] + track(per_frame[start:], seed, min_score, low_score)
 
 
 def extract_skeletons(frames, detector, pose_models, streams=STREAMS):
@@ -61,7 +70,7 @@ def extract_skeletons(frames, detector, pose_models, streams=STREAMS):
     of x1, y1, x2, y2, score; a stream whose target was not detected in a frame stays all zeros there.
     """
     candidates = [detector.candidates(frame) for frame in frames]  # the whole clip first: follow() looks ahead
-    tracks = {stream: follow([c[stream] for c in candidates]) for stream in streams}
+    tracks = {stream: follow([c[stream] for c in candidates], *STREAM_SCORES[stream]) for stream in streams}
     skeletons = np.zeros((2, len(frames), 17, 3), np.float32)
     boxes = np.zeros((2, len(frames), 5), np.float32)
     for t, frame in enumerate(frames):
