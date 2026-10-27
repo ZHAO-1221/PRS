@@ -161,6 +161,13 @@ human COCO-17 and dog AP-10K-17 keypoints, respectively. Set `PET_DATA_ROOT`
 itself. If any of the three files is absent, raw-video inference stops with an
 error listing its expected path.
 
+Official download links for all three models, archive extraction instructions,
+and the exact human RTMPose checkpoint-to-ONNX export commands are provided in
+the [root README external pretrained weights section](../README.md#2-prepare-external-pretrained-weights).
+The human model is the AIC+COCO-pretrained COCO-17 variant at 256×192;
+the dog model is the AP-10K-17 variant at 256×256. Do not substitute a whole-body
+model or rename a PyTorch `.pth` checkpoint to `end2end.onnx`.
+
 The fourth external model used by interaction prediction is the frozen official
 [`openai/clip-vit-base-patch32`](https://huggingface.co/openai/clip-vit-base-patch32)
 model. If `<PET_DATA_ROOT>/models/clip-vit-base-patch32/` contains a complete

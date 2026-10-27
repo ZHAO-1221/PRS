@@ -139,6 +139,16 @@ The selected behaviour and interaction weights are included in [checkpoints/best
 
 These three official pretrained models are **loaded from local files and are not downloaded automatically**. Prepare the files at the exact paths above before running raw-video inference:
 
+Official downloads are hosted by OpenMMLab; a third-party Hugging Face mirror is not required:
+
+| Model | Official download | Preparation |
+|---|---|---|
+| RTMDet-m COCO | [Official `.pth` checkpoint](https://download.openmmlab.com/mmdetection/v3.0/rtmdet/rtmdet_m_8xb32-300e_coco/rtmdet_m_8xb32-300e_coco_20220719_112220-229f527c.pth) | Save under `models/rtmdet-m_coco/` with its original filename. |
+| Human RTMPose-m AIC+COCO, 17 keypoints, 256×192 | [Official `.pth` checkpoint](https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/rtmpose-m_simcc-aic-coco_pt-aic-coco_420e-256x192-63eb25f7_20230126.pth) | Export to ONNX using the instructions below; a `.pth` file cannot be used directly by the ONNX inference wrapper. |
+| Dog RTMPose-m AP-10K (P0), 17 keypoints, 256×256 | [Official ONNX SDK ZIP](https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/onnx_sdk/rtmpose-m_simcc-ap10k_pt-aic-coco_210e-256x256-7a041aa1_20230206.zip) | Extract the archive and copy its `end2end.onnx` into `models/rtmpose-m_ap10k/`. Copy the file itself, not the enclosing archive directory. |
+
+The sources are the [MMDetection RTMDet model zoo](https://github.com/open-mmlab/mmdetection/tree/main/configs/rtmdet) and the [MMPose RTMPose model zoo](https://github.com/open-mmlab/mmpose/tree/main/projects/rtmpose). Keep the exact variants above; whole-body or newer RTMPose models may have different joint layouts or outputs.
+
 | Model | Purpose | Loading location relative to `PET_DATA_ROOT` |
 |---|---|---|
 | RTMDet-m COCO | Human and dog detection | `models/rtmdet-m_coco/rtmdet_m_8xb32-300e_coco_20220719_112220-229f527c.pth` |
@@ -146,6 +156,18 @@ These three official pretrained models are **loaded from local files and are not
 | RTMPose-m AP-10K (P0) | Dog AP-10K-17 keypoints | `models/rtmpose-m_ap10k/end2end.onnx` |
 
 The shared video entry point, `pet_recognition_system/tools/predict_video.py`, loads these files through `_pose_stack()`. A missing file raises an error listing the missing paths. Set `PET_DATA_ROOT` (or `--data-root`) to the directory **containing** `models/`, not to `models/` itself. For example, a data root of `/path/to/data` loads the detector from `/path/to/data/models/rtmdet-m_coco/`.
+
+**Human RTMPose ONNX preparation.** The released pipeline uses an ONNX export of the official AIC+COCO checkpoint linked above. After installing the MMPose/ONNX dependencies in the [system setup](pet_recognition_system/README.md#setup), run the following in PowerShell from `pet_recognition_system/`, with `PET_DATA_ROOT` already set:
+
+```powershell
+$humanModelDir = Join-Path $env:PET_DATA_ROOT "models/rtmpose-m_coco_human"
+New-Item -ItemType Directory -Force -Path $humanModelDir | Out-Null
+Invoke-WebRequest -Uri "https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/rtmpose-m_simcc-aic-coco_pt-aic-coco_420e-256x192-63eb25f7_20230126.pth" -OutFile (Join-Path $humanModelDir "official_checkpoint.pth")
+python -c "from pathlib import Path; from mmengine.hub import get_config; p = Path('work_dirs/rtmpose_human_export.py'); p.parent.mkdir(parents=True, exist_ok=True); get_config('mmpose::body_2d_keypoint/rtmpose/coco/rtmpose-m_8xb256-420e_aic-coco-256x192.py').dump(str(p))"
+python tools/export_rtmpose_onnx.py work_dirs/rtmpose_human_export.py "$humanModelDir/official_checkpoint.pth" "$humanModelDir/end2end.onnx"
+```
+
+This exports the existing pretrained weights; it does not train or fine-tune the human model. A compatible export already supplied with the submission can be placed at the same `end2end.onnx` path instead.
 
 The fourth external model, [openai/clip-vit-base-patch32](https://huggingface.co/openai/clip-vit-base-patch32), provides visual features for interaction recognition. **On the first interaction inference, it downloads automatically from Hugging Face if no local snapshot or cached copy is available**, so an internet connection is required for that first download. Later runs reuse the cache. If `<PET_DATA_ROOT>/models/clip-vit-base-patch32/` contains a complete local snapshot, the pipeline uses it first. Prepare the local snapshot or cache before offline use; dog-behaviour-only inference does not need CLIP.
 
