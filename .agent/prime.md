@@ -32,7 +32,9 @@
 
 ## 待办 / 已知问题
 
-- `diagrams/Dog_Pose_Three_Stage_Adaptation_*` 中 P1 仍写 "AP-10K Train"，应改为 APT-36K。
+- 2026-10-27 用户指定延后清理：`pet_recognition_system/ARCHITECTURE.md` 和 `presentation/Group28_Presentation_Assignment.txt` 已从根 README 资源表移除；文件暂时保留，使用完毕后再删除，不要提前删除。
+
+- 旧版架构图已清理，最终报告图片保留在 `diagrams/report/`。
 
 ## 进度日志
 

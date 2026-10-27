@@ -5,7 +5,7 @@
 **基于多模态视频与骨架特征的室内狗行为及人狗互动识别**（NUS PRS Practice Module，Group 28）。
 让家用宠物摄像头从"看得见狗在哪"走向"看得懂狗在做什么、和谁在互动"。
 
-## 课程要求（摘自 `PRS_Practice_Module_项目要求汇总.md`）
+## 课程要求（提交清单见根目录 README.md）
 
 - 4 个方向至少覆盖 3 个：监督/无监督学习、ML/DL、混合/集成、智能感知/意义建构。
 - 最终交付（打包 1 个 ZIP）：可运行系统、数据集、最终报告（工具/技术、系统设计、性能、讨论）、代码与模型文件、10–15 分钟视频演示、两次演示的 Slides。
@@ -54,16 +54,14 @@
 - **P1**：P0 + APT-36K 狗类数据训练
 - **P2**：P1 + 自建室内数据微调（小学习率 + 增强：翻转换左右点、尺度/旋转、遮挡）
 - 不用 AP-10K 再训练：预训练已用过，再训无新信息且测试不公平。
-- 注意：`diagrams/Dog_Pose_Three_Stage_Adaptation_*` 图中 P1 仍写 "AP-10K Train"，实际应为 APT-36K。
 
 ## 数据
 
 - **APT-36K**：只用狗类，沿用官方划分，不重标。帧均为 1920×1080，每帧一个 JSON 标注。
 - **自建室内数据**：授权或公开视频，人工标注 300–800 张图（狗框 + 17 点，格式同 APT 的逐帧 JSON），另加片段级行为/互动标签。
-- **测试参考**：夜间猫狗视频（见 `viedo_link.md`）。
 - **铁律**：先按狗、按视频划分 train/val/test，再抽帧切片段，防止数据泄漏。验证集只用于选模型，测试集只在最后用一次。
 
-其它数据集/模型链接见 `viedo_link.md`（AP-10K、Animal-Pose、DETRPose、mmpose RTMPose 配置）。
+当前数据与模型链接见根目录 README.md。
 
 ## 评估
 
@@ -75,12 +73,7 @@
 ## 仓库结构
 
 ```
-PRS_Practice_Module_项目要求汇总.md   课程要求与往届示例
-Reolink_Background.md                  选题背景：Reolink 公司、痛点、与课程映射
-Reolink_CCTV_产品分类与数据集调研.md   CCTV 产品分类与可用数据集调研
-viedo_link.md                          数据集 / 模型链接
-proposal/                              Proposal（中/英 docx + 提交版 PDF）
-diagrams/                              架构图，HTML 源 + PNG，_CN / _EN 成对
+diagrams/report/                       最终报告引用的图片
 presentation/
   index.html                           网页版 Proposal 演示
   Proposal_Group28_CN.pptx             中文 PPT（英文版的源）
