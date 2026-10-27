@@ -6,8 +6,8 @@
 
 | **Official Full Name** | **Student ID (MTech Applicable)** | **Email** |
 |---|---|---|
-| Sun Wenjing | TBC | TBC |
-| Zhao Jiayi | TBC | TBC |
+| Sun Wenjing | A0326610N | [e1538441@u.nus.edu](mailto:e1538441@u.nus.edu) |
+| Zhao Jiayi | A0329873M | [e1554200@u.nus.edu](mailto:e1554200@u.nus.edu) |
 
 ## Project Overview
 
