@@ -123,7 +123,7 @@ python -m pip install -e .
 
 Keep the pinned dependency versions, particularly scikit-learn, consistent with the saved recognition models. The CLI's optional segment export requires FFmpeg on `PATH` or the `imageio-ffmpeg` package.
 
-### 2. Prepare external pose weights
+### 2. Prepare external pretrained weights
 
 The selected behaviour and interaction weights are included in [checkpoints/best_models](pet_recognition_system/checkpoints/best_models/). The upstream pose-pipeline weights must be provided separately:
 
@@ -137,7 +137,17 @@ The selected behaviour and interaction weights are included in [checkpoints/best
     └── end2end.onnx
 ```
 
-Interaction inference also uses the official [openai/clip-vit-base-patch32](https://huggingface.co/openai/clip-vit-base-patch32) model. The pipeline prefers a complete local snapshot at `<PET_DATA_ROOT>/models/clip-vit-base-patch32/`; otherwise it downloads the official model on first use and reuses the Hugging Face cache. Prepare the local snapshot or cache before offline use.
+These three official pretrained models are **loaded from local files and are not downloaded automatically**. Prepare the files at the exact paths above before running raw-video inference:
+
+| Model | Purpose | Loading location relative to `PET_DATA_ROOT` |
+|---|---|---|
+| RTMDet-m COCO | Human and dog detection | `models/rtmdet-m_coco/rtmdet_m_8xb32-300e_coco_20220719_112220-229f527c.pth` |
+| RTMPose-m COCO | Human COCO-17 keypoints | `models/rtmpose-m_coco_human/end2end.onnx` |
+| RTMPose-m AP-10K (P0) | Dog AP-10K-17 keypoints | `models/rtmpose-m_ap10k/end2end.onnx` |
+
+The shared video entry point, `pet_recognition_system/tools/predict_video.py`, loads these files through `_pose_stack()`. A missing file raises an error listing the missing paths. Set `PET_DATA_ROOT` (or `--data-root`) to the directory **containing** `models/`, not to `models/` itself. For example, a data root of `/path/to/data` loads the detector from `/path/to/data/models/rtmdet-m_coco/`.
+
+The fourth external model, [openai/clip-vit-base-patch32](https://huggingface.co/openai/clip-vit-base-patch32), provides visual features for interaction recognition. **On the first interaction inference, it downloads automatically from Hugging Face if no local snapshot or cached copy is available**, so an internet connection is required for that first download. Later runs reuse the cache. If `<PET_DATA_ROOT>/models/clip-vit-base-patch32/` contains a complete local snapshot, the pipeline uses it first. Prepare the local snapshot or cache before offline use; dog-behaviour-only inference does not need CLIP.
 
 ### 3. Start the backend and frontend
 

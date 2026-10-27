@@ -144,7 +144,9 @@ result = predict_video(
 )
 ```
 
-The data root must contain the three pose-pipeline weights documented above:
+The data root must contain the three official pretrained pose-pipeline weights below.
+They are loaded from local files by `tools/predict_video.py::_pose_stack()` and
+**are not downloaded automatically**:
 
 ```text
 <PET_DATA_ROOT>/models/
@@ -153,12 +155,20 @@ The data root must contain the three pose-pipeline weights documented above:
 └── rtmpose-m_ap10k/end2end.onnx
 ```
 
-Interaction prediction uses the frozen official
+The `.pth` file is used for human/dog detection; the two ONNX files extract
+human COCO-17 and dog AP-10K-17 keypoints, respectively. Set `PET_DATA_ROOT`
+(or `--data-root`) to the parent directory of `models/`, not to `models/`
+itself. If any of the three files is absent, raw-video inference stops with an
+error listing its expected path.
+
+The fourth external model used by interaction prediction is the frozen official
 [`openai/clip-vit-base-patch32`](https://huggingface.co/openai/clip-vit-base-patch32)
 model. If `<PET_DATA_ROOT>/models/clip-vit-base-patch32/` contains a complete
-local snapshot, it is used first. Otherwise Transformers downloads the official
-model on the first run and reuses its local Hugging Face cache afterwards. A
-local snapshot is therefore only required for offline inference.
+local snapshot, it is used first. Otherwise Transformers **automatically downloads
+the official model on the first interaction inference** if it is not already
+cached, and reuses the Hugging Face cache afterwards. Internet access is required
+for the first download. Prepare either a local snapshot or the cache before
+offline use. Dog-behaviour-only inference does not load CLIP.
 
 Videos up to eight seconds are classified as one clip. Longer videos are read
 lazily and divided into four-second windows, so a long recording is not loaded
