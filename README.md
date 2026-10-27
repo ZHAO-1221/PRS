@@ -202,14 +202,12 @@ Project videos, annotations and generated skeletons are hosted in the [PRS Group
 | Resource | Location |
 |---|---|
 | Final report | [Final_Report.md](Final_Report.md) |
-| Module architecture | [ARCHITECTURE.md](pet_recognition_system/ARCHITECTURE.md) |
 | Installation and inference | [System README](pet_recognition_system/README.md) |
 | Training and evaluation commands | [MODEL_TRAINING.md](pet_recognition_system/MODEL_TRAINING.md) |
 | Selected models and benchmark details | [Model release README](pet_recognition_system/checkpoints/best_models/README.md) |
 | Frontend instructions | [Frontend README](frontend/README.md) |
 | Proposal slides | [Group28_Proposal.pptx](presentation/Group28_Proposal.pptx) |
 | Final slides | [Group28_Final.pptx](presentation/Group28_Final.pptx) |
-| Speaker assignment and slide outline | [Group28_Presentation_Assignment.txt](presentation/Group28_Presentation_Assignment.txt) |
 
 Run backend tests from `pet_recognition_system/` with `python -m pytest -q`, and frontend tests from `frontend/` with `npm test` after installing the corresponding dependencies.
 
