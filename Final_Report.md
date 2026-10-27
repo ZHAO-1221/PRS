@@ -121,7 +121,46 @@ The final fixed split is shown below. The 24-clip test set is balanced with six 
 
 ### 2.4 Dog Pose Data (Hand-Labelled Evaluation Set and APT-36K)
 
+Model One uses two pose datasets. Neither is used to train the behaviour or interaction classifiers.
+
+**APT-36K dog subset.** The dog annotations of APT-36K provide the training data for the fine-tuned pose variant (Section 5.1.2). The subset contains 1,193 frames and 2,245 dog annotations from 27 source videos, all at 1920×1080 resolution. A total of 180 annotations contain no labelled keypoint and are removed, leaving 2,065 dog instances. The data are split by source video, so that frames from one video never appear in both partitions. APT-36K was chosen instead of AP-10K because the baseline model had already been trained on AP-10K. Its keypoints are either labelled or unlabelled; there is no separate state for a labelled but occluded joint.
+
+| APT-36K split | Source videos | Images | Dog instances |
+|---|---:|---:|---:|
+| Training | 24 | 983 | 1,691 |
+| Validation | 3 | 209 | 374 |
+
+**Indoor evaluation set.** Model selection is based on 36 frames taken from the project's indoor home-camera clips. The frames come from 28 dogs in 28 source videos and contain one dog each. They were selected so that each of the six behaviour labels in use at selection time (walking/running, standing, sitting, lying/sleeping, eating/drinking and playing alone) contributes six frames. Playing alone was later removed from Model Two because it could not be labelled consistently; this does not affect the pose evaluation, which never uses behaviour labels. The grouping is used only to break pose accuracy down by posture.
+
+All 17 AP-10K keypoints were labelled by hand by one annotator. Only visible keypoints whose position could be determined were labelled; joints hidden by the body or furniture, or outside the image, were left unlabelled rather than guessed, and they are excluded from every score. This follows the AP-10K convention and allows a direct comparison with the official AP-10K results in Section 6.3. Severely blurred frames, in which a human annotator could not locate the joints, were not included.
+
+| Item | Value |
+|---|---:|
+| Frames | 36 (6 per behaviour label) |
+| Dogs / source videos | 28 / 28 |
+| Keypoint slots (36 × 17) | 612 |
+| Labelled visible keypoints | 547 (89%) |
+| Unlabelled (occluded or undeterminable) | 65 (11%) |
+| Most frequently unlabelled | right knee and right back paw (10 each), left back paw (8), left knee (6) |
+
+None of these frames, and none of their source videos, are used to train any pose model.
+
 ### 2.5 Annotation and Data Preparation Pipeline
+
+The dog-behaviour data are prepared in six steps (Figure 2-1), from online videos to the skeleton sequences consumed by Model Two. The interaction clips pass through the same skeleton-extraction steps.
+
+1. **Video collection.** Videos were searched for on public platforms such as YouTube and Bilibili and in research collections such as SmartHomeBench. Footage resembling a home camera was preferred: a fixed, usually elevated indoor viewpoint, a stable camera and a clearly visible dog. Each original video receives a `source_video_id` and each dog an anonymous `dog_id`.
+2. **Behaviour clipping.** Each video was watched and cut by hand into short clips in which the dog shows one stable behaviour. Most clips last 5--8 seconds (140 of the 170 valid project clips; median 5.0 s). When posture and activity conflict, the clip is labelled by posture; for example, a dog chewing a toy while lying down is labelled lying/sleeping. Start and end times are recorded in a manifest so that every clip can be re-cut from its source. The actual length of every clip file was checked with `ffprobe` against its labelled interval, and clips whose file ran more than one second longer than the label were re-cut from the original video.
+3. **Grouped split.** Clips are assigned to partitions by dog and source video before any frame is sampled (Section 2.6).
+4. **15 fps sampling.** Every clip is resampled to 15 frames per second by keeping the first frame of each 1/15-second interval. A common frame rate makes clips recorded at 24--60 fps comparable in time.
+5. **Skeleton extraction with Model One.** RTMDet and the tracking rule select the dog (and, for interaction clips, the person) in each frame, and RTMPose estimates 17 keypoints inside the selected box (Sections 3.2--3.4). Annotated skeleton videos of a sample of clips were reviewed by eye, and the tracking rule was revised whenever a systematic failure was found.
+6. **Skeleton sequences.** Each clip is stored as one \(2\times T\times17\times3\) skeleton array with the selected boxes, which is handed to Model Two (dog stream only) and Model Three (both streams).
+
+The hand-labelled pose evaluation set (Section 2.4) branches off after the split. Three to six candidate frames per clip were chosen automatically to cover different moments of the clip, ranked by sharpness, dog size and truncation, and then reduced by within-clip similarity. Dog boxes and the 17 keypoints were labelled in LabelMe, with model predictions used only as a starting point that the annotator corrected by hand for every frame. The final 36 evaluation frames were selected from these labelled frames.
+
+![Data preparation pipeline from online videos to skeleton sequences](diagrams/report/figure_2_1_data_preparation_pipeline.png)
+
+*Figure 2-1. Data preparation pipeline. Online home-camera videos are cut by hand into single-behaviour clips, split by dog and source video, sampled at 15 fps and converted by Model One into two-stream skeleton sequences for Models Two and Three. The lower branch shows how frames from the same clips were selected and hand-labelled to form the pose evaluation set used to choose the dog pose weights.*
 
 ### 2.6 Data Splits and Leakage Control
 
@@ -135,11 +174,96 @@ The final interaction ensemble is fitted on all 97 development clips, while the 
 
 ### 3.1 Software Stack and Frameworks
 
+The system is divided into a Python model and back-end stack and a JavaScript mobile web front end. All models run on the CPU, so the complete system can be used on an ordinary laptop without a GPU.
+
+| Layer | Tools | Role |
+|---|---|---|
+| Language and environment | Python 3.11 (Conda) | Inference, evaluation, feature extraction and the back end |
+| Pose training | PyTorch 2.1, MMEngine, MMCV 2.1, MMDetection 3.2, MMPose 1.3 | Fine-tuning RTMPose on APT-36K (P1) and exporting checkpoints |
+| Inference | ONNX Runtime, OpenCV, NumPy | RTMDet and RTMPose inference, video decoding and 15 fps sampling |
+| Recognition models | PyTorch, scikit-learn 1.9, joblib | Motion-aware TCN, ExtraTrees, linear SVM, PCA and logistic regression; saved ensembles |
+| Visual features | Hugging Face Transformers | Frozen CLIP ViT-B/32 encoder for the interaction visual branch |
+| Video tools | FFmpeg / ffprobe | Clip cutting, re-encoding and length checks |
+| Annotation | LabelMe | Dog boxes and keypoints for the pose evaluation set |
+| Back end | FastAPI, Uvicorn | REST API for uploading clips, tracking analysis jobs and returning results |
+| Front end | React 18, React Router, Vite 5 | Mobile web application |
+| Testing | pytest, Vitest | Back-end and model tests; front-end summary-logic tests |
+| Plots | Matplotlib | Report figures |
+
+**Back end.** The FastAPI service stores each uploaded video together with its recording time and camera name, and analyses it in a background worker. Analysis runs one clip at a time because CPU inference is heavy. Each analysis job reports four stages (detection, keypoints, behaviour and interaction) so that the client can show progress. The main endpoints upload a clip, query a job, list clips within a date range, and return one clip's result and cover image. Results are written as JSON files next to each clip, so no separate database is required.
+
+**Front end.** The mobile web application is built with React and Vite. Its pages cover the daily story, uploading, analysis progress, the result of one clip and a weekly summary. All data access goes through one API module; a mock mode serves the same pages from sample data, so that the interface can be developed and demonstrated without running the models. During development, Vite forwards `/api` requests to the FastAPI service, and a phone on the same network can open the application directly.
+
+The P1 fine-tuning used an earlier Python 3.10 environment with the same OpenMMLab versions. MMCV provides no Windows build for the CUDA 12.8 runtime required by the available RTX 5060 GPU, so training also ran on the CPU.
+
 ### 3.2 Object Detection (RTMDet)
+
+RTMDet is a one-stage real-time object detector built on a CSPNeXt backbone. The project uses RTMDet-m with the official COCO weights and does not retrain it. Of the 80 COCO categories, only the person and dog outputs are retained.
+
+A COCO-trained detector frequently assigns indoor dogs to another quadruped category. On the indoor evaluation set, the dog was localised correctly in every frame, but in 9 of the 36 frames another category scored higher than "dog" (eight as cat and one as cow). All quadruped categories (cat, dog, horse, sheep, cow, bear and similar) are therefore merged into a single dog class, and the merged box with the highest score is used. A box must score at least 0.3 to start a new target; lower-scoring boxes are accepted only to continue an existing track (Section 3.4).
+
+With this post-processing, a dog was found in all 36 evaluation frames. Compared with the hand-drawn boxes, the detected dog boxes have a median IoU of 0.83 and a minimum of 0.63. The merging rule assumes that the dog is the only animal in view: a real cat in the same room would also be treated as a dog.
 
 ### 3.3 Pose Estimation (RTMPose)
 
+RTMPose is a top-down pose estimator: the image region inside a detection box is cropped and resized, and the model predicts the keypoints of the single subject in that crop. RTMPose-m uses a CSPNeXt-m backbone and an RTMCC head. Instead of regressing a heatmap, it applies SimCC, which treats the \(x\)- and \(y\)-coordinate of every keypoint as two separate classification problems over sub-pixel bins (split ratio 2.0). This keeps the model light enough for CPU inference.
+
+Two RTMPose-m models are used:
+
+| Branch | Training data | Input size | Keypoints |
+|---|---|---|---|
+| Human | COCO | 256×192 | COCO-17 |
+| Dog | AP-10K | 256×256 | AP-10K-17: eyes, nose, neck, tail root, and shoulder--elbow--front paw and hip--knee--back paw on each side |
+
+The confidence of a keypoint is the peak value of its SimCC distribution. It is not a probability and can exceed 1 (up to about 1.7) or fall slightly below 0. Confidence is therefore clipped to \([0.001, 1]\), so that a value of 0 always means that the subject was not detected. Both models are exported to ONNX and run with ONNX Runtime on the CPU.
+
+Dog pose accuracy is measured with Object Keypoint Similarity (OKS), the standard COCO and AP-10K metric. For one dog,
+
+\[
+\mathrm{OKS}=\frac{\sum_{i}\exp\left(-\dfrac{d_i^{2}}{2s^{2}k_i^{2}}\right)\delta(v_i>0)}{\sum_{i}\delta(v_i>0)},
+\]
+
+where \(d_i\) is the distance between the predicted and labelled position of keypoint \(i\), \(s^2\) is the object area (the area of the hand-drawn box, since no segmentation is available), \(k_i\) is the AP-10K per-keypoint constant, and \(\delta(v_i>0)\) restricts the sum to labelled keypoints. An OKS of 1 means perfect agreement. OKS AP is the COCO-style average precision over OKS thresholds from 0.50 to 0.95; AP50 and AP75 use single thresholds. The Percentage of Correct Keypoints, PCK@\(\alpha\), is the proportion of labelled keypoints whose error is no more than \(\alpha\) times the long side of the hand-drawn box; \(\alpha=0.05\) and \(0.1\) are reported.
+
 ### 3.4 Multi-Target Tracking and Skeleton Extraction
+
+Every clip is sampled at 15 fps. RTMDet is first run on the whole clip; the person and the dog are then tracked separately, and RTMPose is applied inside the selected box in each frame. The output of a clip is
+
+\[
+\mathbf{S}\in\mathbb{R}^{2\times T\times17\times3},
+\]
+
+where stream 0 is the person (COCO-17), stream 1 is the dog (AP-10K-17), \(T\) is the number of frames, and each joint stores its \(x\)- and \(y\)-coordinate in pixels and its confidence. A frame in which the target is not found is filled with zeros. The selected box and its detection score are stored alongside each frame. Dog-behaviour clips export only the dog stream: in an early batch export, 30 of 93 dog-only clips contained false "person" tracks on static objects such as photographs, coats and picture-in-picture overlays.
+
+A frame can contain more than one candidate box, and a dog lying down often receives a low detection score. The box-selection rule must therefore keep the same subject across the clip without discarding low-confidence frames of that subject. The final rule is summarised below.
+
+| Rule | Condition | Purpose |
+|---|---|---|
+| Starting frame | The highest-scoring box in the clip with score ≥ 0.3; if none exists, the highest-scoring box with score ≥ 0.1; otherwise the target is absent from the clip | Start from the most reliable detection |
+| Bidirectional tracking | Track forwards to the end and backwards to the start of the clip from the starting frame | Recover frames before the first confident detection |
+| Normal continuation | Score ≥ 0.3 and IoU > 0 with the previous box; the box with the largest IoU is chosen | Follow the same subject |
+| Low-score continuation | 0.1 ≤ score < 0.3 and IoU ≥ 0.3 with the previous box | Keep lying, distant or partly occluded dogs |
+| Track loss | No box accepted for 3 consecutive frames (0.2 s) | Allow a different box to take over |
+| Recovery | The last position is remembered and the continuation rules keep being applied around it; after a loss, a box with score ≥ 0.3 elsewhere may also take over | Re-attach the subject after a short occlusion |
+
+The rule was developed in six versions, each motivated by failures found by visually reviewing extracted skeletons:
+
+| Version | Change | Problem addressed |
+|---|---|---|
+| 1 | Highest-scoring box in every frame | — |
+| 2 | Highest-scoring box in the first frame, then the box overlapping the previous one most, falling back to the highest score | Version 1 switched between dogs in multi-dog frames |
+| 3 | Overlap only, with no fallback to score | Version 2 could still jump to another animal |
+| 4 | Low-score continuation and re-detection after 3 lost frames | Lying dogs scored 0.1--0.3 and were dropped |
+| 5 | Whole-clip detection, bidirectional tracking, fallback start at the clip's best box, low-score IoU relaxed from 0.5 to 0.3 | Frames before the first confident box were lost; some lying dogs never reached 0.3 |
+| 6 (final) | Remember the last position after a track loss | Dogs returning from behind a person with a low score were not re-attached |
+
+The changes recovered most of the frames in which the detector had found the dog but with a low score. In a human--dog play clip, the dog was detected in 55 of 90 frames with version 3 and in 78 with version 4. A night-time clip of a curled-up sleeping dog rose from 78% to 100% of frames with bidirectional tracking, and a distant dog lying on its back rose from 0% (no box ever reached 0.3) to 78% with version 5 and 90% with version 6. In the first complete export, 12 clips had their target in fewer than 80% of frames; version 6 reduced this number to nine. The remaining cases are mostly genuine absences (the dog leaves the view or is fully hidden by a person), corrupted video frames, or boxes that cover only the dog's head. One night-time infrared clip, in which the detector scored the dog at only 0.04--0.3, produced unusable skeletons and was excluded from the dataset.
+
+![Low-score dog boxes recovered by the tracking rule](diagrams/report/figure_3_1_skeleton_tracking_low_score.jpg)
+
+*Figure 3-1. Four frames from a human--dog play clip in which the dog lies on the floor. The person (blue) and dog (orange) are shown with their boxes and skeletons; each title gives the dog-box detection score. All four dog boxes score between 0.11 and 0.27 and would be discarded by a fixed 0.3 threshold; the low-score continuation rule keeps them because they overlap the dog box of the previous frame.*
+
+Detection and pose estimation therefore remain the main source of missing data. Frames in which the detector produces no usable box cannot be recovered by any selection rule, and lying/sleeping is the weakest posture in both detection and pose accuracy (Section 6.3). The downstream models must therefore tolerate zero-filled frames, which they do through interpolation, frame masks and confidence-weighted pooling.
 
 ### 3.5 Skeleton Preprocessing and Normalisation
 
@@ -181,6 +305,16 @@ A small held-out test set is also evaluated after model development. Because the
 
 ### 4.2 Dual-Species Skeleton Extraction Pipeline
 
+The skeleton extraction stage converts every video clip into the two-stream skeleton tensor used by both recognition models. It is shared by training and inference, so the training skeletons and the skeletons seen by the deployed system are produced in exactly the same way. The pipeline contains five steps:
+
+1. **Frame sampling.** The clip is decoded and sampled at 15 fps.
+2. **Whole-clip detection.** RTMDet-m is applied to every frame. Only person boxes and merged quadruped boxes are kept (Section 3.2).
+3. **Per-species tracking.** One person track and one dog track are selected with the bidirectional rule of Section 3.4. Dog-behaviour clips track only the dog.
+4. **Pose estimation.** The human RTMPose-m model (COCO-17) is applied in the person box and the dog RTMPose-m model (AP-10K-17) in the dog box; confidences are clipped to \([0.001, 1]\).
+5. **Output.** The two streams are stored together as one \(2\times T\times17\times3\) array, with zeros for frames in which a target was not found.
+
+The dog-behaviour model reads stream 1 only, while the interaction model reads both streams. Because the human branch uses the official model unchanged, all model-specific work in this stage concerns the dog detector post-processing, the tracking rule and the choice of dog pose weights (Section 5.1).
+
 ### 4.3 Repository and Module Structure
 
 ### 4.4 Frontend Prototype
@@ -189,11 +323,44 @@ A small held-out test set is also evaluated after model development. Because the
 
 ### 5.1 Model One: Dog Pose Estimation
 
+Model One produces the dog skeletons used by both recognition models. The human branch uses the official RTMPose-m COCO model without modification; only the dog branch was considered for adaptation, because public animal pose data contain few indoor home-camera scenes. Three variants were planned:
+
+| Variant | Dog pose weights | Status |
+|---|---|---|
+| P0 | Official RTMPose-m AP-10K, no further training | Evaluated; **selected** |
+| P1 | P0 fine-tuned on the APT-36K dog subset | Trained and evaluated |
+| P2 | Fine-tuned on hand-labelled indoor frames | Not carried out |
+
+The variants are compared on the 36-frame indoor evaluation set using the real pipeline, in which the pose model receives RTMDet boxes rather than hand-drawn boxes (Section 6.3).
+
 #### 5.1.1 Baseline (P0: RTMPose-m AP-10K)
+
+P0 is the official MMPose RTMPose-m checkpoint for AP-10K, pre-trained on AIC and COCO and then trained for 210 epochs on AP-10K, which covers 54 animal species. Its published results on the AP-10K test set are 0.722 AP, 0.939 AP50 and 0.788 AP75; for large animals the AP is 0.728. Before any fine-tuning, P0 reaches 0.775 AP (0.940 AP50, 0.882 AP75) on the APT-36K dog validation split. P0 is used without any training and serves both as the baseline and as the starting point for P1.
 
 #### 5.1.2 Fine-Tuning on APT-36K (P1)
 
+P1 continues training P0 on the APT-36K dog training split. The model structure, the KLDiscretLoss of the official configuration and the data augmentation are unchanged, and no layer is frozen. Because training starts from converged weights, the learning rate is one tenth of the official value and the schedule is much shorter.
+
+| Setting | P1 | Official AP-10K configuration |
+|---|---|---|
+| Epochs | 40 planned; **stopped manually after 30** | 210 |
+| Learning rate | 4×10⁻⁴ | 4×10⁻³ |
+| Schedule | Linear warm-up for 50 iterations; cosine decay from epoch 20 | Warm-up for 1,000 iterations; cosine decay in the second half |
+| Optimiser | AdamW, weight decay 0.05 | Same |
+| Batch size | 64 (27 iterations per epoch) | 64 × 8 GPUs |
+| Augmentation | Flip, half-body, scale 0.6--1.4, rotation ±80°, HSV jitter, blur, random occlusion | Same |
+| Weight averaging | EMA | Same |
+| Checkpoint selection | Highest AP on the APT-36K validation split, evaluated every epoch | Evaluated every 10 epochs |
+
+The configuration planned a lighter augmentation stage for epochs 31--40; it was not reached because training was stopped after epoch 30. Training ran on a laptop CPU (Intel Core Ultra 7 255H) and took about 67 minutes for 30 epochs, because no Windows MMCV build supported the CUDA 12.8 runtime required by the available RTX 5060 GPU.
+
+On the APT-36K validation split, AP fell to 0.753 after the first epoch, exceeded P0 from epoch 3 and fluctuated between 0.80 and 0.82 after epoch 10 (Figure 6-1). The best value, 0.817, was reached at epoch 19 and this checkpoint is used as P1. The training loss kept decreasing from 0.458 to 0.277 until epoch 30, while validation AP no longer improved after about epoch 10; the later epochs therefore mainly fitted the APT-36K training videos. Since the validation split contains only three videos, the choice of epoch 19 over neighbouring epochs is partly due to chance.
+
 #### 5.1.3 Further Adaptation (P2)
+
+P2 was intended to fine-tune the dog model on hand-labelled indoor frames from the project's own clips. It was not carried out, for three reasons. First, P1 did not improve indoor accuracy (Section 6.3), so additional data from a different public source was not the limiting factor. Second, P0 already performs close to its own benchmark on indoor dogs: its AP with hand-drawn boxes, 0.700, is within the confidence interval of the official large-animal result. Third, the evaluation frames now come from 28 source videos; a fair P2 would require a new video-level split in which none of these videos is used for training, leaving few videos for training.
+
+P0 skeletons were therefore exported for the downstream models. P2 would become worthwhile if the behaviour or interaction models were shown to be limited by skeleton quality, particularly for lying dogs, which are the weakest posture for both detection and pose estimation.
 
 ### 5.2 Model Two: Dog Behaviour Recognition
 
@@ -405,6 +572,71 @@ Per-class precision, recall and F1, together with confusion matrices, are used f
 
 ### 6.3 Dog Pose Estimation Results
 
+The dog pose variants are evaluated on the 36-frame indoor evaluation set (Section 2.4). The primary setting follows the real pipeline: RTMDet detects the dog and the pose model predicts keypoints inside the detected box. Running the pose models inside the hand-drawn boxes is reported as a reference. P1 uses its epoch-19 checkpoint. Both models are exported to ONNX by the same code; re-exporting P0 this way reproduces the official ONNX output exactly, so the two models share identical pre- and post-processing. No flip test is used.
+
+**APT-36K validation.** Fine-tuning improves AP on the APT-36K validation split from 0.775 to 0.817 (Figure 6-1).
+
+![P1 validation AP on APT-36K by epoch](diagrams/report/figure_6_1_p1_apt_val_ap.png)
+
+*Figure 6-1. OKS AP of P1 on the APT-36K dog validation split after each epoch. The dashed line marks P0 before fine-tuning (0.775). AP exceeds P0 from epoch 3, levels off between 0.80 and 0.82 after epoch 10 and peaks at 0.817 at epoch 19, the checkpoint used as P1. Training was stopped after epoch 30 of the 40 planned.*
+
+**Indoor evaluation.** The gain on APT-36K does not carry over to the indoor frames.
+
+| Pose-model input box | Model | OKS AP | AP50 | AP75 | Mean OKS | PCK@0.05 | PCK@0.1 |
+|---|---|---:|---:|---:|---:|---:|---:|
+| RTMDet box (real pipeline) | P0 | 0.678 | 0.970 | 0.762 | 0.827 | 0.682 | 0.857 |
+| RTMDet box (real pipeline) | P1 | 0.693 | 1.000 | 0.754 | 0.831 | 0.680 | 0.861 |
+| Hand-drawn box (reference) | P0 | 0.700 | 0.970 | 0.825 | 0.839 | 0.695 | 0.868 |
+| Hand-drawn box (reference) | P1 | 0.698 | 1.000 | 0.758 | 0.832 | 0.654 | 0.857 |
+
+Because the same 36 frames are scored by both models, the difference is tested with a paired bootstrap: the per-frame change in OKS (P1 minus P0) is resampled over frames 10,000 times.
+
+| Pose-model input box | Mean OKS change | 95% confidence interval | Improved | Within ±0.01 | Worse |
+|---|---:|---|---:|---:|---:|
+| RTMDet box | +0.004 | −0.024 to +0.032 | 17 | 7 | 12 |
+| Hand-drawn box | −0.007 | −0.028 to +0.013 | 11 | 11 | 14 |
+
+Both intervals include zero, and the sign of the mean change differs between the two box sources. P1 and P0 are therefore tied on indoor frames. Individual frames move in both directions by large amounts, from −0.29 to +0.24 (Figure 6-4), which indicates that fine-tuning changed the model's behaviour on individual dogs without making it better on average. The detection step costs little accuracy: with P0, mean OKS falls from 0.839 with hand-drawn boxes to 0.827 with RTMDet boxes.
+
+**By behaviour.** Lying/sleeping is the weakest posture for both models, with a mean OKS about 0.1 lower than the other labels (Figure 6-2). The remaining differences between P0 and P1 go in both directions and, with six frames per label, are within noise.
+
+| Behaviour label | Frames | P0 mean OKS | P1 mean OKS | Change | P0 PCK@0.1 | P1 PCK@0.1 |
+|---|---:|---:|---:|---:|---:|---:|
+| All | 36 | 0.827 | 0.831 | +0.004 | 0.857 | 0.861 |
+| Walking / Running | 6 | 0.799 | 0.853 | +0.054 | 0.750 | 0.837 |
+| Standing | 6 | 0.915 | 0.858 | −0.056 | 0.950 | 0.920 |
+| Sitting | 6 | 0.866 | 0.844 | −0.021 | 0.868 | 0.831 |
+| Lying / Sleeping | 6 | 0.705 | 0.734 | +0.029 | 0.802 | 0.779 |
+| Eating / Drinking | 6 | 0.847 | 0.866 | +0.019 | 0.927 | 0.948 |
+| Playing alone | 6 | 0.831 | 0.831 | 0.000 | 0.833 | 0.833 |
+
+![Mean OKS by behaviour label on the indoor evaluation set](diagrams/report/figure_6_2_indoor_oks_by_behaviour.png)
+
+*Figure 6-2. Mean OKS of P0 and P1 for each behaviour label, using RTMDet boxes. Lying/sleeping is the lowest for both models; differences between the models in the other labels are small relative to the six frames per label.*
+
+**By keypoint.** Neither model dominates across keypoints (Figure 6-3). P1 is slightly better on the head, neck and front legs and slightly worse on the tail root, right hip and back legs. Both models are weakest on joints that are often partly hidden by the body: the right shoulder (PCK@0.1 of 0.686 for P0 and 0.771 for P1), the left hip (0.714 for both) and the right hip (0.788 and 0.758). Each keypoint has only 26--36 labelled instances, so a difference of about 0.03 corresponds to a single point.
+
+![PCK@0.1 by keypoint on the indoor evaluation set](diagrams/report/figure_6_3_indoor_pck_by_keypoint.png)
+
+*Figure 6-3. PCK@0.1 of P0 and P1 for each of the 17 AP-10K keypoints, using RTMDet boxes. Grey markers indicate keypoints on which the two models are identical. The shoulders and hips are the weakest joints for both models.*
+
+![Per-frame OKS change from P0 to P1](diagrams/report/figure_6_4_indoor_oks_change_per_image.png)
+
+*Figure 6-4. Per-frame OKS change from P0 to P1 on the 36 indoor frames, using RTMDet boxes and sorted by change. Seventeen frames improve, twelve become worse and seven change by less than 0.01; the largest changes are −0.29 for a standing dog and +0.24 for a lying dog.*
+
+**Comparison with the official benchmark.** The most comparable official figure is the AP-10K large-animal AP, because the official evaluation also uses ground-truth boxes and the indoor dogs occupy a large part of the frame.
+
+| Evaluation data | AP | AP50 | AP75 |
+|---|---:|---:|---:|
+| Official: AP-10K test set (54 species) | 0.722 | 0.939 | 0.788 |
+| Official: AP-10K test set, large animals | 0.728 | -- | -- |
+| Indoor, hand-drawn boxes | 0.700 | 0.970 | 0.825 |
+| Indoor, RTMDet boxes | 0.678 | 0.970 | 0.762 |
+
+The 95% bootstrap interval of the indoor AP (2,000 resamples over frames) is 0.623--0.775 with hand-drawn boxes and 0.590--0.760 with RTMDet boxes. The official large-animal AP of 0.728 lies inside the first interval, so there is no clear gap between P0's indoor performance and its own benchmark. This comparison is approximate in both directions: the indoor set scores only visible joints, excludes severely blurred frames and contains one large dog per frame, which favours the indoor result, while the official evaluation uses flip testing, which typically adds 0.5--1 AP point and was not used indoors. The official results are also reported for all species together rather than for dogs alone.
+
+**Decision.** P0 is retained as the dog pose model. The APT-36K improvement of about four AP points did not transfer to indoor home-camera scenes, and P0 is already close to its benchmark level. These results have several limitations: the evaluation set has 36 frames and one annotator; occluded joints are not evaluated, although RTMPose still outputs them to the downstream models (with a median confidence of 0.46, compared with 0.79 for labelled joints); frames without a dog, scenes with a real cat and the person boxes were not evaluated; and only one fine-tuning configuration was tried.
+
 ### 6.4 Dog Behaviour Recognition Results
 
 The primary five-fold OOF result of the final dog-behaviour ensemble is **77.37% Accuracy** and **76.47% Macro-F1**. This is the main quantitative estimate reported for model comparison. On the additional 33-clip test set, the model obtains 78.79% Accuracy and 78.83% Macro-F1. The test result supports the feasibility of the approach but is not used as the principal performance claim because of the limited sample count.
@@ -416,7 +648,7 @@ The primary five-fold OOF result of the final dog-behaviour ensemble is **77.37%
 
 ![Five-fold OOF confusion matrix for dog-behaviour recognition](diagrams/report/figure_6_1_dog_behavior_oof_confusion_matrix.png)
 
-*Figure 6-1. Five-fold out-of-fold confusion matrix for the final dog-behaviour model. Each cell reports the percentage within its actual class. The model is strongest on sitting, lying/sleeping and walking/running, while standing and eating/drinking remain the principal sources of confusion.*
+*Figure 6-5. Five-fold out-of-fold confusion matrix for the final dog-behaviour model. Each cell reports the percentage within its actual class. The model is strongest on sitting, lying/sleeping and walking/running, while standing and eating/drinking remain the principal sources of confusion.*
 
 The test-set recalls are shown below for supplementary class-level analysis.
 
@@ -442,7 +674,7 @@ The relation branch is substantially stronger than the visual branch in five-fol
 
 ![Five-fold OOF confusion matrix for human-dog interaction recognition](diagrams/report/figure_6_2_interaction_oof_confusion_matrix.png)
 
-*Figure 6-2. Five-fold out-of-fold confusion matrix for the final relation-plus-CLIP interaction model. Each cell reports the row-normalised percentage. No interaction and playing together have the highest recall; hand feeding is most often confused with petting, reflecting their shared close hand-to-dog geometry.*
+*Figure 6-6. Five-fold out-of-fold confusion matrix for the final relation-plus-CLIP interaction model. Each cell reports the row-normalised percentage. No interaction and playing together have the highest recall; hand feeding is most often confused with petting, reflecting their shared close hand-to-dog geometry.*
 
 The following test recalls are included only as supplementary observations.
 
