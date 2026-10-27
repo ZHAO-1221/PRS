@@ -95,7 +95,6 @@ PRS/
 │   ├── Group28_Final.pptx
 │   └── Group28_Presentation_Assignment.txt
 ├── proposal/                     Proposal materials
-├── prototype/                    Earlier interface design materials
 └── Final_Report.md               Final report in Markdown
 ```
 
