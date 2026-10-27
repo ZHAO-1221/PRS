@@ -89,7 +89,6 @@ PRS/
 │   ├── ARCHITECTURE.md           Module responsibilities
 │   └── MODEL_TRAINING.md         Training and evaluation commands
 ├── dataset/                      Link to the hosted project data
-├── diagrams/                     System and report figures
 ├── presentation/
 │   ├── Group28_Proposal.pptx
 │   └── Group28_Final.pptx

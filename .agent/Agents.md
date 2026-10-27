@@ -73,7 +73,6 @@
 ## 仓库结构
 
 ```
-diagrams/report/                       最终报告引用的图片
 presentation/
   index.html                           网页版 Proposal 演示
   Proposal_Group28_CN.pptx             中文 PPT（英文版的源）

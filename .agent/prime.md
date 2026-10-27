@@ -34,7 +34,7 @@
 
 - 延后清理状态（2026-10-28）：`presentation/Group28_Presentation_Assignment.txt` 已由用户删除；`pet_recognition_system/ARCHITECTURE.md` 仍暂时保留，使用完毕后再删除，不要提前删除。
 
-- 旧版架构图已清理，最终报告图片保留在 `diagrams/report/`。
+- 2026-10-28：MD版最终报告及独立报告配图已清理；最终报告为根目录 `Final_Report.pdf`，图片已嵌入PDF和PPT。
 
 ## 进度日志
 
