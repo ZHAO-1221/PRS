@@ -73,7 +73,6 @@
 ## 仓库结构
 
 ```
-proposal/                              Proposal（中/英 docx + 提交版 PDF）
 diagrams/report/                       最终报告引用的图片
 presentation/
   index.html                           网页版 Proposal 演示

@@ -94,7 +94,6 @@ PRS/
 │   ├── Group28_Proposal.pptx
 │   ├── Group28_Final.pptx
 │   └── Group28_Presentation_Assignment.txt
-├── proposal/                     Proposal materials
 └── Final_Report.md               Final report in Markdown
 ```
 
