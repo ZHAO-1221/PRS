@@ -76,15 +76,56 @@
 
 ## Abstract
 
+Indoor pet cameras can show an owner where a dog is, but not what it is doing or whether anyone has fed it or played with it. This project builds a CPU-only prototype that analyses short indoor clips and reports dog behaviour and human--dog interaction. The system has three models. Model One detects the person and the dog with RTMDet-m, tracks each with a bidirectional, score-aware box-selection rule and estimates 17 keypoints per subject with RTMPose-m. For the dog branch, the official AP-10K weights (P0) were compared with a version fine-tuned on the APT-36K dog subset (P1) on 36 hand-labelled indoor frames. P1 gained four AP points on APT-36K but was tied with P0 indoors (OKS AP 0.678 versus 0.693 with detected boxes; paired bootstrap interval of the mean OKS change −0.024 to +0.032), so P0 was kept. Model Two classifies five dog behaviours (walking/running, standing, sitting, lying/sleeping and eating/drinking) with a motion-aware temporal convolutional network fused with an 834-dimensional engineered geometry classifier and two pairwise specialists. On 137 project clips it reaches 77.37% out-of-fold (OOF) accuracy and 76.47% Macro-F1 under grouped five-fold cross-validation. Model Three classifies four human--dog interactions (no interaction, hand feeding, petting and playing together) with an ExtraTrees/linear-SVM ensemble over 352 human--dog relation features, fused with a frozen CLIP visual branch. On 97 development clips it reaches 77.32% OOF accuracy and 76.13% Macro-F1. All splits are grouped by dog, person and source video. The models are served through a FastAPI back end and a React mobile web application that shows a daily story, per-clip timelines and a weekly summary.
+
 ## 1. Introduction
 
 ### 1.1 Background and Motivation
 
+Pet ownership has grown in recent years, and many owners regard their dogs as family members and want to know how they are while the owners are away from home. Pet cameras have become popular as a result. Grand View Research valued the global pet-monitoring camera market at about USD 198 million in 2024 and expects it to reach about USD 454 million by 2030, a compound annual growth rate of about 12.6%. The same report names the view of pets as family members, and owners' wish to check on their pets' safety and well-being while away, as major drivers of this growth.
+
+Most current pet cameras answer only *where* the pet is. They detect a cat or dog, pan to follow it, or send an alert when they detect movement or barking. Owners want to know *what* the dog is doing: whether it is eating and resting normally, and whether family members or carers have fed it or played with it. Answering these questions today means reviewing recorded footage by hand.
+
+A single frame is often not enough to answer them. Eating and sniffing with the head lowered look alike in one image, as do sleeping and ordinary lying, or petting and standing next to the dog. The differences show in how the motion develops over a few seconds and in how the person and the dog are positioned relative to each other. This project therefore moves from locating the pet towards recognising what the pet is doing and how it interacts with people.
+
 ### 1.2 Problem Statement
+
+Given a short video from an indoor home camera that contains one principal dog and possibly one principal person, the system must:
+
+1. classify the dog's behaviour into one of five classes: walking/running, standing, sitting, lying/sleeping or eating/drinking; and
+2. when a person is present, classify the human--dog interaction into one of four classes: no interaction, hand feeding, petting or playing together.
+
+This raises four difficulties:
+
+- **Domain shift.** Public animal pose data contain few indoor home-camera scenes. Indoor dogs are often seen from above, are partly hidden by furniture, or lie curled up.
+- **Small data.** Clips have to be cut and labelled by hand, so only a few hundred are available. Neighbouring clips from one video, or the same dog, must not appear on both sides of an evaluation split.
+- **Subtle temporal cues.** Several classes differ mainly in duration or motion pattern, for example sustained head lowering for eating, or a hand that approaches, holds and withdraws for hand feeding.
+- **Commodity hardware.** The system must run on an ordinary laptop CPU.
 
 ### 1.3 Objectives and Scope
 
+The project has four objectives:
+
+1. **Dog pose estimation (Model One).** Evaluate the AP-10K-pretrained RTMPose-m dog model on indoor frames, test whether fine-tuning on the APT-36K dog subset improves it, and select the weights used to extract skeletons.
+2. **Dog behaviour recognition (Model Two).** Recognise the five behaviours from the temporal sequence of the dog skeleton and its detection box.
+3. **Human--dog interaction recognition (Model Three).** Recognise the four interaction classes from synchronised human and dog skeletons, their spatial relations and auxiliary visual context.
+4. **End-to-end prototype.** Provide reproducible training and evaluation procedures and a complete user workflow. The user uploads a clip, the system analyses it automatically, and the application shows the behaviour, the interaction, confidence scores and a timeline.
+
+The scope is limited to indoor clips with one principal dog and at most one principal person. Clips with several dogs or people, and audio, are outside the scope of the current system. The labels describe observable actions only; they are not assessments of the dog's health or emotional state.
+
 ### 1.4 Report Organisation
+
+The rest of the report is organised as follows:
+
+- **Section 2** describes the datasets, the annotation pipeline and the grouped splits.
+- **Section 3** introduces the tools and techniques: detection, pose estimation, tracking, preprocessing, temporal modelling, feature engineering, ensembles and evaluation.
+- **Section 4** presents the system architecture, the repository structure and the front-end prototype.
+- **Section 5** details the three models.
+- **Section 6** reports their performance, ablations and runtime.
+- **Section 7** discusses the findings, errors and limitations.
+- **Section 8** concludes.
+
+The appendices give installation instructions, reproduction commands, a file listing and additional results.
 
 ## 2. Datasets
 
@@ -97,6 +138,38 @@ The dog-behaviour and human--dog interaction datasets were assembled from projec
 Every original video is assigned a `source_video_id`, and each dog and person is represented by an anonymous `dog_id` or `person_id`. Source references and quality notes are retained in the manifests so that each short clip can be traced to its original video without storing personal names.
 
 ### 2.2 Dog Behaviour Clips
+
+The dog-behaviour dataset contains **170 valid project clips** drawn from **63 source videos** of **61 anonymous dogs**. Of these, 96 clips come from Bilibili videos and 74 from YouTube videos, including SmartHomeBench footage. Each clip shows one principal dog with one stable behaviour. Clips range from 1.343 to 10.344 seconds, with a mean of 5.45 seconds and a total of 926.6 seconds.
+
+The five behaviour classes are defined as follows:
+
+- **Walking/running:** the dog moves its whole body across the floor with alternating paw steps.
+- **Standing:** the dog is supported by all four extended legs without travelling. Small head movements and looking around are allowed.
+- **Sitting:** the hindquarters rest on the floor while the front legs remain extended.
+- **Lying/sleeping:** the trunk rests on the floor or furniture, either sleeping or awake.
+- **Eating/drinking:** the dog's head is lowered into a bowl, a container or food on the floor, and it is eating or drinking.
+
+When posture and activity conflict, the clip is labelled by posture (Section 2.5).
+
+The manifest also contains 32 rows that are marked as invalid and excluded from every split:
+
+- 26 clips of a dog playing alone, a class that is not part of the five-class model;
+- four clips in which two dogs move in view;
+- one clip whose label boundary overlaps another segment; and
+- one night-time infrared clip whose skeletons were unusable (Section 3.4).
+
+The clips are split by dog and source video (Section 2.6). The 33-clip test set contains 9 dogs, and the 137-clip development set contains the other 52 dogs. The development set is divided into five grouped folds of 29, 28, 26, 26 and 28 clips.
+
+Walking/running and standing are under-represented in the project data. To compensate, 31 curated one-second APT-36K skeleton sequences (15 frames each) are added to the **training portion of every fold**. These sequences never appear in validation or testing.
+
+| Behaviour class | Development (5-fold OOF) | Test | External APT (training only) | Total |
+|---|---:|---:|---:|---:|
+| Walking / Running | 22 | 6 | 28 | 56 |
+| Standing | 28 | 8 | 3 | 39 |
+| Sitting | 30 | 6 | 0 | 36 |
+| Lying / Sleeping | 40 | 7 | 0 | 47 |
+| Eating / Drinking | 17 | 6 | 0 | 23 |
+| **Total** | **137** | **33** | **31** | **201** |
 
 ### 2.3 Human-Dog Interaction Clips
 
@@ -267,6 +340,41 @@ Detection and pose estimation therefore remain the main source of missing data. 
 
 ### 3.5 Skeleton Preprocessing and Normalisation
 
+Raw skeletons are expressed in image pixels, contain zero-filled frames and vary in length, so they are preprocessed before entering the recognition models. All steps operate on the stored \(2\times T\times17\times3\) arrays and are shared by training and inference.
+
+**Missing keypoints.** A joint counts as observed in a frame when its confidence is above zero. For each joint, the \(x\)- and \(y\)-coordinates of unobserved frames are filled by linear interpolation over the frame index, using the nearest observed frames. Before the first observation and after the last one, the nearest observed value is held. Interpolated points keep a confidence of zero, so the downstream confidence weighting still treats them as unobserved. A joint that is never observed in a clip is left at zero.
+
+**Body-centred normalisation.** Each frame is translated and scaled so that skeletons from near and distant, small and large subjects become comparable.
+
+- **Dog.** The centre is the midpoint of the neck and the tail root when both are visible. Otherwise it is the mean of the visible joints. The scale is the larger of the horizontal and vertical extent of the visible joints.
+- **Person.** The centre is the hip midpoint. When the hips are missing, the shoulder midpoint is used instead, and otherwise the mean of the available joints. The scale is defined in the same way as for the dog.
+
+To avoid dividing by a near-zero extent when only a few joints are visible, the scale is bounded below by 2% of the longer image side. Every joint becomes \((\mathbf{p}-\mathbf{c})/s\), where \(\mathbf{c}\) is the centre and \(s\) the scale. Unavailable joints and empty frames are set to zero.
+
+**Global motion.** Body-centred normalisation removes the movement of the dog through the image, which is the main cue for walking/running. Six global-motion channels are therefore computed from the dog detection box:
+
+- the two-dimensional displacement of the box centre from the first frame, normalised by the image size;
+- the two-dimensional velocity of the box centre; and
+- the logarithm of the box scale relative to the first frame, together with its velocity.
+
+Missing box centres are interpolated over time and smoothed with an edge-padded moving average of up to five frames. When no box is available, the same quantities are computed from the keypoints instead.
+
+**Temporal resampling.** Every clip is mapped to \(T=32\) frames using one set of indices shared by all streams, so that the person, the dog and the boxes stay synchronised.
+
+- Clips with at least 32 frames are sampled at 32 evenly spaced positions, rounded to the nearest frame.
+- Shorter clips keep all their frames and are padded with zeros at the end.
+- A binary frame mask marks real frames (1) and padding (0), so that padded positions do not contribute to pooling.
+
+During training, each sampling position is additionally jittered by up to ±0.35 of the sampling step. The first and last positions stay fixed, and the order of the positions is preserved.
+
+**Skeleton augmentation (training only).** Each training sequence receives:
+
+- a random rotation of ±10° and a scaling of 0.9--1.1, applied to both the normalised joints and the global-motion displacement and velocity;
+- Gaussian coordinate noise with a standard deviation of 0.01; and
+- with probability 0.3, the removal of one randomly chosen joint over the whole clip.
+
+The resulting dog tensor has shape \(3\times32\times17\) (coordinates and confidence, time, joints). It is accompanied by the six global-motion channels and the frame mask.
+
 ### 3.6 Temporal Modelling (TCN)
 
 Temporal Convolutional Networks (TCNs) model a sequence using one-dimensional convolutions along the temporal axis. In comparison with a recurrent model, all time positions within a layer can be processed in parallel. Dilated convolution enlarges the temporal receptive field without reducing sequence length, while residual connections support the training of deeper temporal models. These properties make a TCN suitable for recognising actions from short skeleton sequences, where both frame-to-frame joint motion and longer-duration posture patterns are important.
@@ -303,6 +411,23 @@ A small held-out test set is also evaluated after model development. Because the
 
 ### 4.1 Overall System Architecture
 
+The system has three layers: a mobile web front end, a FastAPI back end and a Python inference pipeline. A clip passes through them as follows:
+
+1. **Upload.** The user selects a video in the mobile web application, together with its recording time and camera name. The application posts it to `POST /api/clips`. The back end stores the file under its own clip identifier and creates an analysis job.
+2. **Job queue.** A background worker analyses one clip at a time. While the job runs, the front end polls `GET /api/jobs/{job_id}`. The job reports four stages (detect, keypoints, behaviour and interaction) with counts of the work done in each.
+3. **Windowing.** The inference entry point `predict_video()` (`tools/predict_video.py`) decides how to split the clip:
+   - a clip of up to eight seconds is analysed as one window;
+   - a longer recording is read lazily and divided into four-second windows, so that it never has to be held in memory as a whole.
+4. **Skeleton extraction (Model One).** Each window passes through the dual-species pipeline of Section 4.2, which produces a two-stream skeleton array with detection boxes.
+5. **Recognition (Models Two and Three).** Each window is routed by the fraction of frames in which the dog and the person were detected. The threshold is 50% of frames.
+   - **Dog only.** If the dog passes the threshold and the person does not, the dog stream is classified by the five-fold dog-behaviour ensemble (Section 5.2).
+   - **Dog and person.** If both pass, both streams and eight sampled RGB frames are classified by the interaction ensemble (Section 5.3). The behaviour label of the window is suppressed, because Model Two was trained only on clips without a person.
+   - **Neither case.** The window is marked as insufficient detection instead of receiving a label.
+6. **Result.** The window probabilities are lightly smoothed over time, and neighbouring windows with the same label are merged into timeline segments. The output is written as `result.json`, with the window probabilities and merged timelines, and as `timeline.csv`, with one row per segment. Both files are stored next to the uploaded clip.
+7. **Presentation.** The front end reads the results through `GET /api/clips` and shows them as a daily story, a per-clip result page and a weekly summary (Section 4.4).
+
+The same `predict_video()` function is also available as a command-line tool, so the back end, the command line and the tests all exercise the same inference path.
+
 ### 4.2 Dual-Species Skeleton Extraction Pipeline
 
 The skeleton extraction stage converts every video clip into the two-stream skeleton tensor used by both recognition models. It is shared by training and inference, so the training skeletons and the skeletons seen by the deployed system are produced in exactly the same way. The pipeline contains five steps:
@@ -317,7 +442,45 @@ The dog-behaviour model reads stream 1 only, while the interaction model reads b
 
 ### 4.3 Repository and Module Structure
 
+The repository separates reusable library code, command-line tools, the web service and the front end. Source videos, generated skeletons and the official pose weights are not stored in the repository. They are located through the `PET_DATA_ROOT` environment variable, and the clips and skeletons are published as a Hugging Face dataset (Appendix C).
+
+| Path | Contents |
+|---|---|
+| `pet_recognition_system/pet_recognition/models/` | `rtmdet.py` (detector wrapper, quadruped merging, box selection), `rtmpose_onnx.py` (ONNX pose inference), `skeleton_tcn.py` (motion-aware TCN) |
+| `pet_recognition_system/pet_recognition/inference/` | `skeleton.py` (detection, tracking and two-stream skeleton extraction), `video_pipeline.py` (windowing, routing, smoothing and timeline merging), `interaction_visual.py` (frozen CLIP encoder) |
+| `pet_recognition_system/pet_recognition/preprocessing/` | Interpolation, normalisation, global motion, temporal sampling, augmentation and relation features (Section 3.5) |
+| `pet_recognition_system/pet_recognition/datasets/` | Behaviour and interaction manifest readers, grouped split assignment, LabelMe pose loader |
+| `pet_recognition_system/pet_recognition/evaluation/` | Classification metrics and confusion matrices; OKS, AP and PCK for pose |
+| `pet_recognition_system/pet_recognition/visualization/` | Skeleton overlay drawing for review videos |
+| `pet_recognition_system/tools/` | Command-line entry points: pose evaluation and fine-tuning, skeleton extraction, cross-validation, final training, evaluation and `predict_video.py` |
+| `pet_recognition_system/app/server.py` | FastAPI service with a background job worker |
+| `pet_recognition_system/configs/` | MMPose configuration for P1 fine-tuning |
+| `pet_recognition_system/checkpoints/best_models/` | Released dog-behaviour and interaction ensembles, model card and SHA-256 checksums |
+| `pet_recognition_system/outputs/best_models/` | Frozen split manifests, OOF and test metrics, confusion matrices |
+| `pet_recognition_system/tests/` | pytest tests for the API, the behaviour pipeline, skeleton extraction, keypoint metrics, box selection and the video pipeline |
+| `frontend/` | React and Vite mobile web application, mock API and design prototype |
+| `diagrams/`, `presentation/`, `proposal/` | Report figures, slides and the project proposal |
+
+The two recognition tasks are released as one ensemble each:
+
+- **Dog behaviour.** Five TCN fold checkpoints plus the geometry-fusion and specialist `joblib` files.
+- **Interaction.** Five relation-ensemble and five CLIP-branch `joblib` files.
+
+The fold files are components of a single model, not alternative versions.
+
 ### 4.4 Frontend Prototype
+
+The front end is a mobile web application built with React 18, React Router and Vite (Section 3.1). It has five pages, reached through a bottom navigation bar.
+
+| Page | Route | What it shows |
+|---|---|---|
+| Story | `/` | The activity review for one day. A swipeable deck of clip covers; a 06:00--22:00 day line with a mark for every clip; summary tiles for **Rest** (lying and sitting), **Active** (walking, standing and eating) and **With you** (feeding, petting and playing). Filters show all clips, clips with the dog alone, or clips with a person. |
+| Upload | `/upload` | A file picker for MP4 or MOV files of up to 500 MB, with the recording date and time (pre-filled from the file) and a camera name (living room, kitchen, bedroom or garden). Input is validated before submission. |
+| Analyze | `/analyze/:jobId` | Live progress of the job, polled every second. It lists the four stages (find dog and owner, trace 17 keypoints, recognise behaviour, read the interaction), with the state and progress count of each, and links to the result when the job finishes. |
+| Result | `/clips/:id` | The clip cover and three cards. **The dog is** shows the top behaviour with probability bars averaged over windows, or "not scored" when a person was in view throughout. **With you** shows the interaction probabilities, or states that the dog was alone. **Timeline** lists the merged segments with clock times and confidence. |
+| Week | `/week` | A stacked bar chart of daily minutes per behaviour from Monday to Sunday, the dominant behaviour of the week, and a "How sure are we?" card with each model's test accuracy and number of test clips, read from `/api/models/metrics`. |
+
+All data access goes through one module, `src/api.js`, which calls the REST endpoints and turns server errors into readable messages. Setting `VITE_MOCK=1` replaces it with a mock API that serves sample clips with the same result format and simulates the four analysis stages. The interface can therefore be developed and demonstrated without the models. The logic that turns results into the numbers on screen (dominant label, day totals, weekly rows and averaged probabilities) lives in `src/lib/summary.js` and is covered by Vitest tests.
 
 ## 5. Models
 
@@ -711,6 +874,25 @@ The aggregated OOF metrics measure overall predictive performance, while the mea
 
 ### 6.7 Runtime and Deployment Considerations
 
+End-to-end runtime was measured by calling `predict_video(task="both")` three times in sequence on the development laptop: an Intel Core Ultra 7 255H with 16 logical processors, running on the CPU only. The test clips were one 4.7-second interaction test clip and one 5.0-second dog-behaviour test clip. Each call loads all models again, so the times include model loading.
+
+| Clip | Length | Detection + keypoints | Behaviour + interaction | Total |
+|---|---:|---:|---:|---:|
+| Interaction (first call) | 4.7 s | 47.1 s | 0.6 s | 47.7 s |
+| Dog behaviour | 5.0 s | 32.8 s | 0.8 s | 33.6 s |
+| Interaction (repeat) | 4.7 s | 42.9 s | 0.6 s | 43.5 s |
+
+A five-second clip therefore takes about 35--50 seconds, roughly seven to ten times its own length. Almost all of this time is spent in Model One: model loading, RTMDet-m on every sampled frame and two RTMPose-m passes per frame. Both recognition ensembles together, including the CLIP visual branch, take under one second.
+
+This is acceptable for the intended use, in which clips recorded during the day are reviewed later rather than watched live. Deployment uses the following settings:
+
+- **Sequential jobs.** The back end analyses one clip at a time, and later uploads wait in a queue. Running several CPU-heavy jobs in parallel would slow every job down.
+- **Bounded memory.** Long recordings are read lazily in four-second windows, so memory use does not grow with video length. Uploads are limited to 500 MB.
+- **Model sizes.** The ONNX pose models are about 54 MB each (dog and human), the RTMDet-m checkpoint is 224 MB, the dog-behaviour ensemble is 4.4 MB and the interaction ensemble is 21 MB. The CLIP ViT-B/32 encoder is loaded from a local snapshot if one exists and is otherwise downloaded once from Hugging Face.
+- **Device.** Inference runs on the CPU by default. The `PET_DEVICE` variable selects another device.
+
+The main ways to speed the system up are to keep the models loaded between jobs, to run detection on fewer frames and interpolate the boxes in between, and to export RTMDet to ONNX as well. None of these were needed for the prototype.
+
 ## 7. Findings and Discussion
 
 ### 7.1 Key Findings
@@ -741,19 +923,258 @@ Future work should collect more identity-independent videos for the weak and con
 
 ## 8. Conclusion
 
+This project built a working prototype that turns short indoor home-camera clips into dog-behaviour and human--dog interaction labels with confidence scores and a timeline. It runs entirely on a laptop CPU, from upload to the mobile results page.
+
+The work produced three main results:
+
+- **Pose estimation.** The official RTMPose-m AP-10K model (P0) already performs close to its own benchmark on indoor dogs. Fine-tuning on APT-36K raised accuracy on APT-36K by about four AP points but did not improve the indoor frames, so P0 was kept. The bidirectional, score-aware tracking rule was the more effective intervention: it recovered most low-scoring frames of lying and partly hidden dogs that a fixed threshold would have discarded.
+- **Dog behaviour.** A motion-aware TCN combined with explicit geometry features and two pairwise specialists reaches 77.37% OOF accuracy and 76.47% Macro-F1 on five classes. The engineered geometry added about five points over the TCN alone.
+- **Human--dog interaction.** Relation features between the two skeletons, classified by an ExtraTrees/linear-SVM ensemble, reach 77.32% OOF accuracy. A frozen CLIP branch with a small fusion weight raised Macro-F1 to 76.13%.
+
+Across the three models, explicit domain features (detection-box motion, head-lowering duration and hand-to-nose distance) were more valuable than larger learned models under the available data. All evaluation used splits grouped by dog, person and source video.
+
+The remaining errors are concentrated in eating/drinking versus standing or lying, and in hand feeding versus petting. Both are cases where the skeleton cannot show whether food or contact is actually present. The system assumes one principal dog and one principal person, uses two-dimensional pose and was evaluated on small held-out test sets. More identity-independent data for the confusable classes, mouth-centred visual cues and multi-subject tracking are the most direct next steps (Section 7.6).
+
 ## References
 
 1. Bai, S., Kolter, J. Z., and Koltun, V. (2018). *An Empirical Evaluation of Generic Convolutional and Recurrent Networks for Sequence Modeling*. arXiv:1803.01271.
 2. Geurts, P., Ernst, D., and Wehenkel, L. (2006). “Extremely Randomized Trees.” *Machine Learning*, 63, 3--42.
 3. Radford, A., et al. (2021). “Learning Transferable Visual Models From Natural Language Supervision.” *Proceedings of the 38th International Conference on Machine Learning*.
 4. Yan, S., Xiong, Y., and Lin, D. (2018). “Spatial Temporal Graph Convolutional Networks for Skeleton-Based Action Recognition.” *Proceedings of the AAAI Conference on Artificial Intelligence*.
+5. Lyu, C., Zhang, W., Huang, H., et al. (2022). *RTMDet: An Empirical Study of Designing Real-Time Object Detectors*. arXiv:2212.07784.
+6. Jiang, T., Lu, P., Zhang, L., et al. (2023). *RTMPose: Real-Time Multi-Person Pose Estimation based on MMPose*. arXiv:2303.07399.
+7. Yu, H., Xu, Y., Zhang, J., Zhao, W., Guan, Z., and Tao, D. (2021). “AP-10K: A Benchmark for Animal Pose Estimation in the Wild.” *Advances in Neural Information Processing Systems (Datasets and Benchmarks Track)*.
+8. Yang, Y., Yang, J., Xu, Y., Zhang, J., Lan, L., and Tao, D. (2022). “APT-36K: A Large-scale Benchmark for Animal Pose Estimation and Tracking.” *Advances in Neural Information Processing Systems (Datasets and Benchmarks Track)*.
+9. Lin, T.-Y., Maire, M., Belongie, S., et al. (2014). “Microsoft COCO: Common Objects in Context.” *European Conference on Computer Vision*.
+10. MMPose Contributors (2020). *OpenMMLab Pose Estimation Toolbox and Benchmark*. https://github.com/open-mmlab/mmpose.
+11. Li, Y., Yang, S., Liu, P., et al. (2022). “SimCC: A Simple Coordinate Classification Perspective for Human Pose Estimation.” *European Conference on Computer Vision*.
+12. Grand View Research (n.d.). *Pet Monitoring Camera Market Size, Share & Trends Analysis Report*. Grand View Research.
 
 ## Appendix
 
 ### A. Installation and User Guide
 
+**Requirements.** The system needs Conda with Python 3.11, Node.js for the front end, and FFmpeg on the path. Python 3.11 is required because the released scikit-learn models were saved with scikit-learn 1.9.1, and pickled models load reliably only with the version that saved them.
+
+**Back-end and inference environment.** Run from `pet_recognition_system/`:
+
+```bash
+conda create -n PRS-project-311 python=3.11 -y
+conda activate PRS-project-311
+pip install -r requirements.txt            # ONNX inference and keypoint evaluation
+pip install -r requirements-training.txt   # PyTorch, scikit-learn 1.9.1, joblib
+pip install -r requirements-app.txt        # FastAPI, Uvicorn, pytest
+pip install -e .
+```
+
+**Data root.** Set `PET_DATA_ROOT` to the local data folder. It must contain the three pose-pipeline weights:
+
+```text
+<PET_DATA_ROOT>/models/
+├── rtmdet-m_coco/rtmdet_m_8xb32-300e_coco_20220719_112220-229f527c.pth
+├── rtmpose-m_coco_human/end2end.onnx
+└── rtmpose-m_ap10k/end2end.onnx
+```
+
+The frozen CLIP model `openai/clip-vit-base-patch32` is read from `<PET_DATA_ROOT>/models/clip-vit-base-patch32/` if that folder exists. Otherwise it is downloaded on the first run.
+
+**Running the application.** Start the back end and the front end in two terminals:
+
+```bash
+cd pet_recognition_system
+PET_DATA_ROOT=<data-root> uvicorn app.server:app --port 8000
+```
+
+```bash
+cd frontend
+npm install
+npm run dev          # opens the app; /api is proxied to localhost:8000
+```
+
+The development server also prints a LAN address, which a phone on the same Wi-Fi network can open.
+
+`npm run dev:mock` runs the same pages on sample data without the back end, and `npm run build` produces a static build in `frontend/dist/`.
+
+**Using the application.**
+
+1. Open **Upload**, choose a clip, check the recording time and camera, and submit.
+2. The **Analyze** page shows the four analysis stages. When the job finishes, open the result.
+3. **Result** shows the dog's behaviour, the interaction and the timeline of the clip.
+4. **Story** collects the clips of one day, and **Week** summarises the behaviour minutes of the week.
+
+**Command-line prediction.** One video can be analysed without the application:
+
+```bash
+python tools/predict_video.py input.mp4 --task both --data-root <PET_DATA_ROOT>
+```
+
+`--task dog_behavior` or `--task interaction` runs only one model, and `--export-clips` cuts each merged timeline segment into its own video.
+
+**Tests.** Run `python -m pytest -q` in `pet_recognition_system/` and `npm test` in `frontend/`.
+
 ### B. Model Training and Reproduction Commands
+
+All commands are run from `pet_recognition_system/` with the training requirements installed.
+
+For dog-behaviour training, `<dog-skeleton-dir>` must contain the files from both Hugging Face folders `data/skeletons_generated/` and `data/skeletons_generated_APT/`, with each APT file renamed to `dog_<clip_id>.npz`. The full option lists are in `MODEL_TRAINING.md`.
+
+**Model One: dog pose.**
+
+```bash
+python tools/eval_pose.py P0=$PET_DATA_ROOT/models/rtmpose-m_ap10k/end2end.onnx P1=checkpoints/p1_apt36k.onnx
+python tools/detect_boxes.py                       # RTMDet boxes for the real-pipeline setting
+python tools/eval_pose.py P0=$PET_DATA_ROOT/models/rtmpose-m_ap10k/end2end.onnx --boxes outputs/eval_boxes_rtmdet.json
+python tools/prepare_apt36k_split.py               # APT-36K train/val split by video
+python tools/train_pose.py configs/rtmpose/rtmpose-m_apt36k-dog_finetune.py
+python tools/export_rtmpose_onnx.py configs/rtmpose/rtmpose-m_apt36k-dog_finetune.py \
+    work_dirs/rtmpose-m_apt36k-dog_finetune/best_coco_AP_epoch_N.pth checkpoints/p1_apt36k.onnx
+```
+
+**Skeleton extraction.**
+
+```bash
+python tools/extract_skeletons.py CLIP.mp4 [CLIP.mp4 ...] --out-dir outputs/skeletons [--video]
+```
+
+**Model Two: dog behaviour.**
+
+```bash
+python tools/cross_validate_dog_behavior.py \
+  --manifest outputs/best_models/manifests/dog_behavior_manifest_5class_v4.csv \
+  --skeleton-dir <dog-skeleton-dir> --model motion_aux_tcn --folds 5 --epochs 80 \
+  --patience 15 --target-frames 32 --seed-base 28 --output-dir work_dirs/dog_behavior_5class_v4_cv
+python tools/cross_validate_dog_5class_fusion.py \
+  --cv-dir work_dirs/dog_behavior_5class_v4_cv --skeleton-dir <dog-skeleton-dir> \
+  --feature-version head_duration_v1 --folds 5 --seed 28 \
+  --output-dir work_dirs/dog_behavior_5class_v5_head_duration_fusion
+python tools/evaluate_dog_5class_ensemble.py \
+  --manifest outputs/best_models/manifests/dog_behavior_manifest_5class_v4.csv \
+  --skeleton-dir <dog-skeleton-dir> --cv-dir work_dirs/dog_behavior_5class_v4_cv \
+  --fusion-dir work_dirs/dog_behavior_5class_v5_head_duration_fusion \
+  --feature-version head_duration_v1 --output-dir work_dirs/dog_behavior_retrained_test
+```
+
+**Model Three: human--dog interaction.**
+
+```bash
+python tools/cross_validate_interaction_relation.py \
+  --manifest outputs/best_models/manifests/interaction_manifest_mixed_v2.csv \
+  --skeleton-dir <data>/skeletons_generated --folds 5 --augmentations 0 --seed 28 \
+  --classifier soft_vote --max-features sqrt --min-samples-leaf 1 \
+  --hand-feeding-weight 1.5 --svm-c 0.005 --svm-weight 0.2 \
+  --output-dir work_dirs/interaction_relation_mixed_v2_cv5_noaug
+python tools/train_final_interaction_ensemble.py \
+  --manifest outputs/best_models/manifests/interaction_manifest_mixed_v2.csv \
+  --skeleton-dir <data>/skeletons_generated --output-dir work_dirs/interaction_relation_mixed_v2_final \
+  --models 5 --seed 28 --classifier soft_vote --max-features sqrt --min-samples-leaf 1 \
+  --hand-feeding-weight 1.5 --svm-c 0.005 --svm-weight 0.2
+python tools/extract_interaction_clip_features.py \
+  --manifest outputs/best_models/manifests/interaction_manifest_mixed_v2.csv \
+  --video-dir <data>/interaction --skeleton-dir <data>/skeletons_generated \
+  --output-dir outputs/interaction_clip_features_clip_v2 --frames 8
+python tools/cross_validate_interaction_rgb_fusion.py \
+  --manifest outputs/best_models/manifests/interaction_manifest_mixed_v2.csv \
+  --skeleton-dir <data>/skeletons_generated --feature-dir outputs/interaction_clip_features_clip_v2 \
+  --base-oof-dir work_dirs/interaction_relation_mixed_v2_cv5_noaug \
+  --base-final-dir work_dirs/interaction_relation_mixed_v2_final \
+  --output-dir work_dirs/interaction_multimodal_release --deployment-alpha 0.1
+python tools/evaluate_interaction_multimodal.py \
+  --model-root checkpoints/best_models/interaction \
+  --manifest outputs/best_models/manifests/interaction_manifest_mixed_v2.csv \
+  --skeleton-dir <data>/skeletons_generated --feature-dir outputs/interaction_clip_features_clip_v2 \
+  --split test --output-dir work_dirs/interaction_multimodal_release_check
+```
+
+**Reproducing the released results.** The released ensembles can be evaluated directly by passing `--cv-dir checkpoints/best_models/dog_behavior/backbone` and `--fusion-dir checkpoints/best_models/dog_behavior/fusion` to `evaluate_dog_5class_ensemble.py`, and `--model-root checkpoints/best_models/interaction` to `evaluate_interaction_multimodal.py`. Downloaded files can be verified against `checkpoints/best_models/SHA256SUMS.txt`.
 
 ### C. Dataset and Model File Listing
 
+**Public dataset.** The clips and generated skeletons are published on Hugging Face as `melodyyyyy123/PRS-Group28-data2`:
+
+- `data/skeletons_generated/` holds the project skeletons;
+- `data/skeletons_generated_APT/` holds the 31 APT training sequences.
+
+Each skeleton file `<clip_id>.npz` contains:
+
+| Key | Shape | Content |
+|---|---|---|
+| `skeletons` | (2, T, 17, 3) | Stream 0 person (COCO-17), stream 1 dog (AP-10K-17); \(x\), \(y\) in pixels and confidence |
+| `boxes` | (2, T, 5) | Person and dog box \(x_1, y_1, x_2, y_2\) and detector score |
+| `fps` | scalar | 15 |
+| `image_size` | (2,) | Width and height in pixels |
+
+**Local data root (`PET_DATA_ROOT`).**
+
+| Path | Contents |
+|---|---|
+| `raw/dog_behavior/` | Behaviour clips (`<clip_id>.mp4`) and `dog_behavior_clips.csv` |
+| `raw/interaction/` | Interaction clips and `clips.csv` |
+| `raw/skeletons_generated/`, `raw/skeletons_generated_APT/` | Extracted skeleton files |
+| `APT-dog/`, `apt36k_dog_train.json`, `apt36k_dog_val.json` | APT-36K dog frames and the video-level split |
+| `评估/` | The 36 hand-labelled LabelMe evaluation frames (Section 2.4) |
+| `models/` | RTMDet-m COCO, RTMPose-m AP-10K (dog) and RTMPose-m COCO (human) weights |
+
+**Manifests and released models (in the repository).**
+
+| Path | Contents | Size |
+|---|---|---:|
+| `outputs/best_models/manifests/dog_behavior_manifest_5class_v4.csv` | Behaviour clips, labels, splits and folds | -- |
+| `outputs/best_models/manifests/interaction_manifest_mixed_v2.csv` | Interaction clips, labels and splits | -- |
+| `checkpoints/best_models/dog_behavior/` | `backbone/fold_0..4/best.pt`, `fusion/*.joblib`, `config.json` | 4.4 MB |
+| `checkpoints/best_models/interaction/` | `checkpoints/fold_1..5.joblib`, `rgb/fold_1..5.joblib`, `config.json` | 21 MB |
+| `checkpoints/p1_apt36k_epoch19.onnx` | P1 dog pose model (not used in the final system) | 54.5 MB |
+| `checkpoints/best_models/MODEL_CARD.md`, `SHA256SUMS.txt` | Model card and checksums | -- |
+
 ### D. Additional Results
+
+**Dog behaviour, per-class results.** The values below are taken from the five-fold OOF evaluation on 137 clips and the 33-clip test set.
+
+| Class | OOF precision | OOF recall | OOF F1 | OOF support | Test precision | Test recall | Test F1 | Test support |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|
+| Walking / Running | 0.947 | 0.818 | 0.878 | 22 | 1.000 | 0.833 | 0.909 | 6 |
+| Standing | 0.586 | 0.607 | 0.596 | 28 | 0.700 | 0.875 | 0.778 | 8 |
+| Sitting | 0.818 | 0.900 | 0.857 | 30 | 1.000 | 0.833 | 0.909 | 6 |
+| Lying / Sleeping | 0.825 | 0.825 | 0.825 | 40 | 0.750 | 0.857 | 0.800 | 7 |
+| Eating / Drinking | 0.688 | 0.647 | 0.667 | 17 | 0.600 | 0.500 | 0.545 | 6 |
+
+**Dog behaviour, OOF confusion matrix (counts).** Rows are the actual class and columns the predicted class, in the order walking/running, standing, sitting, lying/sleeping and eating/drinking.
+
+| Actual \ Predicted | Walk | Stand | Sit | Lie | Eat |
+|---|---:|---:|---:|---:|---:|
+| Walking / Running | 18 | 3 | 0 | 0 | 1 |
+| Standing | 1 | 17 | 4 | 3 | 3 |
+| Sitting | 0 | 2 | 27 | 1 | 0 |
+| Lying / Sleeping | 0 | 4 | 2 | 33 | 1 |
+| Eating / Drinking | 0 | 3 | 0 | 3 | 11 |
+
+**Interaction, per-class results.** The values below are taken from the five-fold OOF evaluation on 97 clips and the 24-clip test set.
+
+| Class | OOF precision | OOF recall | OOF F1 | OOF support | Test precision | Test recall | Test F1 | Test support |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|
+| No interaction | 0.929 | 0.963 | 0.945 | 27 | 1.000 | 0.833 | 0.909 | 6 |
+| Hand feeding | 0.632 | 0.522 | 0.571 | 23 | 0.833 | 0.833 | 0.833 | 6 |
+| Petting | 0.720 | 0.720 | 0.720 | 25 | 0.667 | 0.667 | 0.667 | 6 |
+| Playing together | 0.760 | 0.864 | 0.809 | 22 | 0.857 | 1.000 | 0.923 | 6 |
+
+**Interaction, OOF confusion matrix (counts).**
+
+| Actual \ Predicted | None | Feeding | Petting | Playing |
+|---|---:|---:|---:|---:|
+| No interaction | 26 | 0 | 1 | 0 |
+| Hand feeding | 2 | 12 | 6 | 3 |
+| Petting | 0 | 4 | 18 | 3 |
+| Playing together | 0 | 3 | 0 | 19 |
+
+**Dog pose, PCK@0.1 per keypoint.** The values below are measured on the 36 indoor frames, with RTMDet boxes.
+
+| Keypoint | Labelled | P0 | P1 | Keypoint | Labelled | P0 | P1 |
+|---|---:|---:|---:|---|---:|---:|---:|
+| Left eye | 33 | 0.970 | 0.970 | Right elbow | 32 | 0.875 | 0.906 |
+| Right eye | 33 | 0.879 | 0.909 | Right front paw | 31 | 0.871 | 0.871 |
+| Nose | 34 | 0.853 | 0.882 | Left hip | 35 | 0.714 | 0.714 |
+| Neck | 36 | 0.861 | 0.889 | Left knee | 30 | 0.900 | 0.833 |
+| Root of tail | 34 | 0.912 | 0.853 | Left back paw | 28 | 0.893 | 0.857 |
+| Left shoulder | 35 | 0.829 | 0.800 | Right hip | 33 | 0.788 | 0.758 |
+| Left elbow | 33 | 0.909 | 0.970 | Right knee | 26 | 0.923 | 0.885 |
+| Left front paw | 33 | 0.909 | 0.939 | Right back paw | 26 | 0.846 | 0.846 |
+| Right shoulder | 35 | 0.686 | 0.771 | | | | |
