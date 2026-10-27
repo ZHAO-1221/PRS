@@ -69,7 +69,7 @@ The primary recognition results use **grouped five-fold out-of-fold (OOF) evalua
 
 The small test sets provide supporting feasibility results. Use the grouped OOF results as the main comparison, and consult the [model release documentation](pet_recognition_system/checkpoints/best_models/README.md) for the evaluation protocol and benchmark limitations.
 
-Dog-pose quality was evaluated on **36 indoor frames from 28 dogs**, with **547 manually labelled visible joints**. Using RTMDet boxes, P0 achieved 67.8% OKS AP and 85.7% PCK@0.1. APT-36K fine-tuning improved its own validation AP but showed no clear indoor advantage, so P0 was retained. See [Section 6.3 of the report](Final_Report.md#63-dog-pose-estimation-results) for the comparison.
+Dog-pose quality was evaluated on **36 indoor frames from 28 dogs**, with **547 manually labelled visible joints**. Using RTMDet boxes, P0 achieved 67.8% OKS AP and 85.7% PCK@0.1. APT-36K fine-tuning improved its own validation AP but showed no clear indoor advantage, so P0 was retained. See [Section 6.3 of the report](Final_Report.pdf) for the comparison.
 
 Saved recognition metrics, confusion matrices and split manifests are in [outputs/best_models](pet_recognition_system/outputs/best_models/).
 
@@ -92,9 +92,8 @@ PRS/
 ├── diagrams/                     System and report figures
 ├── presentation/
 │   ├── Group28_Proposal.pptx
-│   ├── Group28_Final.pptx
-│   └── Group28_Presentation_Assignment.txt
-└── Final_Report.md               Final report in Markdown
+│   └── Group28_Final.pptx
+└── Final_Report.pdf              Final report in PDF
 ```
 
 ## Quick start: frontend demo
@@ -201,7 +200,7 @@ Project videos, annotations and generated skeletons are hosted in the [PRS Group
 
 | Resource | Location |
 |---|---|
-| Final report | [Final_Report.md](Final_Report.md) |
+| Final report | [Final_Report.pdf](Final_Report.pdf) |
 | Installation and inference | [System README](pet_recognition_system/README.md) |
 | Training and evaluation commands | [MODEL_TRAINING.md](pet_recognition_system/MODEL_TRAINING.md) |
 | Selected models and benchmark details | [Model release README](pet_recognition_system/checkpoints/best_models/README.md) |

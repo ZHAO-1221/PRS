@@ -1,8 +1,0 @@
-﻿behavior,images,mean_oks_P0,mean_oks_P1,pck01_P0,pck01_P1
-All images,36,0.8271,0.8312,0.8574,0.8611
-eating_drinking,6,0.8472,0.8662,0.9271,0.9479
-lying_sleeping,6,0.705,0.7342,0.8023,0.7791
-playing_alone,6,0.8308,0.831,0.8333,0.8333
-sitting,6,0.8657,0.8443,0.8675,0.8313
-standing,6,0.9147,0.8584,0.95,0.92
-walking_run,6,0.7991,0.8533,0.75,0.837
