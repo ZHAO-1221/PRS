@@ -4,10 +4,10 @@
 
 ## Project Team Members
 
-| **Official Full Name** | **Student ID (MTech Applicable)** | **Email** | **Main Contributions** |
-|---|---|---|---|
-| Sun Wenjing | A0326610N | [e1538441@u.nus.edu](mailto:e1538441@u.nus.edu) | Subject detection and skeleton extraction; dog-pose fine-tuning and quality evaluation; frontend and backend integration. |
-| Zhao Jiayi | A0329873M | [e1554200@u.nus.edu](mailto:e1554200@u.nus.edu) | Behaviour and interaction video collection and annotation; dog-behaviour and human–dog interaction model design, training and optimisation; geometric and relation feature engineering; grouped cross-validation and evaluation; video-to-timeline inference pipeline. |
+| **Official Full Name** | **Student ID (MTech Applicable)** | **Email** |
+|---|---|---|
+| Sun Wenjing | A0326610N | [e1538441@u.nus.edu](mailto:e1538441@u.nus.edu) |
+| Zhao Jiayi | A0329873M | [e1554200@u.nus.edu](mailto:e1554200@u.nus.edu) |
 
 ## Project Overview
 
