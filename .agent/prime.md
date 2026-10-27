@@ -32,7 +32,7 @@
 
 ## 待办 / 已知问题
 
-- `diagrams/Dog_Pose_Three_Stage_Adaptation_*` 中 P1 仍写 "AP-10K Train"，应改为 APT-36K。
+- 旧版架构图已清理，最终报告图片保留在 `diagrams/report/`。
 
 ## 进度日志
 

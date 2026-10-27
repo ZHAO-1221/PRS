@@ -54,7 +54,6 @@
 - **P1**：P0 + APT-36K 狗类数据训练
 - **P2**：P1 + 自建室内数据微调（小学习率 + 增强：翻转换左右点、尺度/旋转、遮挡）
 - 不用 AP-10K 再训练：预训练已用过，再训无新信息且测试不公平。
-- 注意：`diagrams/Dog_Pose_Three_Stage_Adaptation_*` 图中 P1 仍写 "AP-10K Train"，实际应为 APT-36K。
 
 ## 数据
 
@@ -80,7 +79,7 @@ Reolink_Background.md                  选题背景：Reolink 公司、痛点、
 Reolink_CCTV_产品分类与数据集调研.md   CCTV 产品分类与可用数据集调研
 viedo_link.md                          数据集 / 模型链接
 proposal/                              Proposal（中/英 docx + 提交版 PDF）
-diagrams/                              架构图，HTML 源 + PNG，_CN / _EN 成对
+diagrams/report/                       最终报告引用的图片
 presentation/
   index.html                           网页版 Proposal 演示
   Proposal_Group28_CN.pptx             中文 PPT（英文版的源）
