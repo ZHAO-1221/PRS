@@ -2,7 +2,14 @@
 
 **Group 28 · NUS PRS Practice Module**
 
-**Sun Wenjing · Zhao Jiayi**
+## Project Team Members
+
+| **Official Full Name** | **Student ID (MTech Applicable)** | **Email** |
+|---|---|---|
+| Sun Wenjing | TBC | TBC |
+| Zhao Jiayi | TBC | TBC |
+
+## Project Overview
 
 This project helps pet owners review video recordings without watching every minute. It detects a dog and a person, extracts their skeletons, recognises activities over time, and returns a timestamped timeline with the relevant video intervals for playback.
 
